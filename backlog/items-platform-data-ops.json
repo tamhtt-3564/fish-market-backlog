@@ -1,0 +1,3198 @@
+[
+  {
+    "key": "E01",
+    "type": "epic",
+    "title": "Hạ tầng và môi trường",
+    "overview": "Dựng ba môi trường dev, staging, production trên Vercel và Supabase vùng Tokyo theo ADR-002, cấu hình nền tảng C-17, CI, sao lưu file sang kho Osaka, đo uptime theo ADR-018 và cảnh báo vận hành mục 8.4. Tài khoản dịch vụ do khách đứng tên (G-08)."
+  },
+  {
+    "key": "E01-S01",
+    "type": "operation",
+    "parent": "E01",
+    "title": "[G-08] Nhận tài khoản dịch vụ do khách đứng tên và cấp quyền nhà thầu",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "G-08",
+      "Q4-19",
+      "D4-84",
+      "ADR-002"
+    ],
+    "overview": "Khách mở tài khoản tổ chức Vercel, Supabase, dịch vụ gửi mail, kho đối tượng Osaka, dịch vụ đo uptime và cấp quyền cho nhà thầu. Không có tài khoản thì mọi issue hạ tầng Sprint 1 bị chặn.",
+    "acceptance": [
+      "Có danh sách 5 dịch vụ, người đứng tên phía khách, quyền đã cấp cho nhà thầu (Supabase: Developer)",
+      "Tổ chức Supabase có ít nhất 2 Owner phía khách",
+      "Danh sách lưu trong repo, không chứa khoá hay mật khẩu"
+    ],
+    "customer_wait": "Khách mở 5 tài khoản dịch vụ và cấp quyền nhà thầu trước ngày đầu Sprint 1",
+    "rough_hours": 4
+  },
+  {
+    "key": "E01-S02",
+    "type": "devtask",
+    "parent": "E01",
+    "title": "[C-17] Dựng ba môi trường dev, staging, production",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-002",
+      "C-17",
+      "ARCH-001 8"
+    ],
+    "overview": "Ba dự án Supabase vùng Tokyo và ba môi trường Vercel vùng hnd1, migration đánh số chạy theo thứ tự ở mỗi môi trường, khoá bí mật ở biến môi trường.",
+    "acceptance": [
+      "Ba môi trường chạy được bản ứng dụng hiện tại",
+      "Người thứ hai dựng lại được theo tài liệu trong repo"
+    ],
+    "depends_on": [
+      "E01-S01"
+    ]
+  },
+  {
+    "key": "E01-S02-T01",
+    "type": "devtask",
+    "parent": "E01-S02",
+    "title": "[C-17] Dựng ba môi trường: dự án Supabase vùng Tokyo, production gói có PITR",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-002",
+      "C-17",
+      "RC-31"
+    ],
+    "overview": "Tạo dự án Supabase cho dev, staging, production ở vùng Tokyo; production bật PITR (RPO 15 phút); Storage riêng tư.",
+    "acceptance": [
+      "Ba dự án ở vùng Tokyo, production có PITR bật và kiểm được trên bảng điều khiển",
+      "Bucket Storage không công khai",
+      "Cấu hình ghi lại trong repo"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E01-S02-T02",
+    "type": "devtask",
+    "parent": "E01-S02",
+    "title": "[C-17] Dựng ba môi trường: Vercel hnd1, biến môi trường, CRON_SECRET, cron chỉ ở production",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-002",
+      "ADR-004",
+      "C-17"
+    ],
+    "overview": "Ba môi trường Vercel trỏ đúng dự án Supabase; khoá bí mật kiểu mới, CRON_SECRET ở biến môi trường; cron chỉ bật ở production, staging gọi việc nền bằng lệnh.",
+    "acceptance": [
+      "vercel.json giữ vùng hnd1",
+      "Không khoá nào nằm trong mã hay trong bundle phía trình duyệt",
+      "Cron chỉ chạy ở production; staging có lệnh gọi việc nền"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S02-T03",
+    "type": "devtask",
+    "parent": "E01-S02",
+    "title": "[C-17] Dựng ba môi trường: quy trình chạy migration theo thứ tự cho từng môi trường",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-17",
+      "W1"
+    ],
+    "overview": "Lệnh và quy trình đưa migration lên staging rồi production, có bước sinh lại kiểu dữ liệu (db:types).",
+    "acceptance": [
+      "Một lệnh chạy migration còn thiếu theo thứ tự",
+      "Production chỉ chạy sau khi staging đạt",
+      "Có ghi lại lần chạy (ai, lúc nào, đợt nào)"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S03",
+    "type": "devtask",
+    "parent": "E01",
+    "title": "[C-17] Cấu hình nền tảng: Auth, khoá bí mật, health, tổ chức Supabase",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-17",
+      "ADR-018",
+      "ADR-006"
+    ],
+    "overview": "Làm các cấu hình C-17: thời hạn không hoạt động của dự án, khoá bí mật kiểu mới, chuyển IP người dùng, /api/health không cache và kiểm DB, Auth; cấu hình tổ chức Supabase; tắt dữ liệu demo ở production.",
+    "acceptance": [
+      "Mọi mục C-17 có cấu hình hoặc ghi rõ epic khác làm (bộ đếm 30 phút ở máy hiện trường thuộc E03)"
+    ],
+    "depends_on": [
+      "E01-S02"
+    ]
+  },
+  {
+    "key": "E01-S03-T01",
+    "type": "devtask",
+    "parent": "E01-S03",
+    "title": "[C-17] Cấu hình nền tảng: /api/health không cache, kiểm ứng dụng, một truy vấn DB và Auth",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "C-17",
+      "ADR-018",
+      "RC-31"
+    ],
+    "overview": "Prototype có /api/health nhưng CDN giữ kết quả 60 giây; sửa để trả Cache-Control no-store và kiểm DB, Auth như ADR-018.",
+    "acceptance": [
+      "Header Cache-Control: no-store",
+      "DB hoặc Auth lỗi thì trả mã lỗi, không trả 200",
+      "Test route chạy xanh",
+      "Route không trả dữ liệu cá nhân, không cần phiên"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E01-S03-T02",
+    "type": "devtask",
+    "parent": "E01-S03",
+    "title": "[C-17] Cấu hình nền tảng: thời hạn phiên dự án, khoá bí mật kiểu mới, chuyển IP người dùng",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-17",
+      "ADR-006",
+      "RC-32"
+    ],
+    "overview": "Đặt thời hạn không hoạt động 8 giờ cho dự án, chuyển sang khoá bí mật kiểu mới, bật chuyển IP người dùng để đổi ca đăng nhập nhiều không bị giới hạn theo một IP.",
+    "acceptance": [
+      "Cấu hình có trên staging và production",
+      "Khoá kiểu cũ bị thu hồi sau khi chuyển",
+      "Đăng nhập thử từ hai máy cùng mạng ghi đúng IP từng máy"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S03-T03",
+    "type": "operation",
+    "parent": "E01-S03",
+    "title": "[C-17] Cấu hình nền tảng: tổ chức Supabase bắt buộc MFA, quyền Owner / Developer, hạn chế token của Owner",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-17",
+      "D4-97",
+      "Q4-25"
+    ],
+    "overview": "Phòng ngừa mất dự án Supabase: Owner phía khách bật bắt buộc MFA cho cả tổ chức, nhà thầu chỉ Developer, hạn chế token cá nhân của Owner.",
+    "acceptance": [
+      "Bắt buộc MFA bật cho tổ chức",
+      "Nhà thầu không có quyền Owner",
+      "Danh sách thành viên và quyền lưu trong repo"
+    ],
+    "customer_wait": "Owner phía khách thao tác cấu hình tổ chức Supabase trước khi dựng production",
+    "rough_hours": 3
+  },
+  {
+    "key": "E01-S03-T04",
+    "type": "devtask",
+    "parent": "E01-S03",
+    "title": "[C-17] Cấu hình nền tảng: production không có dữ liệu demo, thu hồi TRUNCATE trên bảng chỉ thêm",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-14",
+      "ADR-015",
+      "C-17"
+    ],
+    "overview": "reset_demo_data và nút đặt lại demo chỉ có ở môi trường thử; production thu hồi quyền TRUNCATE của service_role trên bảng chỉ thêm.",
+    "acceptance": [
+      "Gọi reset_demo_data ở production bị từ chối",
+      "TRUNCATE bảng chỉ thêm ở production báo lỗi quyền",
+      "dev, staging vẫn reset demo được"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E01-S04",
+    "type": "devtask",
+    "parent": "E01",
+    "title": "[C-17] CI và triển khai: kiểm mã, kiểm migration, khung E2E",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-17",
+      "ARCH-001 8"
+    ],
+    "overview": "Prototype chưa có CI (chỉ có keep-alive). Dựng GitHub Actions kiểm mã, kiểm migration trên DB tạm, khung E2E cho E18 và luồng triển khai có quay lui.",
+    "acceptance": [
+      "Mọi PR chạy CI trước khi gộp",
+      "Quy trình triển khai ghi trong repo"
+    ],
+    "depends_on": [
+      "E01-S02"
+    ]
+  },
+  {
+    "key": "E01-S04-T01",
+    "type": "devtask",
+    "parent": "E01-S04",
+    "title": "[C-17] CI và triển khai: lint, typecheck, vitest, build cho mỗi PR",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-17"
+    ],
+    "overview": "Job CI chạy các lệnh có sẵn trong package.json, chặn gộp khi đỏ.",
+    "acceptance": [
+      "CI đỏ thì không gộp được",
+      "Thời gian chạy dưới 10 phút"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S04-T02",
+    "type": "devtask",
+    "parent": "E01-S04",
+    "title": "[W1] CI và triển khai: job kiểm migration bằng supabase db reset, reset_demo_data và npm run verify",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W1",
+      "C-17"
+    ],
+    "overview": "Mỗi PR có migration thì dựng Supabase cục bộ trong CI, chạy hết các đợt, nạp demo và chạy kịch bản verify, đúng cách kiểm ghi ở bảng thứ tự đợt migration.",
+    "acceptance": [
+      "Migration lỗi hoặc verify đỏ thì CI đỏ",
+      "Không cần khoá thật của staging, production"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E01-S04-T03",
+    "type": "devtask",
+    "parent": "E01-S04",
+    "title": "[RC-34] CI và triển khai: khung E2E @playwright/test và axe-core chạy trên bản preview",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "RC-34",
+      "Q4-29",
+      "C-17"
+    ],
+    "overview": "Prototype chỉ có playwright-core để chụp màn; cần bộ chạy E2E thật và axe-core để E18 viết kiểm thử luồng và accessibility.",
+    "acceptance": [
+      "npm run test:e2e chạy được một ca mẫu đăng nhập",
+      "axe-core chạy trong ca mẫu và báo lỗi khi vi phạm",
+      "CI chạy E2E trên bản preview"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E01-S04-T04",
+    "type": "devtask",
+    "parent": "E01-S04",
+    "title": "[C-17] CI và triển khai: preview mỗi PR, staging khi gộp, production có duyệt, quay về bản trước",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-17",
+      "ARCH-001 8.1"
+    ],
+    "overview": "Luồng triển khai ba môi trường; phát hành lỗi thì quay về bản triển khai trước trên Vercel dưới 15 phút.",
+    "acceptance": [
+      "Production chỉ triển khai khi TL-A duyệt",
+      "Đã thử quay bản trước trên staging, ghi thời gian"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S05",
+    "type": "devtask",
+    "parent": "E01",
+    "title": "[ADR-002] Sao lưu: PITR database và chép file sang kho Osaka",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-002",
+      "ADR-008",
+      "RC-29",
+      "C-15"
+    ],
+    "overview": "Storage không nằm trong PITR nên việc nền chép file mới sang kho của khách ở Osaka mỗi 15 phút, lưu mốc lần chép cuối, báo Critical khi lỗi 2 lần liền.",
+    "acceptance": [
+      "File mới xuất hiện ở kho Osaka trong 15 phút",
+      "Cảnh báo sao lưu lỗi đúng mục 8.4"
+    ],
+    "depends_on": [
+      "E01-S02"
+    ]
+  },
+  {
+    "key": "E01-S05-T01",
+    "type": "devtask",
+    "parent": "E01-S05",
+    "title": "[ADR-002] Sao lưu: kho đối tượng Osaka, mã hoá phía máy chủ, tài khoản dịch vụ chỉ ghi, người vận hành chỉ đọc",
+    "team": "infrastructure",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "ADR-002",
+      "D4-93",
+      "G-08"
+    ],
+    "overview": "Cấu hình kho đối tượng vùng Osaka do khách đứng tên cho sao lưu file và kho lạnh.",
+    "acceptance": [
+      "Tài khoản dịch vụ không đọc, không xoá được",
+      "Mã hoá phía máy chủ bật",
+      "Không có đường công khai"
+    ],
+    "customer_wait": "Khách mở kho đối tượng Osaka và cấp tài khoản dịch vụ trước Sprint chạm sao lưu",
+    "rough_hours": 4
+  },
+  {
+    "key": "E01-S05-T02",
+    "type": "devtask",
+    "parent": "E01-S05",
+    "title": "[ADR-002] Sao lưu: việc nền chép file mới mỗi 15 phút, lưu mốc lần chép cuối, cảnh báo lỗi 2 lần liền",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-002",
+      "C-15",
+      "N-23"
+    ],
+    "overview": "Việc nền chạy qua route tick của N-23 (E13), chép file mới sau mốc, lần sau chép tiếp phần lỗi; chỗ lưu mốc chốt ở thiết kế ngắn trong issue (C-15 còn mở).",
+    "acceptance": [
+      "Thiết kế ngắn chỗ lưu mốc ghi trong issue trước khi code",
+      "Chạy lại không chép trùng",
+      "Lỗi 2 lần liền tạo cảnh báo Critical cho người trực",
+      "Lần chạy ghi audit với người làm là việc nền"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E01-S05-T03",
+    "type": "testdesign",
+    "parent": "E01-S05",
+    "title": "[ADR-002] Sao lưu: ca kiểm thử chép file và cảnh báo lỗi",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-002",
+      "C-15"
+    ],
+    "overview": "Ca kiểm thử cho việc chép file: file mới, chép lại sau lỗi, lỗi 2 lần liền, file bị xoá có duyệt.",
+    "acceptance": [
+      "Ca phủ nhánh thành công, lỗi một lần, lỗi hai lần liền",
+      "TL-A soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E01-S05-T04",
+    "type": "testexecution",
+    "parent": "E01-S05",
+    "title": "[ADR-002] Sao lưu: QA kiểm chép file trên staging",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-002"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging với kho Osaka thật.",
+    "acceptance": [
+      "Mọi ca đạt hoặc có issue lỗi"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E01-S06",
+    "type": "operation",
+    "parent": "E01",
+    "title": "[ADR-018] Đo uptime: cấu hình dịch vụ đo, nhịp cron, mẫu báo cáo tháng",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-018",
+      "RC-31",
+      "Q4-18",
+      "D4-83"
+    ],
+    "overview": "Dịch vụ đo độc lập gọi /api/health mỗi phút trong 02:00 tới 10:00 ngày chợ, nhận nhịp cron, báo ngừng khi lỗi 2 lần liền; mẫu báo cáo uptime tháng dùng để nghiệm thu 99.5%.",
+    "acceptance": [
+      "Có số đo và báo cáo mẫu cho người nghiệm thu"
+    ],
+    "depends_on": [
+      "E01-S03"
+    ]
+  },
+  {
+    "key": "E01-S06-T01",
+    "type": "operation",
+    "parent": "E01-S06",
+    "title": "[ADR-018] Đo uptime: cấu hình kiểm /api/health, nhịp cron, cảnh báo hệ thống ngừng và việc nền ngừng",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "ADR-018",
+      "N-23",
+      "RC-31"
+    ],
+    "overview": "Cấu hình dịch vụ đo: kiểm mỗi phút trong khung giờ, ngừng khi lỗi 2 lần liền, lỡ nhịp cron quá 2 phút là Critical gửi người trực.",
+    "acceptance": [
+      "Tắt thử /api/health trên staging thì nhận cảnh báo sau 2 phút",
+      "Dừng cron thì nhận cảnh báo việc nền ngừng",
+      "Lịch ngày chợ dùng mặc định 6 ngày mỗi tuần tới khi có Q4-46"
+    ],
+    "customer_wait": "Khách mở tài khoản dịch vụ đo uptime (G-08) trước sprint dựng production",
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S06-T02",
+    "type": "operation",
+    "parent": "E01-S06",
+    "title": "[ADR-018] Đo uptime: mẫu báo cáo uptime tháng, tính ngân sách 62 phút, loại trừ bảo trì đã báo",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-018",
+      "Q4-18",
+      "Q4-20"
+    ],
+    "overview": "Mẫu báo cáo tháng theo ADR-018: phút ngừng trong khung giờ, phần loại trừ, nguyên nhân và kế hoạch khắc phục khi không đạt.",
+    "acceptance": [
+      "Báo cáo thử một tháng staging ra số",
+      "Người thứ hai lập lại được theo hướng dẫn"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E01-S07",
+    "type": "devtask",
+    "parent": "E01",
+    "title": "[ARCH-001 8.4] Cảnh báo sự kiện bảo mật và truy cập dữ liệu cá nhân bất thường",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ARCH-001 8.4",
+      "D4-100",
+      "RC-33",
+      "RC-40"
+    ],
+    "overview": "Hai cảnh báo Critical cho ROLE-SYS-ADMIN ở mục 8.4 không gắn với màn nghiệp vụ nào: từ 3 tài khoản khoá tạm trong 15 phút hoặc có đặt lại MFA; một tài khoản đọc hay xuất dữ liệu cá nhân vượt ngưỡng trong 1 giờ.",
+    "acceptance": [
+      "Hai cảnh báo tạo thông báo in_app và email cho ROLE-SYS-ADMIN",
+      "Ngưỡng là mặc định đổi được ở SCR-31"
+    ]
+  },
+  {
+    "key": "E01-S07-T01",
+    "type": "devtask",
+    "parent": "E01-S07",
+    "title": "[ARCH-001 8.4] Cảnh báo bảo mật: dò khoá tạm hàng loạt và đặt lại MFA",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ARCH-001 8.4",
+      "C-14",
+      "RC-40"
+    ],
+    "overview": "Việc nền đọc audit account_lock, mfa_reset và tạo cảnh báo Critical.",
+    "acceptance": [
+      "Từ 3 tài khoản khoá tạm trong 15 phút tạo đúng một cảnh báo",
+      "Mỗi lần đặt lại MFA tạo cảnh báo",
+      "Không tạo trùng khi việc nền chạy lại"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S07-T02",
+    "type": "devtask",
+    "parent": "E01-S07",
+    "title": "[ARCH-001 8.4] Cảnh báo bảo mật: dò đọc dữ liệu cá nhân vượt ngưỡng trong 1 giờ",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ARCH-001 8.4",
+      "D4-100",
+      "QT-03"
+    ],
+    "overview": "Đọc dòng audit loại đọc dữ liệu cá nhân, đếm theo tài khoản trong 1 giờ, vượt ngưỡng mặc định thì báo.",
+    "acceptance": [
+      "Vượt ngưỡng tạo một cảnh báo cho tài khoản đó trong giờ đó",
+      "Truy vấn có chỉ mục, không quét cả bảng audit"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E01-S07-T03",
+    "type": "testdesign",
+    "parent": "E01-S07",
+    "title": "[ARCH-001 8.4] Cảnh báo bảo mật: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 8.4"
+    ],
+    "overview": "Ca kiểm thử ngưỡng, biên 15 phút và 1 giờ, chạy lại không trùng.",
+    "acceptance": [
+      "TL-A soát ca"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E01-S07-T04",
+    "type": "testexecution",
+    "parent": "E01-S07",
+    "title": "[ARCH-001 8.4] Cảnh báo bảo mật: QA kiểm trên staging",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 8.4"
+    ],
+    "overview": "Chạy ca trên staging.",
+    "acceptance": [
+      "Mọi ca đạt hoặc có issue lỗi"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E01-S08",
+    "type": "operation",
+    "parent": "E01",
+    "title": "[Q4-19] Cấu hình dịch vụ gửi mail: tên miền gửi, SPF, DKIM, khoá API",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-19",
+      "ADR-004",
+      "G-08"
+    ],
+    "overview": "Dịch vụ gửi mail cho thông báo và cảnh báo; khai DNS cho tên miền của chợ. Ai khai DNS chưa xác định (Q4-19).",
+    "acceptance": [
+      "Mail thử từ staging tới hộp thư thật không vào thư rác",
+      "Khoá API chỉ ở biến môi trường"
+    ],
+    "customer_wait": "Khách (hoặc bên được chỉ định) khai SPF, DKIM cho tên miền gửi trước sprint làm thông báo email",
+    "rough_hours": 4
+  },
+  {
+    "key": "E01-S09",
+    "type": "investigation",
+    "parent": "E01",
+    "title": "[Q4-25] Làm rõ Q4-25 kèm Q4-19: rủi ro sao lưu trong một vùng và dịch vụ phía khách",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-25",
+      "Q4-19",
+      "D4-97",
+      "D4-99",
+      "D4-102"
+    ],
+    "overview": "Khách chấp nhận ba rủi ro của sao lưu trong một vùng hay chọn hạng mục A hoặc B; khách đứng tên, trả phí các dịch vụ. Không chấp nhận thì đổi khối lượng hạ tầng lớn.",
+    "acceptance": [
+      "Câu trả lời ghi vào bảng Q4",
+      "Nếu chọn A hoặc B: mở issue mới và ước lại E01, E19"
+    ],
+    "customer_wait": "Khách trả lời Q4-25 và Q4-19 bằng văn bản trước khi dựng production",
+    "rough_hours": 4
+  },
+  {
+    "key": "E02",
+    "type": "epic",
+    "title": "Nền dữ liệu (migration đợt 1..8 và đợt 10)",
+    "overview": "Viết migration mới trên DB prototype theo bảng thứ tự đợt migration ở api-design _index và DB design mục 6. Đợt 9 thuộc E11. Thân hàm nghiệp vụ có TECH do story của epic chức năng làm; story đợt ở đây gom bảng, cột, CHECK, view, backfill, vá hàm prototype, bỏ hàm cũ và kiểm khoảng giữa phần a và phần b."
+  },
+  {
+    "key": "E02-S01",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W1] Migration đợt 1: nền dùng chung",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W1",
+      "DB 4.15",
+      "DB 4.16",
+      "DB 4.21",
+      "DB 4.29",
+      "D4-134"
+    ],
+    "overview": "Tạo rule_versions có version 1, incentive_rates, period_closes, client_sync_receipts; nới CHECK action_type một lần; 4 hàm nền không có TECH. Không đổi hàm nghiệp vụ cũ.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ]
+  },
+  {
+    "key": "E02-S01-T01",
+    "type": "devtask",
+    "parent": "E02-S01",
+    "title": "[W1] Migration đợt 1: bảng rule_versions, incentive_rates, period_closes, client_sync_receipts",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W1",
+      "DB 4.15",
+      "DB 4.16",
+      "DB 4.21",
+      "DB 4.29"
+    ],
+    "overview": "Tạo 4 bảng đủ cột, CHECK, chỉ mục theo DB design, bật RLS.",
+    "acceptance": [
+      "rule_versions có 4 CHECK, create_request_id UNIQUE, chỉ mục rule_versions_one_open_rollback",
+      "client_sync_receipts có response_body",
+      "RLS bật, không policy"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S01-T02",
+    "type": "devtask",
+    "parent": "E02-S01",
+    "title": "[W1] Migration đợt 1: chèn version 1, nới CHECK audit_logs.action_type, vá reset_demo_data",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W1",
+      "D4-134",
+      "DB 4.12",
+      "DB 4.15"
+    ],
+    "overview": "Version 1 approved cho hai rule_kind với params tạm; effective_from là ngày nghiệp vụ sớm nhất trong dữ liệu (DB rỗng thì hôm nay); nới CHECK cho 37 loại; reset_demo_data hạ effective_from xuống ngày demo sớm nhất.",
+    "acceptance": [
+      "effective_from tính bằng least của lots, trades, business_day_locks",
+      "CHECK có đủ 37 loại theo lệnh đếm ở bảng đợt",
+      "Sau supabase db reset và reset_demo_data, rule_version_for_day không trả NULL cho ngày demo"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S01-T03",
+    "type": "devtask",
+    "parent": "E02-S01",
+    "title": "[W1] Migration đợt 1: hàm month_lock_key, is_period_closed, rule_version_for_day, close_sync_receipt kèm test",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W1",
+      "DB 4.15",
+      "DB 4.21",
+      "DB 4.29"
+    ],
+    "overview": "Bốn hàm nền theo chữ ký DB design 6.5 số 17, 20, 21, 22; các hàm nghiệp vụ đợt sau gọi chúng.",
+    "acceptance": [
+      "Test từng hàm: ngày có và không có version, kỳ đã và chưa chốt, biên nhận đã đóng",
+      "is_period_closed một thân duy nhất như 6.5 số 21"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S01-T04",
+    "type": "testexecution",
+    "parent": "E02-S01",
+    "title": "[W1] Migration đợt 1: kiểm bằng bản ứng dụng cũ sau migration",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W1"
+    ],
+    "overview": "Chạy lại kịch bản kiểm khoảng giữa dòng đợt 1 bằng bản ứng dụng prototype.",
+    "acceptance": [
+      "Mọi hàm prototype chạy như trước",
+      "Kết quả ghi vào issue"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E02-S02",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W2] Migration đợt 2: người tham gia và căn cứ (2a, 2b)",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W2",
+      "DB 4.14",
+      "DB 4.3",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "Thêm lịch sử hiệu lực tham gia và cột mới của participant_validity, backfill lịch sử từ audit, view mới; 2b chạy lại backfill sau khi route A9 chuyển (route ở E04).",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S01"
+    ]
+  },
+  {
+    "key": "E02-S02-T01",
+    "type": "devtask",
+    "parent": "E02-S02",
+    "title": "[W2] Migration đợt 2a: bảng participant_validity_history, cột applying, lift_condition, cap_period",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W2",
+      "DB 4.14",
+      "DB 4.3"
+    ],
+    "overview": "Bảng lịch sử có basis_no, chỉ mục, trigger forbid_row_change, CHECK changed_by; participant_validity thêm applying vào CHECK status và hai cột.",
+    "acceptance": [
+      "CHECK changed_by cho NULL chỉ ở initial_registration, migration_resync",
+      "Trigger chặn sửa xoá dòng lịch sử"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S02-T02",
+    "type": "devtask",
+    "parent": "E02-S02",
+    "title": "[W2] Migration đợt 2a: backfill lịch sử initial_registration từ audit validity_update",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W2",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "Mỗi người tham gia có dòng hiện hành được chèn một dòng lịch sử; changed_by lấy từ audit validity_update mới nhất, không có thì NULL.",
+    "acceptance": [
+      "Số dòng lịch sử bằng số dòng participant_validity",
+      "from_status NULL ở dòng initial_registration",
+      "Màn hiện người làm là dữ liệu chuyển đổi khi changed_by NULL"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S02-T03",
+    "type": "devtask",
+    "parent": "E02-S02",
+    "title": "[W2] Migration đợt 2a: view v_participants_effective đọc expiry_warning_days, thêm applying",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W2",
+      "RC-06",
+      "RC-04"
+    ],
+    "overview": "View đọc số ngày cảnh báo từ version hiện hành thay số 30 cố định.",
+    "acceptance": [
+      "Đổi params ở version thì cảnh báo đổi theo",
+      "View chỉ thêm cột, mã cũ đọc view không hỏng"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E02-S02-T04",
+    "type": "devtask",
+    "parent": "E02-S02",
+    "title": "[W2] Migration đợt 2b: backfill bù cho thay đổi trong lúc chuyển, bỏ upsert_participant_validity cũ",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W2",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "Chèn bù cho người có updated_at muộn hơn dòng lịch sử mới nhất hoặc chưa có dòng nào; initial_registration hoặc migration_resync; rồi bỏ bản hàm cũ.",
+    "acceptance": [
+      "Ví dụ A-009 đăng ký giữa 2a và 2b có dòng initial_registration sau 2b",
+      "Không còn người tham gia thiếu dòng lịch sử"
+    ],
+    "depends_on": [
+      "E02-S02-T02"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S02-T05",
+    "type": "testexecution",
+    "parent": "E02-S02",
+    "title": "[W2] Migration đợt 2: kiểm khoảng giữa 2a và 2b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W2"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 2 ở bảng kiểm khoảng giữa: A9 cũ ghi trong lúc chuyển, mã mới đọc dòng ghi bù.",
+    "acceptance": [
+      "Kết quả khớp cột kết quả của bảng kiểm khoảng giữa",
+      "Lỗi tìm thấy mở issue"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S03",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W3] Migration đợt 3: lô và danh mục 荷目 (3a, 3b)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W3",
+      "DB 4.13",
+      "DB 4.4",
+      "DB 4.5",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "Thay ô chữ 荷目 bằng danh mục item_categories, giữ item_name song song tới 3b; chuyển 11 file src đọc item_name sang view v_lots_named. Hàm create_lot, record_judgment, update_lot mới ở E05.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S02"
+    ]
+  },
+  {
+    "key": "E02-S03-T01",
+    "type": "devtask",
+    "parent": "E02-S03",
+    "title": "[W3] Migration đợt 3a: item_categories, backfill từ item_name, cột mới của lots và lot_judgments",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W3",
+      "DB 4.13",
+      "DB 4.4",
+      "DB 4.5"
+    ],
+    "overview": "Tạo danh mục từ các giá trị item_name đang có, thêm item_category_id để NULL được, receipt_doc_no cho NULL, recorded_offline, synced_at, cột lot_judgments theo 4.5.",
+    "acceptance": [
+      "Mọi lô có tên đã vào danh mục được gán khoá",
+      "item_name vẫn NOT NULL"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S03-T02",
+    "type": "devtask",
+    "parent": "E02-S03",
+    "title": "[W3] Migration đợt 3a: view v_lots_named, trigger điền item_category_id, vá update_lot cũ và reset_demo_data",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W3",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "View hai cột lot_id, item_display_name; trigger BEFORE INSERT điền khoá khi tên đã có; update_lot cũ không tạo danh mục mới.",
+    "acceptance": [
+      "Lô do create_lot cũ ghi có khoá khi tên đã có",
+      "update_lot cũ với tên chưa có để khoá NULL",
+      "View không dùng l.*"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S03-T03",
+    "type": "devtask",
+    "parent": "E02-S03",
+    "title": "[W3] Migration đợt 3a: chuyển 11 file src đọc item_name sang item_category_id và v_lots_named",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W3",
+      "D4-140"
+    ],
+    "overview": "Danh sách 11 file ở bảng đợt 3 (lệnh grep đếm kèm); đọc tên 荷目 qua view.",
+    "acceptance": [
+      "grep -rln item_name src chỉ còn file được phép tới 3b",
+      "Màn lô, giao dịch, giao nhận hiện đúng tên 荷目"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S03-T04",
+    "type": "devtask",
+    "parent": "E02-S03",
+    "title": "[W3] Migration đợt 3b: backfill lại danh mục và khoá, NOT NULL, sửa view, bỏ trigger, hàm cũ và cột item_name",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W3",
+      "D4-140",
+      "Q4-28"
+    ],
+    "overview": "Chạy lại backfill, xuất danh sách danh mục mới tạo cho ROLE-SETTLEMENT xem, đặt NOT NULL, view chỉ đọc danh mục, bỏ ba hàm bản cũ, vá hàm mới và reset_demo_data bỏ item_name, rồi mới bỏ cột.",
+    "acceptance": [
+      "Không còn lô item_category_id NULL trước khi đặt NOT NULL",
+      "Có file danh sách danh mục tạo ở bước này",
+      "Thứ tự bước đúng bảng đợt 3"
+    ],
+    "depends_on": [
+      "E02-S03-T02",
+      "E02-S03-T03"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E02-S03-T05",
+    "type": "testexecution",
+    "parent": "E02-S03",
+    "title": "[W3] Migration đợt 3: kiểm khoảng giữa 3a và 3b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W3"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 3 ở bảng kiểm khoảng giữa, gồm lô có tên chưa có danh mục.",
+    "acceptance": [
+      "Không mất lô, không trống tên 荷目",
+      "Kết quả ghi vào issue"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S04",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W4] Migration đợt 4: giao dịch (4a, 4b)",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "DB 4.6",
+      "DB 4.10",
+      "D4-129"
+    ],
+    "overview": "Cột mới của trades và correction_requests, backfill người duyệt từ audit, vá 5 hàm prototype trước khi mở trạng thái nháp, view v_trade_effective; 4b bỏ confirm_trade và hàm kiểm bản cũ. Hàm approve_trade, save_trade_draft, discard_trade_draft, lookup_buyers ở E06.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S03"
+    ]
+  },
+  {
+    "key": "E02-S04-T01",
+    "type": "devtask",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4a: cột trades, request_type và return_to_lot của correction_requests, chỉ mục",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "DB 4.6",
+      "DB 4.10"
+    ],
+    "overview": "paper_slip, paper_slip_reason, approved_by, created_by, submitted_at, confirmed_at, hai request_id UNIQUE, hai chỉ mục, confirmed_by cho NULL; request_type mặc định correction, return_to_lot kèm CHECK; CHECK unit_price_jpy >= 1 (kiểm dữ liệu cũ trước).",
+    "acceptance": [
+      "Phiếu đang có nhận request_type correction",
+      "Dữ liệu cũ không vi phạm CHECK đơn giá trước khi gắn"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S04-T02",
+    "type": "devtask",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4a: backfill approved_by, confirmed_at, created_by từ audit trade_confirm",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "D4-129"
+    ],
+    "overview": "Mọi giao dịch confirmed và cancelled nhận người duyệt, giờ chốt từ audit, không có thì confirmed_by và traded_at.",
+    "acceptance": [
+      "Không còn giao dịch confirmed thiếu approved_by",
+      "Giao dịch hủy cũ không bị coi là nháp bỏ"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S04-T03",
+    "type": "devtask",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4a: sửa seed demo và vá 5 hàm prototype chỉ nhận giao dịch confirmed",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "D4-129"
+    ],
+    "overview": "reset_demo_data, seed_demo_audit_rows ghi rõ status, approved_by, created_by; cancel_trade, record_delivery, complete_delivery, record_delivery_exception từ chối khi status khác confirmed; lock_business_day cũ từ chối khi ngày còn nháp.",
+    "acceptance": [
+      "Test từng hàm vá với giao dịch draft bị từ chối",
+      "Vá xong trước bước mở CHECK draft"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S04-T04",
+    "type": "devtask",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4a: mở CHECK status draft, awaiting_confirmation, CHECK hủy mới, view v_trade_effective",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "DB 4.6",
+      "RC-19"
+    ],
+    "overview": "Chỉ sau khi vá hàm mới mở trạng thái nháp; view số lượng, đơn giá hiệu lực theo phiếu đã duyệt.",
+    "acceptance": [
+      "View khớp ví dụ ở DB design mục 5",
+      "Thứ tự bước (1) tới (5) đúng bảng đợt 4"
+    ],
+    "depends_on": [
+      "E02-S04-T03"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S04-T05",
+    "type": "devtask",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4b: backfill lại approved_by, gắn CHECK, NOT NULL created_by, bỏ confirm_trade và hàm kiểm bản cũ",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W4",
+      "D4-129"
+    ],
+    "overview": "Sau khi route A16, A17, A33, A34 đã chuyển (E06): chạy lại backfill, gắn ràng buộc, bỏ confirm_trade, buyer_rejection, validity_reason, check_buyer_validity(uuid) và ba hàm kiểm căn cứ bản cũ.",
+    "acceptance": [
+      "Không còn lời gọi tới hàm đã bỏ trong src",
+      "Giao dịch confirm_trade ghi trong lúc chuyển có approved_by"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S04-T06",
+    "type": "testexecution",
+    "parent": "E02-S04",
+    "title": "[W4] Migration đợt 4: kiểm khoảng giữa 4a và 4b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W4"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 4 ở bảng kiểm khoảng giữa.",
+    "acceptance": [
+      "Kết quả khớp bảng",
+      "Lỗi tìm thấy mở issue"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S05",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W5] Migration đợt 5: giao nhận (5a, 5b)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W5",
+      "DB 4.7",
+      "DB 4.8",
+      "DB 4.28",
+      "D4-139"
+    ],
+    "overview": "delivery_holds, cột mới của deliveries và delivery_exceptions, settlement_day có backfill và trigger, view v_delivery_progress bản mới. Hàm record_delivery, complete_delivery mới ở E07.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S04"
+    ]
+  },
+  {
+    "key": "E02-S05-T01",
+    "type": "devtask",
+    "parent": "E02-S05",
+    "title": "[W5] Migration đợt 5a: delivery_holds, cột ngoại tuyến, bỏ giới hạn 5, CHECK quantity của return, max_partial_deliveries",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W5",
+      "DB 4.28",
+      "DB 4.7",
+      "DB 4.8"
+    ],
+    "overview": "Bảng tạm dừng giao, cột recorded_offline, synced_at; kiểm dữ liệu cũ trước khi gắn CHECK; max_partial_deliveries stable đọc version đợt 1; vá record_delivery_exception theo cột ngoại tuyến.",
+    "acceptance": [
+      "Dữ liệu cũ không vi phạm CHECK return",
+      "max_partial_deliveries trả theo version của ngày"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S05-T02",
+    "type": "devtask",
+    "parent": "E02-S05",
+    "title": "[W5] Migration đợt 5a: settlement_day backfill, trigger điền theo is_day_locked, vá reset_demo_data, NOT NULL",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W5",
+      "D4-139",
+      "D4-140"
+    ],
+    "overview": "Backfill bằng ngày JST của delivered_at; trigger điền ngày chưa khoá sớm nhất cho lần giao do hàm cũ ghi.",
+    "acceptance": [
+      "Lần giao ghi sau giờ khoá không rơi vào ngày đã khoá",
+      "Reset demo sau 5b không vướng NOT NULL"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S05-T03",
+    "type": "devtask",
+    "parent": "E02-S05",
+    "title": "[W5] Migration đợt 5a: view v_delivery_progress 6 trạng thái, delivered_net, period_closed",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W5",
+      "D4-39",
+      "D4-74",
+      "D4-75",
+      "C-12"
+    ],
+    "overview": "View đọc v_trade_effective, request_type, delivery_holds; giữ tên 3 cột cũ đổi nghĩa; phần gộp viết LATERAL theo t.id để lọc đẩy được.",
+    "acceptance": [
+      "Thứ tự trạng thái khi trùng đúng DB design mục 5",
+      "Kỳ đã chốt có remaining_quantity 0",
+      "SCR-17 đọc view như cũ không lỗi"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E02-S05-T04",
+    "type": "devtask",
+    "parent": "E02-S05",
+    "title": "[W5] Migration đợt 5b: bỏ trigger điền settlement_day, bỏ record_delivery 5 tham số",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W5"
+    ],
+    "overview": "Sau khi route A23, A24 chuyển (E07).",
+    "acceptance": [
+      "Không còn lời gọi record_delivery 5 tham số"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E02-S05-T05",
+    "type": "testexecution",
+    "parent": "E02-S05",
+    "title": "[W5] Migration đợt 5: kiểm khoảng giữa 5a và 5b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W5"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 5 ở bảng kiểm khoảng giữa.",
+    "acceptance": [
+      "Kết quả khớp bảng"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S06",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W6] Migration đợt 6: phiếu điều chỉnh, đính kèm, thông báo (6a, 6b)",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W6",
+      "DB 4.10",
+      "DB 4.25",
+      "DB 4.27",
+      "D4-134"
+    ],
+    "overview": "Cột và CHECK mới của correction_requests, bảng attachments, notifications; ghép decide_correction thân mới (E08) và decide_delivery_hold (E07) trong cùng migration.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S05"
+    ]
+  },
+  {
+    "key": "E02-S06-T01",
+    "type": "devtask",
+    "parent": "E02-S06",
+    "title": "[W6] Migration đợt 6a: correction_requests trạng thái returned, resubmitted_at, CHECK theo request_type, đổi chỉ mục",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W6",
+      "DB 4.10"
+    ],
+    "overview": "proposed_quantity, proposed_unit_price_jpy cho NULL khi hủy, 2 CHECK theo loại, CHECK đơn giá >= 1 (kiểm dữ liệu cũ), chỉ mục một phiếu đang chờ đổi điều kiện.",
+    "acceptance": [
+      "Phiếu cũ qua 2 CHECK mới",
+      "Chỉ mục correction_requests_day_status_idx có"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S06-T02",
+    "type": "devtask",
+    "parent": "E02-S06",
+    "title": "[W6] Migration đợt 6a: bảng attachments và notifications",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W6",
+      "DB 4.25",
+      "DB 4.27"
+    ],
+    "overview": "Hai bảng đủ cột (file_name, next_attempt_at), chỉ mục, RLS.",
+    "acceptance": [
+      "RLS bật, không policy"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S06-T03",
+    "type": "devtask",
+    "parent": "E02-S06",
+    "title": "[W6] Migration đợt 6a và 6b: ghép decide_correction thân mới với decide_delivery_hold trong một migration, bỏ cancel_trade",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W6",
+      "D4-134",
+      "D4-143"
+    ],
+    "overview": "Bảo đảm không có lúc phiếu return_to_lot được duyệt bằng thân cũ; 6b bỏ cancel_trade và create_correction bản cũ sau khi route A20, A29, A31, A37 chuyển.",
+    "acceptance": [
+      "Thử số 100 / 60 / 40: lô +40, hiệu lực 60, còn 0",
+      "Không còn lời gọi cancel_trade"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E02-S06-T04",
+    "type": "testexecution",
+    "parent": "E02-S06",
+    "title": "[W6] Migration đợt 6: kiểm khoảng giữa 6a và 6b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W6"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 6 ở bảng kiểm khoảng giữa.",
+    "acceptance": [
+      "Kết quả khớp bảng"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S07",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W7] Migration đợt 7: khoá ngày thành chuỗi sự kiện, bản chụp, xuất kế toán (7a, 7b)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W7",
+      "DB 4.9",
+      "DB 4.20",
+      "DB 4.22",
+      "DB 4.23",
+      "ADR-015",
+      "D4-139"
+    ],
+    "overview": "business_day_locks thêm cột song song và chép dòng cũ trong một giao dịch tường minh; bảng day_reopen_requests, daily_reconciliation_snapshots, accounting_export_batches. Hàm khoá ngày, mở lại sổ, chốt kỳ ở E09.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S06"
+    ]
+  },
+  {
+    "key": "E02-S07-T01",
+    "type": "devtask",
+    "parent": "E02-S07",
+    "title": "[W7] Migration đợt 7a: day_reopen_requests, cột song song của business_day_locks, chép dòng cũ trong begin commit",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W7",
+      "DB 4.9",
+      "DB 4.20",
+      "ADR-015"
+    ],
+    "overview": "Thêm event_by, event_at không DEFAULT, event_seq, event_type, lock_seq có DEFAULT, reopen_request_id, khoá chính id, 2 UNIQUE; tắt trigger chỉ thêm, chép, bật lại trong một giao dịch.",
+    "acceptance": [
+      "Dòng cũ có event_seq 1, event_type lock, lock_seq 1",
+      "Đoạn tắt trigger nằm trong begin commit tường minh"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E02-S07-T02",
+    "type": "devtask",
+    "parent": "E02-S07",
+    "title": "[W7] Migration đợt 7a: trigger điền hai chiều, bảng daily_reconciliation_snapshots, accounting_export_batches",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W7",
+      "DB 4.22",
+      "DB 4.23"
+    ],
+    "overview": "Seed cũ chèn locked_at thì trigger chép đúng giờ đó sang event_at.",
+    "acceptance": [
+      "reset_demo_data cũ chèn ngày d0 - 2 lúc 15:00 cho event_at 15:00",
+      "Hai bảng mới có RLS"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S07-T03",
+    "type": "devtask",
+    "parent": "E02-S07",
+    "title": "[W7] Migration đợt 7b: vá seed ghi cột mới, DROP DEFAULT, DEFAULT now cho event_at, bỏ trigger và cột locked_by, locked_at",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W7",
+      "D4-139"
+    ],
+    "overview": "Sau khi route A27, A28, A38..A40 và 4 file service đọc latest_day_event (E09).",
+    "acceptance": [
+      "Seed vá trước khi DROP DEFAULT",
+      "grep locked_at src không còn kết quả",
+      "Reset demo chạy được sau 7b"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E02-S07-T04",
+    "type": "testexecution",
+    "parent": "E02-S07",
+    "title": "[W7] Migration đợt 7: kiểm khoảng giữa 7a và 7b bằng bản ứng dụng cũ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W7"
+    ],
+    "overview": "Chạy kịch bản dòng đợt 7 ở bảng kiểm khoảng giữa, gồm lời gọi lock_business_day hai tham số.",
+    "acceptance": [
+      "Kết quả khớp bảng"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S08",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W8] Migration đợt 8: gom hàm version quy tắc vào một migration và kiểm",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "W8",
+      "DB 4.15"
+    ],
+    "overview": "Không thêm bảng; gom 8 hàm version quy tắc (thân ở E10) thành migration đợt 8, kiểm chạy trên DB đợt 7.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp",
+      "Route A41..A44 mới không đụng hàm cũ"
+    ],
+    "depends_on": [
+      "E02-S07"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E02-S09",
+    "type": "devtask",
+    "parent": "E02",
+    "title": "[W10b] Migration đợt 10b: report_runs, retention_deletion_requests, disputes và phần bảng, cột phát sinh từ thiết kế ngắn",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W10",
+      "G-04",
+      "H-05",
+      "DB 4.24",
+      "DB 4.26",
+      "DB 4.30"
+    ],
+    "overview": "Phần đợt 10 không cần cho đăng nhập: tạo các bảng ngoài 9 đợt và các bảng, cột mà thiết kế ngắn của N-24, N-17, N-20, N-01, H-03 chốt. Chạy sau đợt 7 vì vế cảnh báo 11:00 của hàm khoá ngày đọc report_runs.",
+    "acceptance": [
+      "Chạy được trên DB của đợt trước: supabase db reset tới hết đợt trước rồi chạy đợt này không lỗi",
+      "Backfill đúng nguồn ghi ở bảng thứ tự đợt migration; có câu SQL kiểm không còn dòng vi phạm",
+      "Prototype vẫn chạy sau đợt: reset_demo_data chạy được, npm run verify của các hàm còn sống xanh",
+      "Có script quay lui hoặc ghi rõ phần không quay lui được",
+      "Bảng mới bật RLS ngay trong migration tạo bảng; không sửa migration đã chạy",
+      "TL-A duyệt migration trước khi gộp"
+    ],
+    "depends_on": [
+      "E02-S07"
+    ]
+  },
+  {
+    "key": "E02-S09-T01",
+    "type": "devtask",
+    "parent": "E02-S09",
+    "title": "[W10] Migration đợt 10: bảng report_runs, retention_deletion_requests, disputes và dispute_seq",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W10",
+      "DB 4.24",
+      "DB 4.26",
+      "DB 4.30"
+    ],
+    "overview": "Ba bảng đủ cột, CHECK cấp bảng, chỉ mục (report_runs UNIQUE NULLS NOT DISTINCT, disputes_open_idx), sequence cho mã tranh chấp; vá reset_demo_data truncate disputes vì FK tới trades.",
+    "acceptance": [
+      "Reset demo chạy được khi có dòng disputes",
+      "CHECK người duyệt khác người lập của retention_deletion_requests"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S09-T04",
+    "type": "devtask",
+    "parent": "E02-S09",
+    "team": "backend",
+    "title": "[W10b] Bảng, cột, loại audit phát sinh từ thiết kế ngắn",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "W10",
+      "N-24",
+      "N-17",
+      "N-20",
+      "N-01",
+      "H-03",
+      "C-15"
+    ],
+    "overview": "Thêm chỗ lưu trạng thái công bố đối soát, cấu hình thông báo, cột trỏ bản ghi mới khi biên nhận được nhập lại, loại audit tạo tài khoản và yêu cầu xoá dữ liệu cá nhân; nới CHECK action_type một lần.",
+    "acceptance": [
+      "Chạy được trên DB của đợt 10a và đợt 7",
+      "Đúng thiết kế ngắn đã được TL-A duyệt",
+      "Có script quay lui hoặc ghi rõ không quay lui được"
+    ],
+    "depends_on": [
+      "E09-S08-T02",
+      "E13-S05",
+      "E14-S04-T02",
+      "E03-S07-T02"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S09-T03",
+    "type": "testexecution",
+    "parent": "E02-S09",
+    "title": "[W10] Migration đợt 10: kiểm bằng bản ứng dụng cũ sau migration",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W10"
+    ],
+    "overview": "Prototype đăng nhập, đổi vai trò, reset demo sau đợt 10.",
+    "acceptance": [
+      "Không hàm cũ nào hỏng"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E02-S10",
+    "type": "devtask",
+    "parent": "E02",
+    "team": "backend",
+    "title": "[W10a] Migration đợt 10a: cột mới của user_profiles cho đăng nhập, MFA, tài khoản migration; bảng thiết bị dùng chung",
+    "owner": "BE-B",
+    "spec_refs": [
+      "C-14",
+      "DB 4.1",
+      "G-04",
+      "H-05",
+      "N-26",
+      "PKT-01",
+      "S-07",
+      "W10"
+    ],
+    "overview": "Tách khỏi đợt 10 vì đăng nhập, khoá tạm, tài khoản người tham gia và tài khoản migration cần sớm; không phụ thuộc đợt 2..9 nên chạy ngay sau đợt 1.",
+    "acceptance": [
+      "Chạy được trên DB của đợt 1",
+      "Prototype vẫn đăng nhập được sau đợt",
+      "TL-A duyệt"
+    ],
+    "depends_on": [
+      "E02-S01"
+    ]
+  },
+  {
+    "key": "E02-S10-T01",
+    "type": "devtask",
+    "parent": "E02-S10",
+    "title": "[W10a] Migration đợt 10a: user_profiles thêm 2 vai trò, participant_id kèm CHECK, failed_login_count, locked_until, is_migration_account; bảng thiết bị dùng chung (S-07)",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "C-14",
+      "DB 4.1",
+      "N-26",
+      "PKT-01",
+      "QT-07",
+      "S-07",
+      "W10"
+    ],
+    "overview": "CHECK role nhận 11 mã; CHECK vai ROLE-PARTICIPANT-VIEW khi và chỉ khi có participant_id; cột khoá tạm và cờ tài khoản chuyển đổi. Thêm bảng thiết bị dùng chung cho cờ máy hiện trường (S-07).",
+    "acceptance": [
+      "Tài khoản cũ qua CHECK mới",
+      "getSession không trả NO_PROFILE với 2 mã mới (kiểm cùng E03)",
+      "Bảng thiết bị dùng chung có mã thiết bị duy nhất, người cấp, thời điểm cấp và thu hồi; RLS bật, chỉ máy chủ đọc ghi"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E02-S10-T02",
+    "type": "testexecution",
+    "parent": "E02-S10",
+    "title": "[W10a] Migration đợt 10a: kiểm bằng bản ứng dụng cũ sau migration",
+    "owner": "QA-A",
+    "spec_refs": [
+      "W10"
+    ],
+    "overview": "QA chạy luồng đăng nhập và quản lý tài khoản của prototype sau đợt 10a.",
+    "acceptance": [
+      "Đăng nhập, khoá tạm, sửa tài khoản chạy đúng như trước đợt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E17",
+    "type": "epic",
+    "title": "Chuyển đổi dữ liệu và vùng lịch sử",
+    "overview": "Theo ADR-017: dữ liệu gốc nạp vào bảng nghiệp vụ trước go-live qua hàm ghi thường bằng tài khoản migration; 13 tháng lịch sử nạp vào schema legacy chỉ đọc sau khi kỳ cũ chốt; giao dịch dở chạy nốt ở hệ thống cũ. Định dạng file chờ Q4-24."
+  },
+  {
+    "key": "E17-S01",
+    "type": "investigation",
+    "parent": "E17",
+    "title": "[Q4-24] Làm rõ Q4-24: định dạng file xuất hệ thống cũ, nơi chạy script, chạy song song",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-24",
+      "ADR-017"
+    ],
+    "overview": "Khối lượng script chuyển đổi phụ thuộc định dạng file và môi trường khách cấp.",
+    "acceptance": [
+      "Câu trả lời ghi vào bảng Q4",
+      "Issue E17 gắn độ tin thấp được ước lại"
+    ],
+    "customer_wait": "Khách trả lời Q4-24 và gửi file mẫu của hệ thống cũ trước sprint làm script chuyển đổi",
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S02",
+    "type": "operation",
+    "parent": "E17",
+    "title": "[C-16] Kế hoạch chuyển đổi và tài khoản migration",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-16",
+      "C-14",
+      "ADR-017",
+      "D4-101"
+    ],
+    "overview": "Thủ tục chuyển đổi C-16 và quy trình tài khoản, khoá riêng cho chuyển đổi.",
+    "acceptance": [
+      "Kế hoạch và quy trình có trong repo, khách duyệt"
+    ],
+    "depends_on": [
+      "E17-S01"
+    ]
+  },
+  {
+    "key": "E17-S02-T01",
+    "type": "operation",
+    "parent": "E17-S02",
+    "title": "[C-16] Kế hoạch chuyển đổi: ánh xạ, tiêu chí đạt, go / no-go, chạy song song, ai chạy và ký",
+    "owner": "TL-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-16",
+      "ADR-017",
+      "D4-92",
+      "D4-95"
+    ],
+    "overview": "Ánh xạ người và mã giao dịch cũ, tiêu chí đạt 100% số dòng và tổng tiền theo ngày, kịch bản diễn tập, biên bản, go / no-go, mốc đóng băng, thời gian song song tối đa, ai chạy và ký việc nạp legacy sau 30 ngày hỗ trợ.",
+    "acceptance": [
+      "Đủ các vế C-16",
+      "Khách duyệt bản kế hoạch"
+    ],
+    "customer_wait": "Khách duyệt kế hoạch chuyển đổi và cử người ký biên bản trước diễn tập",
+    "rough_hours": 10
+  },
+  {
+    "key": "E17-S02-T02",
+    "type": "operation",
+    "parent": "E17-S02",
+    "title": "[C-16] Quy trình nhóm tài khoản migration và khoá riêng cho chuyển đổi",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-16",
+      "C-14",
+      "D4-101"
+    ],
+    "overview": "Mỗi tài khoản migration mang đúng vai trò hàm yêu cầu; khoá riêng có hạn dùng, máy chạy, người giữ; khoá nhóm và thu hồi sau go-live.",
+    "acceptance": [
+      "Quy trình tạo, giữ, thu hồi ghi trong repo",
+      "Có bước kiểm sau go-live: nhóm migration bị đình chỉ, khoá đã thu hồi"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S03",
+    "type": "devtask",
+    "parent": "E17",
+    "title": "[ADR-017] Script làm sạch và nạp dữ liệu gốc qua hàm ghi thường",
+    "team": "backend",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "C-16",
+      "Q4-24"
+    ],
+    "overview": "Script Node đọc file hệ thống cũ, làm sạch, ghi danh sách dòng lỗi, nạp người tham gia, căn cứ hiệu lực, tài khoản qua hàm ghi thường để có kiểm và audit. Danh mục 荷目 nạp ở E05-S06 dùng chung khung script này.",
+    "acceptance": [
+      "Dòng lỗi không nạp, có danh sách cho khách sửa nguồn",
+      "Mọi dòng nạp có audit lý do migration"
+    ],
+    "depends_on": [
+      "E17-S01",
+      "E02-S10"
+    ]
+  },
+  {
+    "key": "E17-S03-T01",
+    "type": "devtask",
+    "parent": "E17-S03",
+    "title": "[ADR-017] Script dữ liệu gốc: khung đọc file, kiểm dòng, danh sách lỗi, báo cáo đối số",
+    "team": "backend",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "Q4-24"
+    ],
+    "overview": "Khung chung cho mọi loại dữ liệu; định dạng file theo câu trả lời Q4-24.",
+    "acceptance": [
+      "Chạy lại không nạp trùng",
+      "Báo cáo số dòng đọc, nạp, lỗi"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E17-S03-T02",
+    "type": "devtask",
+    "parent": "E17-S03",
+    "title": "[ADR-017] Script dữ liệu gốc: người tham gia và căn cứ hiệu lực qua create_participant, upsert_participant_validity",
+    "team": "backend",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "D4-121"
+    ],
+    "overview": "Nạp bằng tài khoản migration vai ROLE-PARTY; dòng lịch sử đầu là initial_registration; 許可 và 承認 giữ tách.",
+    "acceptance": [
+      "Căn cứ suy ra từ loại người tham gia ở máy chủ",
+      "Dòng sai căn cứ vào danh sách lỗi"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E17-S03-T03",
+    "type": "devtask",
+    "parent": "E17-S03",
+    "title": "[ADR-017] Script dữ liệu gốc: tài khoản người dùng qua tài khoản migration vai ROLE-SYS-ADMIN",
+    "team": "backend",
+    "owner": "BE-A",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "C-14",
+      "N-01"
+    ],
+    "overview": "Tạo tài khoản qua hàm tạo tài khoản (N-01, làm ở E03), gán vai trò, gắn participant_id cho tài khoản chỉ xem. Danh mục 荷目 nạp ở E05-S06, không làm lại ở đây.",
+    "acceptance": [
+      "Tài khoản ROLE-PARTICIPANT-VIEW có participant_id",
+      "Không gửi mail mời trước ngày go-live"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E17-S03-T04",
+    "type": "testdesign",
+    "parent": "E17-S03",
+    "title": "[ADR-017] Script dữ liệu gốc: ca kiểm thử đối số và dòng lỗi",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-017",
+      "C-16"
+    ],
+    "overview": "Ca kiểm số dòng, dòng bẩn, nạp lại, vai trò tài khoản migration.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S03-T05",
+    "type": "testexecution",
+    "parent": "E17-S03",
+    "title": "[ADR-017] Script dữ liệu gốc: QA kiểm trên staging bằng file mẫu",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-017"
+    ],
+    "overview": "Chạy ca kiểm với file mẫu của khách.",
+    "acceptance": [
+      "Đối số khớp 100%",
+      "Lỗi tìm thấy mở issue"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E17-S04",
+    "type": "devtask",
+    "parent": "E17",
+    "title": "[C-19] Schema legacy chỉ đọc và vai trò DB nạp lịch sử",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-19",
+      "ADR-017",
+      "D4-95",
+      "D4-98",
+      "RC-29",
+      "RC-33"
+    ],
+    "overview": "Vùng tra cứu 13 tháng lịch sử tách khỏi bảng nghiệp vụ: không mở cho API của Supabase, RLS bật, chỉ vai trò nạp ghi được, khoá sửa xoá sau nghiệm thu.",
+    "acceptance": [
+      "anon, authenticated không đọc không ghi được schema legacy",
+      "Vai trò nạp chỉ ghi được schema legacy"
+    ]
+  },
+  {
+    "key": "E17-S04-T01",
+    "type": "devtask",
+    "parent": "E17-S04",
+    "title": "[C-19] Schema legacy: bảng giao dịch, lô, giao nhận, thanh toán, người tham gia và chỉ mục",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-19",
+      "ADR-013"
+    ],
+    "overview": "Cột 業務日 theo ADR-013, mã giao dịch cũ giữ nguyên, ánh xạ mã người tham gia cũ sang participants, chỉ mục theo 業務日, mã giao dịch, người tham gia.",
+    "acceptance": [
+      "Không GRANT cho anon, authenticated",
+      "Cột cá nhân đánh dấu như DB design"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E17-S04-T02",
+    "type": "devtask",
+    "parent": "E17-S04",
+    "title": "[C-19] Schema legacy: vai trò nạp, policy riêng, bảng lô nạp, trigger chặn sửa xoá chừa đường ẩn danh hoá",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-19",
+      "D4-101",
+      "Q4-10"
+    ],
+    "overview": "Vai trò DB riêng có policy ghi; mỗi lần nạp một dòng lô nạp (file nguồn, số dòng, tổng tiền, người chạy); trigger chặn sửa xoá bật sau nghiệm thu, chừa đường ẩn danh hoá có duyệt sau 7 năm.",
+    "acceptance": [
+      "Sửa xoá sau khi bật trigger bị từ chối",
+      "Đường ẩn danh hoá chỉ chạy qua hàm có duyệt"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E17-S04-T03",
+    "type": "testdesign",
+    "parent": "E17-S04",
+    "title": "[C-19] Schema legacy: ca kiểm quyền và chặn sửa xoá",
+    "owner": "QA-A",
+    "spec_refs": [
+      "C-19"
+    ],
+    "overview": "Ca kiểm quyền theo vai trò DB và trigger.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E17-S04-T04",
+    "type": "testexecution",
+    "parent": "E17-S04",
+    "title": "[C-19] Schema legacy: QA kiểm trên staging",
+    "owner": "QA-A",
+    "spec_refs": [
+      "C-19"
+    ],
+    "overview": "Chạy ca kiểm quyền.",
+    "acceptance": [
+      "Mọi ca đạt hoặc có issue lỗi"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S05",
+    "type": "story",
+    "parent": "E17",
+    "title": "[SCR-15] Tra cứu giao dịch cũ ở vùng legacy trên danh sách và chi tiết giao dịch (N-22)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-22",
+      "SCR-15",
+      "SCR-16",
+      "C-19",
+      "QT-03",
+      "PKT-11"
+    ],
+    "overview": "Văn phòng tra cứu 13 tháng lịch sử ở cùng màn tra cứu giao dịch; đọc qua hàm security definer ở public, có log đọc dữ liệu cá nhân.",
+    "acceptance": [
+      "Vai bị chặn bị chặn ở hàm DB hoặc API, không chỉ ẩn nút",
+      "Dòng cũ có nhãn 旧システム, mã cũ giữ nguyên",
+      "Mỗi request trả dữ liệu cá nhân ghi một dòng log đọc; không ghi được thì không trả dữ liệu"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E17-S04"
+    ]
+  },
+  {
+    "key": "E17-S05-T01",
+    "type": "devtask",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu legacy (N-22): hàm đọc security definer kiểm vai trò, ghi log đọc",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-22",
+      "C-19",
+      "QT-03",
+      "D4-100"
+    ],
+    "overview": "Hàm ở public đọc schema legacy, kiểm vai trò bằng require_actor, ghi audit loại đọc dữ liệu cá nhân.",
+    "acceptance": [
+      "Vai khác ROLE-SETTLEMENT bị hàm từ chối",
+      "Test hàm theo 業務日, mã giao dịch, người tham gia"
+    ],
+    "rough_hours": 8,
+    "depends_on": [
+      "E17-S05-T06"
+    ]
+  },
+  {
+    "key": "E17-S05-T02",
+    "type": "devtask",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu legacy (N-22): API mở rộng A18, A19 đọc hai vùng",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-22",
+      "A18",
+      "A19"
+    ],
+    "overview": "Chọn mở rộng A18, A19 hay route riêng ở thiết kế ngắn trong issue; trả dòng mới và cũ có cờ nguồn.",
+    "acceptance": [
+      "Mã HTTP và mã lỗi theo API design",
+      "ROLE-PARTICIPANT-VIEW nhận 403"
+    ],
+    "rough_hours": 6,
+    "depends_on": [
+      "E17-S05-T06"
+    ]
+  },
+  {
+    "key": "E17-S05-T03",
+    "type": "devtask",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu legacy (N-22): hiện dòng 旧システム trên SCR-15 và chi tiết chỉ đọc SCR-16",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "N-22",
+      "SCR-15",
+      "SCR-16"
+    ],
+    "overview": "Thêm lựa chọn vùng tìm và nhãn nguồn; chi tiết dòng cũ chỉ đọc, không có nút ghi.",
+    "acceptance": [
+      "Nhãn, câu báo tiếng Nhật đúng bảng đã duyệt",
+      "Dòng cũ không có nút hủy, sửa"
+    ],
+    "rough_hours": 10,
+    "depends_on": [
+      "E17-S05-T06"
+    ]
+  },
+  {
+    "key": "E17-S05-T04",
+    "type": "testdesign",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu legacy (N-22): ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-22",
+      "QT-07"
+    ],
+    "overview": "Ca theo vai được phép, 10 vai bị chặn, log đọc, dòng hai vùng.",
+    "acceptance": [
+      "Có ca vai bị chặn ở API"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S05-T05",
+    "type": "testexecution",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu legacy (N-22): QA kiểm trên staging",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-22"
+    ],
+    "overview": "Chạy ca kiểm.",
+    "acceptance": [
+      "Đạt trên staging"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E17-S06",
+    "type": "devtask",
+    "parent": "E17",
+    "title": "[ADR-017] Script nạp 13 tháng lịch sử vào schema legacy",
+    "team": "backend",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "C-19",
+      "Q4-24"
+    ],
+    "overview": "Nạp lịch sử sau khi kỳ cũ chốt, đối số theo ngày, không đạt thì xoá vùng rồi nạp lại (chỉ trước biên bản nghiệm thu).",
+    "acceptance": [
+      "Số dòng và tổng tiền theo ngày khớp nguồn 100%"
+    ],
+    "depends_on": [
+      "E17-S04",
+      "E17-S01"
+    ]
+  },
+  {
+    "key": "E17-S06-T01",
+    "type": "devtask",
+    "parent": "E17-S06",
+    "title": "[ADR-017] Nạp legacy: giao dịch và lô",
+    "team": "backend",
+    "owner": "BE-B",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "C-19"
+    ],
+    "overview": "Làm sạch và nạp giao dịch, lô, ghi dòng lô nạp.",
+    "acceptance": [
+      "Dòng lỗi không nạp, có danh sách"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E17-S06-T02",
+    "type": "devtask",
+    "parent": "E17-S06",
+    "title": "[ADR-017] Nạp legacy: giao nhận, thanh toán, ánh xạ người tham gia",
+    "team": "backend",
+    "owner": "BE-A",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "ADR-017",
+      "C-19"
+    ],
+    "overview": "Nạp phần còn lại, ánh xạ mã người tham gia cũ.",
+    "acceptance": [
+      "Mã không ánh xạ được vào danh sách lỗi"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E17-S06-T03",
+    "type": "devtask",
+    "parent": "E17-S06",
+    "title": "[ADR-017] Nạp legacy: báo cáo đối số theo ngày và lệnh xoá vùng nạp lại",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-017"
+    ],
+    "overview": "Báo cáo đối số cho biên bản; lệnh xoá vùng chỉ chạy khi chưa có biên bản nghiệm thu.",
+    "acceptance": [
+      "Lệnh xoá từ chối sau khi đã bật trigger chặn sửa xoá"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E17-S06-T04",
+    "type": "testdesign",
+    "parent": "E17-S06",
+    "title": "[ADR-017] Nạp legacy: ca kiểm thử đối số và nạp lại",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-017"
+    ],
+    "overview": "Ca kiểm số dòng, tổng tiền, dòng bẩn, xoá nạp lại.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E17-S06-T05",
+    "type": "testexecution",
+    "parent": "E17-S06",
+    "title": "[ADR-017] Nạp legacy: QA kiểm trên staging bằng file mẫu",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-017"
+    ],
+    "overview": "Chạy ca kiểm.",
+    "acceptance": [
+      "Đối số khớp 100%"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E17-S07",
+    "type": "operation",
+    "parent": "E17",
+    "title": "[C-16] Diễn tập chuyển đổi trên staging",
+    "owner": "TL-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-16",
+      "ADR-017"
+    ],
+    "overview": "Ít nhất một lần chạy đủ thủ tục trên staging bằng file của khách, ghi thời gian từng bước, lập biên bản diễn tập.",
+    "acceptance": [
+      "Biên bản diễn tập có thời gian, đối số, lỗi",
+      "Kế hoạch chuyển đổi sửa theo kết quả"
+    ],
+    "depends_on": [
+      "E17-S03",
+      "E17-S06"
+    ],
+    "customer_wait": "Khách cấp file xuất đầy đủ của hệ thống cũ trước diễn tập",
+    "rough_hours": 12
+  },
+  {
+    "key": "E17-S08",
+    "type": "operation",
+    "parent": "E17",
+    "title": "[C-16] Chạy chuyển đổi dữ liệu gốc trước go-live, khoá nhóm migration",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-16",
+      "C-14",
+      "D4-101"
+    ],
+    "overview": "Nạp dữ liệu gốc lên production trước go-live, đối số, go / no-go; sau go-live đình chỉ nhóm migration, thu hồi khoá riêng.",
+    "acceptance": [
+      "Biên bản go / no-go có chữ ký phía khách",
+      "Nhóm migration bị đình chỉ, khoá đã thu hồi"
+    ],
+    "depends_on": [
+      "E17-S07"
+    ],
+    "customer_wait": "Khách đóng băng dữ liệu gốc ở hệ thống cũ và duyệt go / no-go trước ngày go-live",
+    "rough_hours": 10
+  },
+  {
+    "key": "E17-S09",
+    "type": "operation",
+    "parent": "E17",
+    "title": "[C-19] Nạp lịch sử thật sau khi kỳ cũ chốt, nghiệm thu, thu hồi vai trò nạp",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-19",
+      "ADR-017",
+      "D4-98"
+    ],
+    "overview": "Nạp 13 tháng lịch sử vào legacy production, lập biên bản nghiệm thu nạp lịch sử, thu hồi vai trò nạp và bật trigger chặn sửa xoá.",
+    "acceptance": [
+      "Đối số khớp 100%",
+      "Sau nghiệm thu vai trò nạp không còn quyền"
+    ],
+    "depends_on": [
+      "E17-S08"
+    ],
+    "customer_wait": "Khách chốt kỳ cũ ở hệ thống cũ và ký biên bản nghiệm thu nạp lịch sử; hạn: trước sprint go-live (T9 theo lịch LAB-1)",
+    "rough_hours": 8
+  },
+  {
+    "key": "E18",
+    "type": "epic",
+    "title": "Kiểm thử hệ thống và phi chức năng",
+    "overview": "Kiểm thử đầu cuối theo điểm rẽ nhánh ở kiến trúc mục 6, tải theo FIG-LOAD-01, quét quyền và đọc chéo theo QT-xx, accessibility theo mục tiêu WCAG 2.2 AA, bảo mật. Kiểm thử từng issue nằm ở sub-issue của issue đó, epic này chỉ kiểm cả hệ thống."
+  },
+  {
+    "key": "E18-S01",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[ARCH-001 8] Kế hoạch kiểm thử hệ thống: phạm vi, môi trường, dữ liệu, tiêu chí vào ra",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 8",
+      "RC-41",
+      "RC-34",
+      "RC-33"
+    ],
+    "overview": "Một kế hoạch chung cho E18: dùng staging hay dự án thử tải riêng, bộ dữ liệu, lịch chạy, tiêu chí đạt trước UAT.",
+    "acceptance": [
+      "TL-A duyệt kế hoạch",
+      "Mỗi story E18 có tiêu chí vào ra"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E18-S02",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[ARCH-001 6] Kiểm thử đầu cuối theo điểm rẽ nhánh nghiệp vụ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6",
+      "RC-01",
+      "RC-05",
+      "RC-22",
+      "RC-23",
+      "RC-30",
+      "RC-14",
+      "RC-16"
+    ],
+    "overview": "Mỗi nhánh của 8 điểm rẽ ở kiến trúc mục 6 có ít nhất một ca E2E chạy tự động trên staging.",
+    "acceptance": [
+      "Bảng nhánh × ca kiểm đủ 8 điểm rẽ",
+      "Vòng hồi quy đạt trước UAT"
+    ],
+    "depends_on": [
+      "E18-S01"
+    ]
+  },
+  {
+    "key": "E18-S02-T01",
+    "type": "testdesign",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: kịch bản và dữ liệu cho 8 điểm rẽ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6"
+    ],
+    "overview": "Kịch bản đi qua nhiều màn cho từng nhánh, dữ liệu người tham gia đủ 4 loại, version quy tắc hai mốc.",
+    "acceptance": [
+      "Mỗi nhánh có ca và kết quả mong đợi",
+      "TL-A soát"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S02-T02",
+    "type": "testexecution",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: loại bên mua, hiệu lực căn cứ, version quy tắc theo ngày",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6",
+      "RC-01",
+      "RC-05",
+      "RC-08",
+      "QT-04"
+    ],
+    "overview": "仲卸 (許可), 売買参加者 (承認), 買出人 (登録), 卸売業者 bị từ chối; hết hiệu lực bị từ chối có lý do; giao dịch áp version theo ngày nghiệp vụ.",
+    "acceptance": [
+      "Ca tự động chạy trên CI",
+      "許可 và 承認 kiểm riêng"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S02-T03",
+    "type": "testexecution",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: 相対 và せり, trước và sau khoá ngày",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6",
+      "RC-22",
+      "RC-23",
+      "RC-14"
+    ],
+    "overview": "Chốt 相対, nhập kết quả せり, hủy trước khoá phải duyệt, sau khoá đi phiếu sửa.",
+    "acceptance": [
+      "Ca tự động chạy trên CI"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S02-T04",
+    "type": "testexecution",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: kỳ chưa chốt và đã chốt khi duyệt phiếu, mở lại sổ",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6",
+      "RC-15",
+      "RC-16"
+    ],
+    "overview": "Bút toán vào ngày giao dịch rồi mở lại sổ và khoá lại; kỳ đã chốt thì bút toán vào ngày chưa khoá, chỉ sửa tiền.",
+    "acceptance": [
+      "Ca tự động chạy trên CI"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S02-T05",
+    "type": "testexecution",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: mất mạng ghi tạm rồi đồng bộ, bên mua 失効 lúc giao",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6",
+      "RC-30",
+      "RC-38"
+    ],
+    "overview": "Ghi tạm lô và lần giao, đồng bộ, xung đột ở SCR-34, 相対 không chốt khi mất mạng; tạm dừng giao và người quyết.",
+    "acceptance": [
+      "Ca tự động giả lập mất mạng trên trình duyệt"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S02-T06",
+    "type": "testexecution",
+    "parent": "E18-S02",
+    "title": "[ARCH-001 6] E2E điểm rẽ: chạy vòng hồi quy đầy đủ trên staging trước UAT",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ARCH-001 6"
+    ],
+    "overview": "Chạy toàn bộ ca E2E, mở issue lỗi, chạy lại sau sửa.",
+    "acceptance": [
+      "Báo cáo vòng hồi quy, không còn lỗi mức cao"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S03",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[RC-41] Kiểm thử tải theo FIG-LOAD-01",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-41",
+      "RC-13",
+      "ADR-002",
+      "C-19"
+    ],
+    "overview": "Kiểm 60 người đồng thời, đỉnh 600 lô và 1,200 giao dịch mỗi ngày, cao điểm ghi 02:30 tới 05:00, đăng nhập đổi ca, tìm kiếm p95 không quá 2 giây trên cả hai vùng.",
+    "acceptance": [
+      "Báo cáo tải có số đo và đề xuất cấu hình máy DB"
+    ],
+    "depends_on": [
+      "E18-S01"
+    ]
+  },
+  {
+    "key": "E18-S03-T01",
+    "type": "testdesign",
+    "parent": "E18-S03",
+    "title": "[RC-41] Tải: hồ sơ tải, công cụ, môi trường thử tải",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-41",
+      "RC-13"
+    ],
+    "overview": "Chuyển FIG-LOAD-01 thành kịch bản tải; chọn công cụ; môi trường riêng để không đụng staging.",
+    "acceptance": [
+      "TL-A, Infra-A soát"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E18-S03-T02",
+    "type": "testexecution",
+    "parent": "E18-S03",
+    "title": "[RC-41] Tải: sinh dữ liệu khối lượng nhiều năm và 13 tháng legacy",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-41",
+      "C-19"
+    ],
+    "overview": "Dữ liệu đủ để đo tìm kiếm khi DB lớn dần; legacy 13 tháng để đo tìm hai vùng.",
+    "acceptance": [
+      "Dữ liệu sinh lại được bằng script trong repo",
+      "Không dùng dữ liệu thật"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S03-T03",
+    "type": "testexecution",
+    "parent": "E18-S03",
+    "title": "[RC-41] Tải: script luồng ghi cao điểm và đăng nhập đổi ca",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-41",
+      "RC-32"
+    ],
+    "overview": "Nhiều máy ghi lô, giao dịch, lần giao cùng lúc; đổi ca nhiều lần đăng nhập.",
+    "acceptance": [
+      "Script chạy được lặp lại"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S03-T04",
+    "type": "testexecution",
+    "parent": "E18-S03",
+    "title": "[RC-41] Tải: chạy, đo p95, báo cáo và đề xuất",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-41",
+      "ADR-002"
+    ],
+    "overview": "Chạy hồ sơ tải, đo p95 tìm kiếm, khoá dòng, lỗi; không đạt thì đề xuất nâng máy DB hoặc chỉ mục.",
+    "acceptance": [
+      "Báo cáo có số đo từng kịch bản",
+      "Ước lại dung lượng log audit"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S04",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[QT-01] Quét quyền và đọc chéo theo ma trận 11 vai trò",
+    "owner": "QA-A",
+    "spec_refs": [
+      "QT-01",
+      "QT-02",
+      "QT-03",
+      "QT-04",
+      "QT-05",
+      "QT-06",
+      "QT-07",
+      "QT-08",
+      "QT-09",
+      "PKT-11"
+    ],
+    "overview": "Mở rộng test quét ma trận có sẵn (npm run verify:sweep-rbac) cho 11 vai trò, A1..A53, N-01..N-25; mỗi vai bị chặn phải bị chặn ở API hoặc hàm DB, không chỉ ẩn nút.",
+    "acceptance": [
+      "Mọi ô ma trận có ca",
+      "Ca đọc chéo của tài khoản bên ngoài đạt"
+    ],
+    "depends_on": [
+      "E18-S01"
+    ]
+  },
+  {
+    "key": "E18-S04-T01",
+    "type": "testdesign",
+    "parent": "E18-S04",
+    "title": "[QT-01] Quét quyền: ma trận ca theo vai trò, thao tác, màn",
+    "owner": "QA-A",
+    "spec_refs": [
+      "QT-01",
+      "QT-02"
+    ],
+    "overview": "Sinh danh sách ca từ ma trận quyền; đánh dấu ca phải chặn ở hàm DB.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S04-T02",
+    "type": "testexecution",
+    "parent": "E18-S04",
+    "title": "[QT-01] Quét quyền: mở rộng verify:sweep-rbac cho 11 vai và thao tác mới",
+    "owner": "QA-A",
+    "spec_refs": [
+      "QT-01",
+      "QT-02",
+      "PKT-01"
+    ],
+    "overview": "Gọi trực tiếp API và hàm DB bằng từng vai, không qua giao diện.",
+    "acceptance": [
+      "Chạy trên CI",
+      "Mọi ô ma trận đúng"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S04-T03",
+    "type": "testexecution",
+    "parent": "E18-S04",
+    "title": "[QT-07] Quét quyền: đọc chéo của ROLE-PARTICIPANT-VIEW và log đọc dữ liệu cá nhân",
+    "owner": "QA-A",
+    "spec_refs": [
+      "QT-07",
+      "QT-09",
+      "QT-03",
+      "PKT-11",
+      "PKT-10"
+    ],
+    "overview": "Tài khoản bên ngoài đổi participant_id trong request vẫn chỉ thấy dữ liệu của mình; mọi ghi bị hàm DB từ chối; mỗi request trả dữ liệu cá nhân có dòng log.",
+    "acceptance": [
+      "Không ca nào đọc được dữ liệu người khác"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E18-S04-T04",
+    "type": "testexecution",
+    "parent": "E18-S04",
+    "title": "[QT-05] Quét quyền: hai người khác nhau, không sửa audit và ngày khoá, MFA aal2",
+    "owner": "QA-A",
+    "spec_refs": [
+      "QT-05",
+      "QT-06",
+      "QT-08",
+      "QT-04"
+    ],
+    "overview": "Tự duyệt bị chặn ở hàm DB cho mọi cặp lập duyệt; không vai nào sửa audit hay ngày đã khoá; phiên chưa aal2 bị từ chối mọi request.",
+    "acceptance": [
+      "Ca chạy trên CI"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S05",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[Q4-29] Kiểm thử accessibility luồng lõi theo WCAG 2.2 AA",
+    "owner": "QA-A",
+    "spec_refs": [
+      "Q4-29",
+      "RC-34"
+    ],
+    "overview": "Luồng lõi theo quy ước nhập giao diện; mục tiêu là mặc định LAB-4, Q4-29 không thuộc 18 câu có issue làm rõ.",
+    "acceptance": [
+      "Báo cáo accessibility có lỗi và cách sửa"
+    ],
+    "depends_on": [
+      "E18-S01"
+    ]
+  },
+  {
+    "key": "E18-S05-T01",
+    "type": "testdesign",
+    "parent": "E18-S05",
+    "title": "[Q4-29] Accessibility: ca kiểm theo bảng tiêu chí cho 11 luồng lõi",
+    "owner": "QA-A",
+    "spec_refs": [
+      "Q4-29",
+      "RC-34"
+    ],
+    "overview": "Nhãn, báo lỗi, tương phản, bàn phím, vùng bấm, phóng 200%.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E18-S05-T02",
+    "type": "testexecution",
+    "parent": "E18-S05",
+    "title": "[Q4-29] Accessibility: axe-core trong E2E cho luồng lõi",
+    "owner": "QA-A",
+    "spec_refs": [
+      "Q4-29",
+      "RC-34"
+    ],
+    "overview": "Gắn kiểm axe-core vào ca E2E của luồng lõi.",
+    "acceptance": [
+      "Chạy trên CI, vi phạm mức nghiêm trọng làm CI đỏ"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E18-S05-T03",
+    "type": "testexecution",
+    "parent": "E18-S05",
+    "title": "[Q4-29] Accessibility: kiểm tay bàn phím, trình đọc màn hình, phóng to, nút 48 px trên iPad đeo găng",
+    "owner": "QA-A",
+    "spec_refs": [
+      "Q4-29",
+      "RC-34"
+    ],
+    "overview": "Kiểm tay SCR-13, SCR-14 bằng bàn phím, hộp xác nhận, Edge và Safari, iPad thật.",
+    "acceptance": [
+      "Báo cáo có ảnh chụp và issue lỗi"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E18-S06",
+    "type": "testdesign",
+    "parent": "E18",
+    "title": "[RC-33] Kiểm thử bảo mật",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-33",
+      "RC-32",
+      "RC-40",
+      "C-17"
+    ],
+    "overview": "Kiểm các điểm bảo mật của kiến trúc mục 8: RLS không policy, khoá bí mật không ra trình duyệt, phiên, khoá tạm, MFA, URL ký file, quyền TRUNCATE.",
+    "acceptance": [
+      "Báo cáo bảo mật không còn lỗi mức cao trước UAT"
+    ],
+    "depends_on": [
+      "E18-S01"
+    ]
+  },
+  {
+    "key": "E18-S06-T01",
+    "type": "testdesign",
+    "parent": "E18-S06",
+    "title": "[RC-33] Bảo mật: ca kiểm theo kiến trúc mục 8 và lỗi web thường gặp",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-33",
+      "RC-32"
+    ],
+    "overview": "Danh sách ca theo từng điểm bảo mật.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E18-S06-T02",
+    "type": "testexecution",
+    "parent": "E18-S06",
+    "title": "[RC-33] Bảo mật: quét tự động khoá công khai, khoá bí mật trong repo, lỗ hổng thư viện, quét web",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-33",
+      "C-17"
+    ],
+    "overview": "Dùng npm run verify:sweep-public có sẵn và công cụ quét; chạy trên staging.",
+    "acceptance": [
+      "Kết quả quét lưu trong repo"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E18-S06-T03",
+    "type": "testexecution",
+    "parent": "E18-S06",
+    "title": "[RC-32] Bảo mật: kiểm tay đăng nhập, khoá tạm, hết phiên, đặt lại MFA, URL ký file",
+    "owner": "QA-A",
+    "spec_refs": [
+      "RC-32",
+      "RC-40",
+      "Q4-16"
+    ],
+    "overview": "Sai 5 lần khoá 15 phút, hết phiên theo loại máy, URL ký hết hạn, tải file khi không có quyền đối tượng chủ.",
+    "acceptance": [
+      "Mọi ca đạt hoặc có issue lỗi"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19",
+    "type": "epic",
+    "title": "Vận hành, đào tạo, hỗ trợ UAT, bàn giao",
+    "overview": "Runbook khôi phục và vận hành (C-18, C-20, kiến trúc 8.1, 8.3), diễn tập trước nghiệm thu, đào tạo IT của khách, hỗ trợ UAT, bàn giao sau 30 ngày hỗ trợ."
+  },
+  {
+    "key": "E19-S01",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[C-18] Runbook khôi phục theo kịch bản ở kiến trúc 8.1",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.1",
+      "ADR-002",
+      "D4-97"
+    ],
+    "overview": "Mỗi kịch bản khôi phục có runbook từng bước, ai làm, quyền cần có.",
+    "acceptance": [
+      "Người thứ hai làm theo được trên staging"
+    ],
+    "depends_on": [
+      "E01-S02"
+    ]
+  },
+  {
+    "key": "E19-S01-T01",
+    "type": "operation",
+    "parent": "E19-S01",
+    "title": "[C-18] Runbook khôi phục: PITR tại chỗ và PITR sang dự án tạm chép phần hỏng",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.1",
+      "ADR-002"
+    ],
+    "overview": "Hai kịch bản database; phần hỏng một phần chép đúng dòng về, bảng chỉ thêm sửa bằng phiếu.",
+    "acceptance": [
+      "Thời gian ước từng bước",
+      "Danh sách việc cần quyền Owner"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S01-T02",
+    "type": "operation",
+    "parent": "E19-S01",
+    "title": "[C-18] Runbook khôi phục: Vercel ngừng chuyển kix1, phát hành lỗi quay bản trước",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.1"
+    ],
+    "overview": "Quá 1 giờ thì triển khai sang kix1; không chọn vùng ngoài Nhật.",
+    "acceptance": [
+      "Đã thử trên staging"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E19-S01-T03",
+    "type": "operation",
+    "parent": "E19-S01",
+    "title": "[C-18] Runbook khôi phục: mất dự án Supabase, việc cần Owner và cấp tạm, dự án tạm dừng vì hoá đơn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-18",
+      "D4-97",
+      "Q4-25"
+    ],
+    "overview": "Kịch bản mất dự án khi khách không mua hạng mục A; cách cấp quyền tạm có ghi lại; email thanh toán về hộp thư chung.",
+    "acceptance": [
+      "Khách xác nhận người Owner gọi được trong 02:00 tới 10:00"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S02",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[C-20] Runbook Supabase mất vùng Tokyo",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-20",
+      "ARCH-001 8.1",
+      "D4-96",
+      "D4-97"
+    ],
+    "overview": "Chờ nhà cung cấp, chạy phiếu giấy dự phòng, nhập bù, báo khách; kiểm định kỳ phòng ngừa mất dự án.",
+    "acceptance": [
+      "Runbook có trong repo, khách duyệt"
+    ],
+    "depends_on": [
+      "E19-S01"
+    ]
+  },
+  {
+    "key": "E19-S02-T01",
+    "type": "operation",
+    "parent": "E19-S02",
+    "title": "[C-20] Runbook mất vùng: phiếu giấy dự phòng và nhập bù vào ngày nghiệp vụ đã qua",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-20",
+      "D4-96"
+    ],
+    "overview": "Ai nhập bù, nhập vào ngày đã qua thế nào (cờ phiếu giấy), khoá ngày và batch báo cáo sau đó, báo khách, ghi báo cáo tháng.",
+    "acceptance": [
+      "Các bước khớp hàm có sẵn, không cần đường ghi riêng",
+      "Chỗ thiếu hàm ghi vào issue làm rõ"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S02-T02",
+    "type": "operation",
+    "parent": "E19-S02",
+    "title": "[C-20] Runbook mất vùng: danh mục kiểm định kỳ phòng ngừa mất dự án",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-20",
+      "C-17"
+    ],
+    "overview": "Số Owner có MFA, bắt buộc MFA của tổ chức, quyền nhà thầu; kho file Osaka dùng khi khôi phục file.",
+    "acceptance": [
+      "Danh mục kiểm có tần suất và người làm"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E19-S03",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[ARCH-001 8.3] Runbook vận hành thường ngày",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ARCH-001 8.3",
+      "ARCH-001 8.4",
+      "C-18"
+    ],
+    "overview": "Runbook trực cảnh báo, kho lạnh, báo cáo uptime tháng, bảo trì, đặt lại MFA khi người quản trị mất điện thoại.",
+    "acceptance": [
+      "IT của khách làm theo được"
+    ]
+  },
+  {
+    "key": "E19-S03-T01",
+    "type": "operation",
+    "parent": "E19-S03",
+    "title": "[ARCH-001 8.4] Runbook trực cảnh báo: mỗi cảnh báo ai nhận, xem gì, làm gì",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ARCH-001 8.4",
+      "C-18"
+    ],
+    "overview": "11 cảnh báo ở mục 8.4, mức, người nhận, bước xử lý.",
+    "acceptance": [
+      "Đủ 11 cảnh báo"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S03-T02",
+    "type": "operation",
+    "parent": "E19-S03",
+    "title": "[ARCH-001 8.3] Runbook: khôi phục kho lạnh, báo cáo uptime tháng, khung bảo trì",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ARCH-001 8.3",
+      "ADR-008",
+      "ADR-018",
+      "Q4-20"
+    ],
+    "overview": "Khôi phục kho lạnh trong 2 ngày làm việc theo lịch chợ, lập báo cáo uptime, bảo trì 21:00 tới 01:00 báo trước 3 ngày.",
+    "acceptance": [
+      "Đã thử khôi phục một file từ kho lạnh trên staging"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S03-T03",
+    "type": "operation",
+    "parent": "E19-S03",
+    "title": "[C-18] Runbook: đặt lại MFA khi người quản trị mất điện thoại",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-18",
+      "ADR-019"
+    ],
+    "overview": "Quy trình khi chính ROLE-SYS-ADMIN mất thiết bị MFA, xác minh danh tính, ai thao tác.",
+    "acceptance": [
+      "Có audit mfa_reset"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E19-S04",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[C-18] Diễn tập trước nghiệm thu",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.3"
+    ],
+    "overview": "Mỗi loại diễn tập một lần trước nghiệm thu cùng IT của khách, ghi thời gian từng bước.",
+    "acceptance": [
+      "Biên bản diễn tập từng loại"
+    ],
+    "depends_on": [
+      "E19-S01",
+      "E19-S03"
+    ]
+  },
+  {
+    "key": "E19-S04-T01",
+    "type": "operation",
+    "parent": "E19-S04",
+    "title": "[C-18] Diễn tập: khôi phục DB bằng PITR, ước lại cho dung lượng năm 7",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ADR-002"
+    ],
+    "overview": "PITR trên dự án thử, ghi thời gian từng bước.",
+    "acceptance": [
+      "Thời gian dưới RTO 4 giờ hoặc có kế hoạch sửa"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S04-T02",
+    "type": "operation",
+    "parent": "E19-S04",
+    "title": "[C-18] Diễn tập: khôi phục file và kho lạnh",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ADR-008"
+    ],
+    "overview": "Lấy file từ kho Osaka và kho lạnh.",
+    "acceptance": [
+      "Biên bản có thời gian"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E19-S04-T03",
+    "type": "operation",
+    "parent": "E19-S04",
+    "title": "[C-18] Diễn tập: mất mạng ở điểm giao và hệ thống ngừng chạy phiếu giấy rồi nhập bù",
+    "owner": "TL-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-18",
+      "C-20",
+      "ADR-003"
+    ],
+    "overview": "Ghi tạm, đồng bộ, xung đột, chốt 相対 bằng máy khác hoặc phiếu giấy; phiếu giấy dự phòng rồi nhập bù.",
+    "acceptance": [
+      "Biên bản có người tham gia phía khách"
+    ],
+    "customer_wait": "Khách cử nhân viên hiện trường và IT tham gia diễn tập trước nghiệm thu",
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S04-T04",
+    "type": "operation",
+    "parent": "E19-S04",
+    "title": "[C-18] Diễn tập: tạo lại file kế toán lỗi và gửi thử từng cảnh báo Critical",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.4"
+    ],
+    "overview": "Tạo lỗi xuất kế toán trên staging, chạy tạo lại; gửi thử mọi cảnh báo Critical.",
+    "acceptance": [
+      "Mọi cảnh báo tới đúng người nhận"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E19-S05",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[C-18] Đào tạo IT của khách",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "Q4-21",
+      "D4-87"
+    ],
+    "overview": "Sau 30 ngày hỗ trợ khách tự vận hành; IT của khách được đào tạo theo runbook.",
+    "acceptance": [
+      "IT của khách tự làm một lần mỗi runbook chính"
+    ],
+    "depends_on": [
+      "E19-S03"
+    ]
+  },
+  {
+    "key": "E19-S05-T01",
+    "type": "operation",
+    "parent": "E19-S05",
+    "title": "[C-18] Đào tạo IT: tài liệu đào tạo theo runbook và màn vận hành",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "SCR-31",
+      "SCR-33",
+      "SCR-34"
+    ],
+    "overview": "Tài liệu theo runbook, màn thông báo, xoá theo hạn, hàng đợi đồng bộ, tài khoản.",
+    "acceptance": [
+      "TL-A soát"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S05-T02",
+    "type": "operation",
+    "parent": "E19-S05",
+    "title": "[C-18] Đào tạo IT: buổi đào tạo và thực hành trên staging",
+    "owner": "Infra-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-18"
+    ],
+    "overview": "Đào tạo và cho IT của khách tự làm trên staging.",
+    "acceptance": [
+      "Biên bản đào tạo có danh sách người học"
+    ],
+    "customer_wait": "Khách cử IT và chốt lịch đào tạo trước 30 ngày hỗ trợ",
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S06",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[ARCH-001 8.3] Hỗ trợ UAT",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ARCH-001 8.3",
+      "C-18"
+    ],
+    "overview": "Chuẩn bị dữ liệu UAT và tiếp nhận lỗi UAT; người dùng của khách làm UAT không vào backlog.",
+    "acceptance": [
+      "Khách bắt đầu UAT đúng lịch"
+    ],
+    "depends_on": [
+      "E18-S02"
+    ]
+  },
+  {
+    "key": "E19-S06-T01",
+    "type": "operation",
+    "parent": "E19-S06",
+    "title": "[ARCH-001 8.3] Hỗ trợ UAT: chuẩn bị dữ liệu và tài khoản 11 vai trên staging",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ARCH-001 8.3"
+    ],
+    "overview": "Tài khoản đủ 11 vai, người tham gia đủ 4 loại, version quy tắc, dữ liệu theo kịch bản UAT, không dữ liệu thật.",
+    "acceptance": [
+      "Dữ liệu dựng lại được bằng script"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S06-T02",
+    "type": "operation",
+    "parent": "E19-S06",
+    "title": "[ARCH-001 8.3] Hỗ trợ UAT: tiếp nhận, phân loại lỗi UAT, mở issue sửa",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ARCH-001 8.3"
+    ],
+    "overview": "Lỗi UAT thành issue sửa riêng ước khi phát sinh; issue này chỉ tính phần tiếp nhận và phân loại.",
+    "acceptance": [
+      "Mọi lỗi UAT có issue và mức"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E19-S07",
+    "type": "operation",
+    "parent": "E19",
+    "title": "[C-18] Bàn giao sau 30 ngày hỗ trợ ban đầu",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-18",
+      "D4-87",
+      "Q4-21"
+    ],
+    "overview": "Tổng hợp sự cố, biên bản bàn giao, thu hồi quyền nhà thầu. Giờ trực 30 ngày không là issue (xem câu hỏi ở báo cáo).",
+    "acceptance": [
+      "Biên bản bàn giao có chữ ký phía khách"
+    ],
+    "depends_on": [
+      "E19-S05"
+    ]
+  },
+  {
+    "key": "E19-S07-T01",
+    "type": "operation",
+    "parent": "E19-S07",
+    "title": "[C-18] Bàn giao: lịch trực 30 ngày và sổ sự cố theo mức",
+    "owner": "TL-A",
+    "spec_refs": [
+      "C-18",
+      "ARCH-001 8.3"
+    ],
+    "overview": "Lập lịch trực 2 tuần đầu 02:00 tới 10:00 và 2 tuần sau, sổ ghi sự cố, mức, thời gian khôi phục.",
+    "acceptance": [
+      "Sổ sự cố dùng được từ ngày go-live"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E19-S07-T02",
+    "type": "operation",
+    "parent": "E19-S07",
+    "title": "[C-18] Bàn giao: tổng hợp sự cố và biên bản bàn giao",
+    "owner": "TL-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "C-18"
+    ],
+    "overview": "Tổng hợp sự cố theo mức và thời gian khôi phục, biên bản bàn giao.",
+    "acceptance": [
+      "Khách ký"
+    ],
+    "customer_wait": "Khách ký biên bản bàn giao cuối 30 ngày hỗ trợ",
+    "rough_hours": 8
+  },
+  {
+    "key": "E19-S07-T03",
+    "type": "operation",
+    "parent": "E19-S07",
+    "title": "[C-18] Bàn giao: thu hồi quyền nhà thầu, khoá và tài khoản dịch vụ",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "C-18",
+      "C-17",
+      "D4-101"
+    ],
+    "overview": "Thu hồi quyền Developer, khoá API do nhà thầu tạo; xác nhận không còn khoá chuyển đổi.",
+    "acceptance": [
+      "Danh sách quyền sau bàn giao chỉ còn phía khách"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E19-S08",
+    "type": "documentation",
+    "parent": "E19",
+    "title": "[LAB-4 specs] Cập nhật bộ spec theo các chỗ sửa thiết kế ở PREMISE LAB-5",
+    "owner": "BA-A",
+    "spec_refs": [
+      "S-02",
+      "S-03",
+      "S-04",
+      "S-05",
+      "S-06"
+    ],
+    "overview": "Sửa DB design, bảng đợt migration, api-conventions, error-codes và các câu TECH đã ghi cần sửa ở mục 5, để spec khớp backlog.",
+    "acceptance": [
+      "Mỗi dòng S-xx của PREMISE LAB-5 có chỗ sửa tương ứng trong spec",
+      "Spec qua soát theo quy trình LAB-4",
+      "TL-A duyệt phần DB và API"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E17-S05-T06",
+    "type": "documentation",
+    "parent": "E17-S05",
+    "title": "[SCR-15] Tra cứu giao dịch cũ ở vùng legacy trên danh sách và chi tiết giao dịch (N-22) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "N-22",
+      "SCR-15",
+      "SCR-16",
+      "C-19",
+      "QT-03",
+      "PKT-11"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 3
+  }
+]

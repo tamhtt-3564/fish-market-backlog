@@ -1,0 +1,6384 @@
+[
+  {
+    "key": "E03",
+    "type": "epic",
+    "title": "Đăng nhập, tài khoản, phân quyền",
+    "overview": "Đăng nhập có khoá tạm và MFA, quản lý tài khoản kể cả tài khoản chỉ xem của người tham gia, hai vai trò mới, lớp đọc dữ liệu cá nhân ghi log và hàng rào đọc cho tài khoản bên ngoài. Nâng cấp từ prototype LAB-2 (G-07)."
+  },
+  {
+    "key": "E03-S01",
+    "type": "story",
+    "parent": "E03",
+    "title": "[PKT-01] Thêm 2 vai trò mới vào ma trận quyền trong mã",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-01",
+      "PKT-02",
+      "PKT-16",
+      "ADR-014",
+      "DB 4.1",
+      "W10",
+      "D4-107"
+    ],
+    "overview": "Thêm ROLE-REPORT-VIEW, ROLE-PARTICIPANT-VIEW vào roles.ts, ACTIONS, SCREENS, tên hiển thị; sửa ô ma trận theo PKT-02 (A3), PKT-16 (A32). CHECK user_profiles.role và participant_id ở migration đợt 10 (E02-S09); ô A19 của PKT-03 sửa ở E06-S06; mở rộng test quét cho 11 vai ở E18-S04.",
+    "acceptance": [
+      "getSession nhận 11 mã vai trò, không trả NO_PROFILE cho 2 mã mới",
+      "Test quét ma trận có sẵn chạy xanh sau khi đổi, ca của 2 vai mới thêm vào bảng ca",
+      "ROLE-PARTICIPANT-VIEW gọi A3 nhận 403; ROLE-SYS-ADMIN gọi A32 nhận 200",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [],
+    "depends_on": [
+      "E02-S10"
+    ]
+  },
+  {
+    "key": "E03-S01-T01",
+    "type": "devtask",
+    "parent": "E03-S01",
+    "title": "[PKT-01] Thêm 2 vai trò mới vào ma trận quyền trong mã : hằng vai trò, ACTIONS, SCREENS",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-01",
+      "PKT-02",
+      "PKT-16",
+      "ADR-014"
+    ],
+    "overview": "Sửa roles.ts, role-access-matrix.ts, screen-access.ts, menuFor, khoá role.* trong app-shell-text.ts, test role-access-matrix.",
+    "acceptance": [
+      "Ô ma trận khớp mục 5, mục 6 của ma trận quyền LAB-4 (giá trị thiết kế)",
+      "Tên Nhật 2 vai mới theo D4-107"
+    ],
+    "rough_hours": 10,
+    "team": "backend"
+  },
+  {
+    "key": "E03-S01-T02",
+    "type": "testdesign",
+    "parent": "E03-S01",
+    "title": "[PKT-01] Thêm 2 vai trò mới vào ma trận quyền trong mã : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-01",
+      "ADR-014"
+    ],
+    "overview": "Viết ca kiểm thử cho đổi ma trận quyền từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S01-T03",
+    "type": "testexecution",
+    "parent": "E03-S01",
+    "title": "[PKT-01] Thêm 2 vai trò mới vào ma trận quyền trong mã : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-01",
+      "ADR-014"
+    ],
+    "overview": "Chạy ca kiểm thử của đổi ma trận quyền trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S02",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-01",
+      "A1",
+      "PKT-05",
+      "ADR-006",
+      "DB 4.1",
+      "RC-32",
+      "C-14",
+      "W10"
+    ],
+    "overview": "Hàm đăng nhập security definer đọc failed_login_count, locked_until: 5 lần sai liên tiếp khoá 15 phút (giả định Q4-16), đúng thì về 0. Mọi lần từ chối trả cùng câu LOGIN_FAILED, không lộ tài khoản có tồn tại hay đang khoá.",
+    "acceptance": [
+      "Sai 5 lần liên tiếp thì locked_until = now() + 15 phút; lần 6 trong hạn khoá bị từ chối dù mật khẩu đúng",
+      "Đăng nhập đúng đưa failed_login_count về 0",
+      "Khoá ghi audit account_lock; từ chối ghi audit login với mã lý do ACCOUNT_LOCKED; email không có tài khoản chỉ ghi audit",
+      "Tài khoản suspended bị từ chối với cùng câu LOGIN_FAILED",
+      "Route A1 gửi IP người dùng (Sb-Forwarded-For) theo ADR-006"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [],
+    "depends_on": [
+      "E03-S01",
+      "E02-S10",
+      "E01-S03"
+    ]
+  },
+  {
+    "key": "E03-S02-T01",
+    "type": "documentation",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-006",
+      "PKT-05"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hàm đăng nhập khoá tạm, thứ tự kiểm, audit (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S02-T02",
+    "type": "devtask",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : hàm DB và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ADR-006",
+      "DB 4.1",
+      "C-14",
+      "RC-32"
+    ],
+    "overview": "Hàm security definer tra người dùng theo email, đếm lần sai, đặt và gỡ khoá tạm, ghi audit trong một giao dịch DB.",
+    "acceptance": [
+      "Test hàm phủ: đúng, sai lần 1..5, đang khoá, hết khoá, email không có, tài khoản suspended",
+      "Chỉ route A1 gọi được hàm (quyền EXECUTE)"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "depends_on": [
+      "E03-S02-T01"
+    ]
+  },
+  {
+    "key": "E03-S02-T03",
+    "type": "devtask",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : route A1",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A1",
+      "ADR-006"
+    ],
+    "overview": "Sửa src/server/auth/login.ts gọi hàm mới trước và sau signInWithPassword; dùng khoá bí mật kiểu mới.",
+    "acceptance": [
+      "Mọi lần từ chối trả 401 LOGIN_FAILED",
+      "Không lộ khác biệt thời gian rõ giữa email có và không có tài khoản"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E03-S02-T01"
+    ]
+  },
+  {
+    "key": "E03-S02-T04",
+    "type": "devtask",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : câu báo trên SCR-01",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-01",
+      "D4-106"
+    ],
+    "overview": "Câu LOGIN_FAILED thêm vế nhắc khoá 15 phút sau 5 lần sai, theo wireframe SCR-01.",
+    "acceptance": [
+      "Câu khớp error-codes",
+      "Nút ログイン tắt khi đang gửi, bấm hai lần không gửi hai lần"
+    ],
+    "rough_hours": 3,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S02-T01"
+    ]
+  },
+  {
+    "key": "E03-S02-T05",
+    "type": "testdesign",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-006"
+    ],
+    "overview": "Viết ca kiểm thử cho khoá tạm đăng nhập từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S02-T06",
+    "type": "testexecution",
+    "parent": "E03-S02",
+    "title": "[SCR-01] Khoá tạm khi sai mật khẩu nhiều lần (A1) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-006"
+    ],
+    "overview": "Chạy ca kiểm thử của khoá tạm đăng nhập trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S03",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-01",
+      "PKT-04",
+      "ADR-019",
+      "RC-40",
+      "D4-89"
+    ],
+    "overview": "Khung B đăng ký TOTP lần đầu, khung C nhập mã mỗi lần đăng nhập. getSession từ chối mọi request của 7 vai trò bắt MFA khi phiên chưa aal2; thêm hàm dùng chung để API kiểm lại aal2 trước duyệt, khoá ngày, mở lại sổ, chốt kỳ (các API đó gắn ở epic của màn).",
+    "acceptance": [
+      "7 vai trò bắt MFA chưa aal2 gọi bất kỳ trang hay API nào (trừ trang đăng ký, nhập mã) nhận 401 MFA_REQUIRED",
+      "4 vai trò hiện trường đăng nhập xong vào thẳng SCR-02, không qua khung B, C",
+      "Mã sai trả MFA_CODE_INVALID; ROLE-PARTICIPANT-VIEW nhập mã đúng vào SCR-06, 10 vai trò nội bộ vào SCR-02",
+      "Hàm kiểm lại aal2 có test, sẵn cho A28, A31, A39, A40 và các API duyệt gọi"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [],
+    "depends_on": [
+      "E03-S01"
+    ]
+  },
+  {
+    "key": "E03-S03-T01",
+    "type": "uidesign",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-019"
+    ],
+    "overview": "Thiết kế khung B đăng ký MFA và khung C nhập mã theo wireframe LAB-4, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp wireframe LAB-4; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E03-S03-T02",
+    "type": "documentation",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-019"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: luồng MFA Supabase Auth, chỗ kiểm aal2, đường dẫn bước B, C (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S03-T03",
+    "type": "devtask",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : kiểm aal2 ở getSession và hàm kiểm lại",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-04",
+      "ADR-019",
+      "RC-40"
+    ],
+    "overview": "Sửa require-session.ts và handle-api.ts: đọc mức aal của phiên, từ chối theo danh sách 7 vai trò; thêm hàm kiểm lại aal2 cho API nhạy cảm.",
+    "acceptance": [
+      "Trả 401 MFA_REQUIRED đúng mã ở error-codes 6.2",
+      "Test phủ 11 vai trò x aal1 / aal2"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "depends_on": [
+      "E03-S03-T02"
+    ]
+  },
+  {
+    "key": "E03-S03-T04",
+    "type": "devtask",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : khung B, C trên SCR-01",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-019"
+    ],
+    "overview": "Dựng khung B (QR, khoá nhập tay, mã 6 số) và khung C, chuyển hướng sau khi đúng mã theo vai trò.",
+    "acceptance": [
+      "Ô mã chỉ nhận 6 chữ số, inputmode numeric, autocomplete one-time-code",
+      "Bàn phím theo thứ tự Tab ở wireframe"
+    ],
+    "rough_hours": 12,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S03-T02"
+    ]
+  },
+  {
+    "key": "E03-S03-T05",
+    "type": "testdesign",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-019"
+    ],
+    "overview": "Viết ca kiểm thử cho MFA từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S03-T06",
+    "type": "testexecution",
+    "parent": "E03-S03",
+    "title": "[SCR-01] Đăng ký và nhập mã MFA cho 7 vai trò văn phòng : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-01",
+      "ADR-019"
+    ],
+    "overview": "Chạy ca kiểm thử của MFA trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E03-S04",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2)",
+    "owner": "FE-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "Bộ đếm 30 phút không thao tác trên máy hiện trường, hết thì đăng xuất; nút 交代 đăng xuất về SCR-01, bị chặn khi máy còn bản ghi chưa đồng bộ. Cờ máy hiện trường lưu ở máy chủ theo PREMISE S-07: ROLE-SYS-ADMIN cấp mã thiết bị, máy chủ đọc mã để áp hết phiên 30 phút.",
+    "acceptance": [
+      "Máy có cờ hiện trường: 30 phút không thao tác thì về SCR-01; máy văn phòng theo hạn 8 giờ của Supabase",
+      "Nút 交代 và huy hiệu 未同期 chỉ hiện trên máy có cờ, không theo vai trò",
+      "Còn bản ghi chưa đồng bộ thì 交代 và ログアウト bị chặn, hiện số bản ghi chờ",
+      "Cờ máy hiện trường lưu ở máy chủ (bảng thiết bị, PREMISE S-07); chỉ ROLE-SYS-ADMIN cấp, thu hồi mã thiết bị, chặn ở API; người dùng không gỡ được cờ từ trình duyệt"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E02-S10",
+      "E14-S01"
+    ]
+  },
+  {
+    "key": "E03-S05",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3)",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "Ô số của ROLE-PARTY đọc expiry_warning_days của version 業務規程 thay số 30 cố định; lối vào E-1 cho ROLE-REPORT-VIEW, ROLE-RULE-ADMIN, ROLE-SYS-ADMIN; bỏ nhãn prototype.",
+    "acceptance": [
+      "ROLE-PARTY thấy số người tham gia sắp 失効 theo số ngày của version đang áp",
+      "ROLE-PARTICIPANT-VIEW gọi A3 nhận 403 và được đưa về SCR-06",
+      "Lối vào mỗi vai trò khớp bảng ở wireframe SCR-02"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01"
+    ]
+  },
+  {
+    "key": "E03-S06",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-07] Danh sách tài khoản: cột MFA, khoá tạm, người tham gia (A4)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-07",
+      "A4",
+      "PKT-04",
+      "PKT-05",
+      "PKT-10",
+      "RC-33"
+    ],
+    "overview": "A4 trả thêm trạng thái đăng ký MFA, khoá tạm, người tham gia gắn kèm; đọc qua lớp đọc chung có log đọc vì có tên và email.",
+    "acceptance": [
+      "Bảng có cột 多要素認証, ロック, 参加者 theo wireframe",
+      "Mỗi lần mở ghi một dòng personal_data_read",
+      "Vai khác ROLE-SYS-ADMIN gọi A4 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E03-S06-T01",
+    "type": "devtask",
+    "parent": "E03-S06",
+    "title": "[SCR-07] Danh sách tài khoản: cột MFA, khoá tạm, người tham gia (A4) : API A4",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A4",
+      "PKT-10",
+      "ADR-019"
+    ],
+    "overview": "Đọc user_profiles, trạng thái yếu tố MFA của Auth, locked_until, participant qua lớp đọc chung.",
+    "acceptance": [
+      "Trả đủ cột cho bảng",
+      "Có test 200 cho ROLE-SYS-ADMIN và 403 cho 10 vai còn lại"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E03-S06-T04"
+    ]
+  },
+  {
+    "key": "E03-S06-T02",
+    "type": "devtask",
+    "parent": "E03-S06",
+    "title": "[SCR-07] Danh sách tài khoản: cột MFA, khoá tạm, người tham gia (A4) : bảng SCR-07",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-07"
+    ],
+    "overview": "Thêm 3 cột và 2 vai trò mới vào bảng, bỏ câu phụ đề cũ của prototype.",
+    "acceptance": [
+      "Nhãn khớp wireframe",
+      "Vùng bấm tên cao tối thiểu 44 px"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S06-T04"
+    ]
+  },
+  {
+    "key": "E03-S06-T03",
+    "type": "testexecution",
+    "parent": "E03-S06",
+    "title": "[SCR-07] Danh sách tài khoản: cột MFA, khoá tạm, người tham gia (A4) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-07",
+      "A4"
+    ],
+    "overview": "Chạy ca kiểm thử của danh sách tài khoản trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S07",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-07",
+      "SCR-08",
+      "N-01",
+      "PKT-14",
+      "QT-09",
+      "C-23",
+      "DB 4.1",
+      "RC-28",
+      "W10"
+    ],
+    "overview": "Hộp tạo tài khoản trên SCR-07: tạo người dùng Auth rồi ghi user_profiles bằng hàm mới; vai 参加者（閲覧専用） chỉ gắn người tham gia loại 卸売業者, 仲卸, 売買参加者.",
+    "acceptance": [
+      "Tạo xong mở SCR-08 của tài khoản mới; audit ghi người tạo, vai trò, người tham gia",
+      "Email trùng trả mã lỗi chốt ở thiết kế ngắn (C-23), không tạo dòng nào",
+      "Gắn vai chỉ xem với 買出人 hoặc thiếu người tham gia bị hàm DB từ chối",
+      "Lỗi sau khi đã tạo người dùng Auth thì xoá người dùng Auth đó, không để tài khoản mồ côi",
+      "API kiểm lại aal2; vai khác ROLE-SYS-ADMIN nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01",
+      "E03-S03",
+      "E02-S10"
+    ]
+  },
+  {
+    "key": "E03-S07-T01",
+    "type": "uidesign",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-07"
+    ],
+    "overview": "Thiết kế hộp tạo tài khoản C theo wireframe LAB-4, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp wireframe LAB-4; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S07-T02",
+    "type": "documentation",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "N-01",
+      "C-23",
+      "SCR-07"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hàm tạo tài khoản, mã lỗi email trùng và loại người tham gia sai, loại audit dùng (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S07-T03",
+    "type": "devtask",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : hàm DB và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-01",
+      "DB 4.1",
+      "QT-09"
+    ],
+    "overview": "Hàm mới ghi user_profiles, kiểm vai trò người gọi, kiểm loại người tham gia, ghi audit.",
+    "acceptance": [
+      "Test phủ mọi mã lỗi và vai bị chặn (42501)",
+      "CHECK vai chỉ xem gắn participant_id được giữ"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "depends_on": [
+      "E03-S07-T02"
+    ]
+  },
+  {
+    "key": "E03-S07-T04",
+    "type": "devtask",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : route POST /api/accounts",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-01",
+      "ADR-019"
+    ],
+    "overview": "Route gọi API quản trị của Supabase Auth tạo người dùng, gọi hàm DB, bù khi lỗi.",
+    "acceptance": [
+      "400, 403, 409 đúng mã",
+      "Không trả mật khẩu tạm ra log"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "depends_on": [
+      "E03-S07-T02"
+    ]
+  },
+  {
+    "key": "E03-S07-T05",
+    "type": "devtask",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : hộp tạo trên SCR-07",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-07"
+    ],
+    "overview": "Dựng hộp C, ô chọn người tham gia hiện khi chọn vai chỉ xem.",
+    "acceptance": [
+      "Bàn phím, Esc đóng hộp theo wireframe",
+      "Câu báo từ error-codes"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S07-T02"
+    ]
+  },
+  {
+    "key": "E03-S07-T06",
+    "type": "testdesign",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-01",
+      "SCR-07"
+    ],
+    "overview": "Viết ca kiểm thử cho tạo tài khoản từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S07-T07",
+    "type": "testexecution",
+    "parent": "E03-S07",
+    "title": "[SCR-07] Tạo tài khoản, kể cả tài khoản chỉ xem của người tham gia (N-01) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-01",
+      "SCR-07"
+    ],
+    "overview": "Chạy ca kiểm thử của tạo tài khoản trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S08",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-08",
+      "A5",
+      "PKT-01",
+      "QT-09",
+      "C-23",
+      "RC-07",
+      "RC-28"
+    ],
+    "overview": "update_account nhận 2 vai mới, bắt người tham gia khi đổi sang vai chỉ xem, kiểm loại người tham gia; không tự đổi vai hay đình chỉ chính mình.",
+    "acceptance": [
+      "Đổi vai có audit trước / sau và lý do",
+      "Đổi sang vai chỉ xem mà người tham gia ngoài loại cho phép bị hàm DB từ chối",
+      "Tài khoản đang mở là chính mình thì khối C, D thay bằng câu account.self, hàm cũng từ chối",
+      "API kiểm lại aal2",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01",
+      "E03-S03"
+    ]
+  },
+  {
+    "key": "E03-S08-T01",
+    "type": "uidesign",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-08"
+    ],
+    "overview": "Thiết kế khối B trạng thái xác thực, khối C đổi quyền, khối D và hộp F, G theo wireframe LAB-4, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp wireframe LAB-4; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E03-S08-T02",
+    "type": "devtask",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : hàm DB và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A5",
+      "QT-09",
+      "C-23"
+    ],
+    "overview": "Vá update_account: nhận 11 vai, participant_id, kiểm loại, chặn tự sửa.",
+    "acceptance": [
+      "Test phủ mã lỗi mới và 42501 cho vai khác"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "depends_on": [
+      "E03-S08-T07"
+    ]
+  },
+  {
+    "key": "E03-S08-T03",
+    "type": "devtask",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : route A5",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A5",
+      "ADR-019"
+    ],
+    "overview": "Route nhận participantId, kiểm lại aal2.",
+    "acceptance": [
+      "403, 400 đúng mã"
+    ],
+    "rough_hours": 4,
+    "team": "backend",
+    "depends_on": [
+      "E03-S08-T07"
+    ]
+  },
+  {
+    "key": "E03-S08-T04",
+    "type": "devtask",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : khối C trên SCR-08",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-08"
+    ],
+    "overview": "Ô vai trò 11 giá trị, ô người tham gia khi chọn vai chỉ xem.",
+    "acceptance": [
+      "Nhãn khớp wireframe"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S08-T07"
+    ]
+  },
+  {
+    "key": "E03-S08-T05",
+    "type": "testdesign",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A5",
+      "SCR-08"
+    ],
+    "overview": "Viết ca kiểm thử cho đổi vai trò, đình chỉ từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S08-T06",
+    "type": "testexecution",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A5",
+      "SCR-08"
+    ],
+    "overview": "Chạy ca kiểm thử của đổi vai trò, đình chỉ trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S09",
+    "type": "story",
+    "parent": "E03",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-08",
+      "N-02",
+      "PKT-14",
+      "ADR-006",
+      "ADR-019",
+      "C-14",
+      "C-23",
+      "RC-32",
+      "RC-40"
+    ],
+    "overview": "Hai thao tác của ROLE-SYS-ADMIN có lý do và hộp xác nhận: gỡ khoá tạm, xoá yếu tố MFA đã đăng ký để người dùng đăng ký lại; không làm cho chính mình.",
+    "acceptance": [
+      "Mở khoá đưa locked_until về NULL, failed_login_count về 0, audit account_unlock",
+      "Đặt lại MFA xoá yếu tố TOTP qua API quản trị Auth, audit mfa_reset kèm lý do",
+      "Mở khoá tài khoản không khoá trả mã lỗi chốt ở thiết kế ngắn (C-23)",
+      "Tự mở khoá, tự đặt lại MFA bị hàm DB từ chối",
+      "API kiểm lại aal2",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S02",
+      "E03-S03",
+      "E03-S08"
+    ]
+  },
+  {
+    "key": "E03-S09-T01",
+    "type": "documentation",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "N-02",
+      "C-23"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hai hàm mới, thứ tự gọi Auth và DB, mã lỗi (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S09-T02",
+    "type": "devtask",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : hàm DB và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-02",
+      "C-14"
+    ],
+    "overview": "Hai hàm ghi trạng thái và audit.",
+    "acceptance": [
+      "Test phủ mã lỗi, tự làm cho mình, 42501"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "depends_on": [
+      "E03-S09-T01"
+    ]
+  },
+  {
+    "key": "E03-S09-T03",
+    "type": "devtask",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : route unlock, mfa-reset",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-02",
+      "ADR-019"
+    ],
+    "overview": "Hai route gọi hàm DB và API quản trị Auth.",
+    "acceptance": [
+      "Lỗi Auth không để audit ghi sai"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E03-S09-T01"
+    ]
+  },
+  {
+    "key": "E03-S09-T04",
+    "type": "devtask",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : khối B, D, hộp G trên SCR-08",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-08"
+    ],
+    "overview": "D-2 chỉ bấm được khi đang khoá; D-3 chỉ hiện với vai bắt MFA đã đăng ký.",
+    "acceptance": [
+      "Hộp G bắt đánh dấu 本人確認を行いました"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S09-T01"
+    ]
+  },
+  {
+    "key": "E03-S09-T05",
+    "type": "testdesign",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-02"
+    ],
+    "overview": "Viết ca kiểm thử cho mở khoá, đặt lại MFA từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S09-T06",
+    "type": "testexecution",
+    "parent": "E03-S09",
+    "title": "[SCR-08] Mở khoá tài khoản, đặt lại MFA (N-02) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-02"
+    ],
+    "overview": "Chạy ca kiểm thử của mở khoá, đặt lại MFA trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S10",
+    "type": "story",
+    "parent": "E03",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-10",
+      "QT-03",
+      "D4-100",
+      "D4-104",
+      "ADR-014",
+      "RC-33",
+      "C-14"
+    ],
+    "overview": "Mọi đọc tên người dùng, tên người tham gia, before_data / after_data của audit từ màn hay API đi qua một lớp ở src/server, ghi một dòng audit_logs loại personal_data_read mỗi request (khuôn dòng ở log-convention mục 6.1); không ghi được thì không trả dữ liệu. Story này dựng lớp và hàm ghi log; route của từng màn chuyển sang lớp ở story của màn đó (ví dụ E05-S03, E06-S06, E07-S01, E08-S05, E09-S01, E11-S04), nên các story đó cần story này xong trước.",
+    "acceptance": [
+      "Mỗi request trả dữ liệu cá nhân có đúng một dòng personal_data_read (gộp nhiều lần đọc)",
+      "Hàm ghi log lỗi thì request trả 500, không trả dữ liệu",
+      "CI có bước kiểm không file nào ở src/app đọc thẳng các cột cá nhân, danh sách ngoại lệ tạm ghi rõ story sẽ chuyển"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01"
+    ]
+  },
+  {
+    "key": "E03-S10-T01",
+    "type": "documentation",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "PKT-10",
+      "D4-104"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: giao diện lớp đọc, danh sách cột cá nhân, cách gộp theo request, khuôn dòng log-convention 6.1 (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S10-T02",
+    "type": "devtask",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : hàm DB ghi log đọc và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-10",
+      "C-14"
+    ],
+    "overview": "Hàm ghi dòng personal_data_read: người, màn hoặc API, điều kiện, số dòng.",
+    "acceptance": [
+      "Test hàm; log chỉ thêm"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E03-S10-T01"
+    ]
+  },
+  {
+    "key": "E03-S10-T03",
+    "type": "devtask",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : lớp đọc chung",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-10",
+      "QT-03"
+    ],
+    "overview": "Lớp bọc truy vấn đọc ở src/server, gom log theo request.",
+    "acceptance": [
+      "Unit test: ghi lỗi thì không trả dữ liệu"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "depends_on": [
+      "E03-S10-T01"
+    ]
+  },
+  {
+    "key": "E03-S10-T04",
+    "type": "devtask",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : bước CI kiểm đọc thẳng cột cá nhân",
+    "owner": "BE-B",
+    "spec_refs": [
+      "PKT-10",
+      "QT-03"
+    ],
+    "overview": "Script quét src/app, src/server tìm truy vấn cột cá nhân không qua lớp chung, chạy trong CI.",
+    "acceptance": [
+      "Script có danh sách ngoại lệ tạm, rỗng trước nghiệm thu"
+    ],
+    "rough_hours": 4,
+    "team": "backend",
+    "depends_on": [
+      "E03-S10-T01"
+    ]
+  },
+  {
+    "key": "E03-S10-T05",
+    "type": "testdesign",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-10",
+      "RC-33"
+    ],
+    "overview": "Viết ca kiểm thử cho log đọc dữ liệu cá nhân từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S10-T06",
+    "type": "testexecution",
+    "parent": "E03-S10",
+    "title": "[PKT-10] Lớp đọc dữ liệu cá nhân dùng chung, ghi log đọc : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-10",
+      "RC-33"
+    ],
+    "overview": "Chạy ca kiểm thử của log đọc dữ liệu cá nhân trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S11",
+    "type": "story",
+    "parent": "E03",
+    "title": "[PKT-11] Hàng rào đọc cho tài khoản người tham gia bên ngoài",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-11",
+      "QT-07",
+      "C-12",
+      "ADR-014",
+      "D4-125",
+      "C-23",
+      "RC-33"
+    ],
+    "overview": "Module đọc riêng của ROLE-PARTICIPANT-VIEW lấy participant_id từ phiên ở máy chủ, không nhận từ request; layout không chặn vai này ở SCR-06; test quét đọc chéo trên toàn ma trận ở E18-S04.",
+    "acceptance": [
+      "Gửi participant_id của người khác trong request vẫn chỉ nhận dữ liệu của mình",
+      "Vai này không có trong require_actor của hàm ghi nào: mọi lần gọi hàm ghi nhận 42501",
+      "Không đọc được vùng legacy",
+      "Đăng nhập xong vào SCR-06, gọi trang khác nhận ForbiddenNotice"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [],
+    "depends_on": [
+      "E03-S01"
+    ]
+  },
+  {
+    "key": "E03-S11-T01",
+    "type": "devtask",
+    "parent": "E03-S11",
+    "title": "[PKT-11] Hàng rào đọc cho tài khoản người tham gia bên ngoài : module đọc riêng, layout và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "PKT-11",
+      "QT-07",
+      "C-23"
+    ],
+    "overview": "Module ở src/server, sửa layout requirePageRole home cho SCR-06, chuyển hướng sau đăng nhập; unit test module.",
+    "acceptance": [
+      "Không có tham số participant_id ở API của vai này"
+    ],
+    "rough_hours": 10,
+    "team": "backend"
+  },
+  {
+    "key": "E03-S11-T02",
+    "type": "testdesign",
+    "parent": "E03-S11",
+    "title": "[PKT-11] Hàng rào đọc cho tài khoản người tham gia bên ngoài : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-11"
+    ],
+    "overview": "Viết ca kiểm thử cho hàng rào tài khoản bên ngoài từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S11-T03",
+    "type": "testexecution",
+    "parent": "E03-S11",
+    "title": "[PKT-11] Hàng rào đọc cho tài khoản người tham gia bên ngoài : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "PKT-11"
+    ],
+    "overview": "Chạy ca kiểm thử của hàng rào tài khoản bên ngoài trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E03-S12",
+    "type": "story",
+    "parent": "E03",
+    "title": "[error-codes] Sửa câu báo và khoá chữ của prototype trong src/lib/i18n/text",
+    "owner": "FE-A",
+    "spec_refs": [
+      "D4-134",
+      "C-23",
+      "SCR-01",
+      "SCR-02"
+    ],
+    "overview": "Sửa câu SUSPENDED, NO_PROFILE, DAY_LOCKED, LOT_NOT_JUDGED thêm vế bước tiếp; forbidden.body viết システム管理者; bỏ dấu chấm giữa kiểu Âu trong các khoá liệt kê ở C-23.",
+    "acceptance": [
+      "Câu khớp cột tiếng Nhật của error-codes 0.8.0",
+      "Không còn chữ アカウント管理者 trong src/lib/i18n/text",
+      "Test rpc-rejection-text và test chữ chạy xanh"
+    ]
+  },
+  {
+    "key": "E04",
+    "type": "epic",
+    "title": "Người tham gia và tư cách tham gia",
+    "overview": "Hồ sơ và hiệu lực tham gia của 4 loại người tham gia với căn cứ riêng (許可 khác 承認), lịch sử hiệu lực, màn tra cứu thông tin tham gia cho nhân viên và cho người tham gia bên ngoài."
+  },
+  {
+    "key": "E04-S01",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6)",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "Đọc số ngày cảnh báo từ version 業務規程 qua view v_participants_effective (đợt 2), thêm 申請 vào bộ lọc và bảng, nhãn căn cứ 取引地点での登録; đọc qua lớp đọc chung.",
+    "acceptance": [
+      "Dải cảnh báo dùng expiry_warning_days của version đang áp",
+      "Lọc theo 申請 trả đúng dòng",
+      "Mở màn ghi log đọc; vai khác ROLE-PARTY gọi A6 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY"
+    ],
+    "roles_blocked": [
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S10",
+      "E02-S02"
+    ]
+  },
+  {
+    "key": "E04-S02",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-04] Hồ sơ người tham gia: nhãn 必須, trạng thái 申請 (A7, A8)",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-04",
+      "A7",
+      "A8",
+      "RC-01",
+      "RC-04"
+    ],
+    "overview": "Sửa giao diện tạo, sửa hồ sơ theo wireframe; hàm create_participant, update_participant không đổi quyền; mở hồ sơ ghi log đọc.",
+    "acceptance": [
+      "Nhãn 必須 trước khi gửi, nhãn căn cứ theo RFP",
+      "Tạo xong chuyển sang SCR-05 của người vừa tạo",
+      "Vai khác ROLE-PARTY gọi A7, A8 nhận 403, gọi hàm nhận 42501"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY"
+    ],
+    "roles_blocked": [
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E04-S02-T01",
+    "type": "documentation",
+    "parent": "E04-S02",
+    "title": "[SCR-04] Hồ sơ người tham gia: nhãn 必須, trạng thái 申請 (A7, A8) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-04"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: chỗ đổi so với prototype, nhãn mới (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S02-T02",
+    "type": "devtask",
+    "parent": "E04-S02",
+    "title": "[SCR-04] Hồ sơ người tham gia: nhãn 必須, trạng thái 申請 (A7, A8) : form tạo và sửa",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-04"
+    ],
+    "overview": "Sửa participant-form và trang hồ sơ theo wireframe.",
+    "acceptance": [
+      "Bàn phím theo thứ tự Tab ở wireframe",
+      "Câu báo đúng error-codes"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "depends_on": [
+      "E04-S02-T01"
+    ]
+  },
+  {
+    "key": "E04-S02-T03",
+    "type": "testdesign",
+    "parent": "E04-S02",
+    "title": "[SCR-04] Hồ sơ người tham gia: nhãn 必須, trạng thái 申請 (A7, A8) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-04",
+      "A7",
+      "A8"
+    ],
+    "overview": "Viết ca kiểm thử cho hồ sơ người tham gia từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S02-T04",
+    "type": "testexecution",
+    "parent": "E04-S02",
+    "title": "[SCR-04] Hồ sơ người tham gia: nhãn 必須, trạng thái 申請 (A7, A8) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-04",
+      "A7",
+      "A8"
+    ],
+    "overview": "Chạy ca kiểm thử của hồ sơ người tham gia trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E04-S03",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "SCR-05",
+      "A9",
+      "ADR-011",
+      "RC-01",
+      "RC-02",
+      "RC-03",
+      "RC-04",
+      "RC-28",
+      "W2"
+    ],
+    "overview": "Thân mới của upsert_participant_validity theo TECH: căn cứ suy ra từ loại, trạng thái 申請, bảng chuyển trạng thái mới, điều kiện gỡ đình chỉ theo loại, lịch sử hiệu lực, lý do bắt buộc. Bảng participant_validity_history, cột mới và backfill thuộc migration đợt 2 (nhóm E02).",
+    "acceptance": [
+      "Đủ nhánh và mã lỗi của TECH mục 4: FIRST_STATUS_NOT_ACTIVE, RE_REVIEW_REQUIRED, INVALID_TRANSITION, NOTE_REQUIRED, NO_CHANGE, REASON_REQUIRED, REREGISTRATION_REQUIRED",
+      "Mỗi lần đổi trạng thái, số căn cứ, ngày hiệu lực có một dòng lịch sử và một dòng audit validity_update trong cùng giao dịch DB",
+      "Không vai nào gộp 許可 và 承認: căn cứ không nhận từ trình duyệt",
+      "API kiểm aal2",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY"
+    ],
+    "roles_blocked": [
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E02-S02"
+    ]
+  },
+  {
+    "key": "E04-S03-T01",
+    "type": "uidesign",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-05"
+    ],
+    "overview": "Thiết kế ô 理由, khối 解除の方法, ô 解除の条件, kỳ 参加上限, trạng thái 申請 theo SCR_05_SPEC và wireframe, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp SCR_05_SPEC và wireframe; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E04-S03-T02",
+    "type": "devtask",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : hàm DB: kiểm nhập, khoá, bảng chuyển trạng thái",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "RC-03",
+      "RC-04"
+    ],
+    "overview": "TECH mục 4.2 đến 4.4: kiểm dữ liệu, khoá participants rồi participant_validity, lần ghi đầu, re_review_entry_status, điều kiện gỡ đình chỉ theo 4 loại.",
+    "acceptance": [
+      "Test phủ từng cặp chuyển trạng thái hợp lệ và không hợp lệ cho 4 loại",
+      "Test 42501 cho vai khác ROLE-PARTY"
+    ],
+    "rough_hours": 12,
+    "team": "backend"
+  },
+  {
+    "key": "E04-S03-T03",
+    "type": "devtask",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : hàm DB: ghi hiện hành, lịch sử, audit, đường nạp migration",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "C-14",
+      "D4-125"
+    ],
+    "overview": "TECH mục 4.5 đến 4.7: ghi dòng hiện hành, dòng lịch sử có basis_no, audit có history_id, nhánh tài khoản nhóm migration.",
+    "acceptance": [
+      "Test NO_CHANGE không ghi lịch sử",
+      "Đổi riêng 状態メモ hoặc 参加上限 chỉ ghi audit (QA Q7)",
+      "Tài khoản migration ghi lý do migration"
+    ],
+    "rough_hours": 10,
+    "team": "backend"
+  },
+  {
+    "key": "E04-S03-T04",
+    "type": "devtask",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : route A9",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A9",
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md"
+    ],
+    "overview": "Route đọc reason, liftCondition, giới hạn 500 ký tự, kiểm aal2 (TECH mục 4.1).",
+    "acceptance": [
+      "400, 403 đúng mã ở TECH"
+    ],
+    "rough_hours": 5,
+    "team": "backend"
+  },
+  {
+    "key": "E04-S03-T05",
+    "type": "devtask",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : form hiệu lực trên SCR-05",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-05"
+    ],
+    "overview": "Form theo nhánh 4 loại (SPEC mục 6.1), ô lý do, khối gỡ đình chỉ.",
+    "acceptance": [
+      "Ô và nhánh hiện đúng loại",
+      "Câu báo đúng error-codes"
+    ],
+    "rough_hours": 12,
+    "team": "frontend"
+  },
+  {
+    "key": "E04-S03-T06",
+    "type": "devtask",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : lịch sử hiệu lực và 参加上限 theo kỳ",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-05"
+    ],
+    "overview": "Hiện lịch sử từ participant_validity_history, ô 参加上限 có kỳ.",
+    "acceptance": [
+      "Dòng migration hiện システム（データ移行）"
+    ],
+    "rough_hours": 6,
+    "team": "frontend"
+  },
+  {
+    "key": "E04-S03-T07",
+    "type": "testdesign",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "SCR-05"
+    ],
+    "overview": "Viết ca kiểm thử cho ghi hiệu lực tham gia từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E04-S03-T08",
+    "type": "testexecution",
+    "parent": "E04-S03",
+    "title": "[SCR-05] Ghi hiệu lực tham gia và 参加上限 (A9) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR_05_UPSERT_PARTICIPANT_VALIDITY_TECH.md",
+      "SCR-05"
+    ],
+    "overview": "Chạy ca kiểm thử của ghi hiệu lực tham gia trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E04-S04",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-13, SCR-14] Tra bên mua theo ngày nghiệp vụ khi chốt (A15)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A15",
+      "SCR-13",
+      "SCR-14",
+      "RC-01",
+      "RC-33",
+      "W4"
+    ],
+    "overview": "Đổi hợp đồng A15 theo API design: nhận ngày nghiệp vụ, mốc thời điểm, ngữ cảnh せり; thân hàm lookup_buyers tìm bằng tham số liên kết, không ghép chuỗi; trả rows và hasMore; log đọc. Ô chọn bên mua trên SCR-13, SCR-14 do epic giao dịch sửa.",
+    "acceptance": [
+      "卸売業者 không bao giờ có trong kết quả",
+      "Chuỗi tìm có ký tự đặc biệt không làm sai truy vấn",
+      "Mỗi request ghi một dòng personal_data_read",
+      "Vai khác ROLE-TRADE gọi A15 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-TRADE"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S10",
+      "E02-S04"
+    ]
+  },
+  {
+    "key": "E04-S04-T01",
+    "type": "devtask",
+    "parent": "E04-S04",
+    "title": "[SCR-13, SCR-14] Tra bên mua theo ngày nghiệp vụ khi chốt (A15) : hàm lookup_buyers và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A15",
+      "W4"
+    ],
+    "overview": "Thân hàm theo DB design 6.5 số 50.",
+    "acceptance": [
+      "Test phủ 4 loại, ngày nghiệp vụ, hết hạn, せり"
+    ],
+    "rough_hours": 8,
+    "team": "backend"
+  },
+  {
+    "key": "E04-S04-T02",
+    "type": "devtask",
+    "parent": "E04-S04",
+    "title": "[SCR-13, SCR-14] Tra bên mua theo ngày nghiệp vụ khi chốt (A15) : route A15",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A15"
+    ],
+    "overview": "Route theo A15_API mục 3, 4.",
+    "acceptance": [
+      "Hợp đồng camelCase, rows, hasMore",
+      "400 khi tham số sai"
+    ],
+    "rough_hours": 5,
+    "team": "backend"
+  },
+  {
+    "key": "E04-S04-T03",
+    "type": "testdesign",
+    "parent": "E04-S04",
+    "title": "[SCR-13, SCR-14] Tra bên mua theo ngày nghiệp vụ khi chốt (A15) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A15"
+    ],
+    "overview": "Viết ca kiểm thử cho tra bên mua từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S04-T04",
+    "type": "testexecution",
+    "parent": "E04-S04",
+    "title": "[SCR-13, SCR-14] Tra bên mua theo ngày nghiệp vụ khi chốt (A15) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A15"
+    ],
+    "overview": "Chạy ca kiểm thử của tra bên mua trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E04-S05",
+    "type": "documentation",
+    "parent": "E04",
+    "title": "[SCR-06] Viết spec SCR-06",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-03",
+      "N-04",
+      "N-25",
+      "G-02",
+      "H-01",
+      "Q4-30",
+      "Q4-31",
+      "RC-33",
+      "RC-36"
+    ],
+    "overview": "Viết spec 参加情報照会: phần người tham gia bên ngoài xem dữ liệu của mình (hiệu lực, nghĩa vụ thanh toán, 荷受け, số đối soát đã công bố), khối thông báo, phần nhân viên tra hộ 買出人. Chốt sự kiện nào sinh thông báo cho người tham gia và hàm nào sinh.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-06 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E04-S06",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-03",
+      "PKT-11",
+      "ADR-014",
+      "C-12",
+      "Q4-30",
+      "RC-33"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-03 (danh sách chỉ đọc) và SCR-16 (chi tiết chỉ đọc). Đọc qua module đọc riêng, participant_id lấy từ phiên.",
+    "acceptance": [
+      "Chỉ thấy dữ liệu của người tham gia gắn với tài khoản",
+      "Số đối soát chỉ hiện ngày đã công bố (TM-31)",
+      "Mỗi request ghi log đọc",
+      "Vai khác ROLE-PARTICIPANT-VIEW gọi N-03 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S05",
+      "E03-S11"
+    ]
+  },
+  {
+    "key": "E04-S06-T01",
+    "type": "uidesign",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-06"
+    ],
+    "overview": "Thiết kế phần xem của người tham gia bên ngoài theo spec SCR-06, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-06; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 6,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S06-T02",
+    "type": "devtask",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : API N-03: hiệu lực, 荷受け",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-03",
+      "PKT-11"
+    ],
+    "overview": "Đọc hiệu lực và tình trạng 荷受け của chính mình.",
+    "acceptance": [
+      "Không nhận participant_id từ request"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S06-T07"
+    ]
+  },
+  {
+    "key": "E04-S06-T03",
+    "type": "devtask",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : API N-03: nghĩa vụ thanh toán, đối soát đã công bố",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-03",
+      "Q4-30"
+    ],
+    "overview": "Đọc khoản phải trả và dữ liệu đối soát đã công bố.",
+    "acceptance": [
+      "Ngày chưa công bố hoặc đang mở lại sổ không hiện"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S06-T07"
+    ]
+  },
+  {
+    "key": "E04-S06-T04",
+    "type": "devtask",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : màn SCR-06 phần người tham gia",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-06"
+    ],
+    "overview": "Dựng màn theo spec.",
+    "acceptance": [
+      "Nhãn tiếng Nhật đúng bảng duyệt"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S06-T07"
+    ]
+  },
+  {
+    "key": "E04-S06-T05",
+    "type": "testdesign",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-03"
+    ],
+    "overview": "Viết ca kiểm thử cho SCR-06 phần người tham gia từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S06-T06",
+    "type": "testexecution",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-03"
+    ],
+    "overview": "Chạy ca kiểm thử của SCR-06 phần người tham gia trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S07",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-06] Nhân viên tra hộ thông tin tham gia của 買出人 (N-04)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-04",
+      "RC-33"
+    ],
+    "overview": "Màn chưa có spec, ước theo SCR-03. ROLE-TRADE, ROLE-DELIVERY tra hộ tại điểm giao dịch, có log đọc.",
+    "acceptance": [
+      "Chỉ trả 買出人",
+      "Mỗi request ghi log đọc",
+      "Vai khác ROLE-TRADE, ROLE-DELIVERY gọi N-04 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-TRADE",
+      "ROLE-DELIVERY"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S05",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E04-S07-T01",
+    "type": "devtask",
+    "parent": "E04-S07",
+    "title": "[SCR-06] Nhân viên tra hộ thông tin tham gia của 買出人 (N-04) : API N-04",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-04"
+    ],
+    "overview": "Route tra hộ qua lớp đọc chung.",
+    "acceptance": [
+      "403 cho vai khác"
+    ],
+    "rough_hours": 5,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S07-T04"
+    ]
+  },
+  {
+    "key": "E04-S07-T02",
+    "type": "devtask",
+    "parent": "E04-S07",
+    "title": "[SCR-06] Nhân viên tra hộ thông tin tham gia của 買出人 (N-04) : phần tra hộ trên SCR-06",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-06"
+    ],
+    "overview": "Ô tìm và kết quả.",
+    "acceptance": [
+      "Vùng bấm 48 px cho tablet"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S07-T04"
+    ]
+  },
+  {
+    "key": "E04-S07-T03",
+    "type": "testexecution",
+    "parent": "E04-S07",
+    "title": "[SCR-06] Nhân viên tra hộ thông tin tham gia của 買出人 (N-04) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-04"
+    ],
+    "overview": "Chạy ca kiểm thử của tra hộ 買出人 trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S08",
+    "type": "story",
+    "parent": "E04",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-06",
+      "N-25",
+      "Q4-31",
+      "DB 4.27",
+      "RC-36",
+      "W6"
+    ],
+    "overview": "Màn chưa có spec. Đọc và đánh dấu đã đọc thông báo có người nhận là tài khoản trong phiên; sinh thông báo khi đổi tư cách tham gia và nghĩa vụ thanh toán (giả định Q4-31), email do việc nền E13 gửi.",
+    "acceptance": [
+      "Chỉ thấy thông báo của chính mình, request mang mã thông báo người khác nhận 404",
+      "Đổi trạng thái hiệu lực sinh thông báo in_app và email cho tài khoản chỉ xem của người tham gia đó",
+      "Vai khác ROLE-PARTICIPANT-VIEW gọi N-25 nhận 403"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S05",
+      "E03-S11",
+      "E13-S02"
+    ]
+  },
+  {
+    "key": "E04-S08-T01",
+    "type": "devtask",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : API N-25",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-25",
+      "PKT-11"
+    ],
+    "overview": "GET và POST đã đọc qua module đọc riêng.",
+    "acceptance": [
+      "read_at chỉ đặt cho in_app"
+    ],
+    "rough_hours": 5,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S08-T06"
+    ]
+  },
+  {
+    "key": "E04-S08-T02",
+    "type": "devtask",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : sinh thông báo theo sự kiện tư cách, nghĩa vụ thanh toán",
+    "owner": "BE-B",
+    "spec_refs": [
+      "Q4-31",
+      "DB 4.27"
+    ],
+    "overview": "Chèn notifications từ hàm hiệu lực và từ việc nền nhắc hạn trả, dùng dedupe_key.",
+    "acceptance": [
+      "Chạy trùng không sinh hai thông báo"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S08-T06"
+    ]
+  },
+  {
+    "key": "E04-S08-T03",
+    "type": "devtask",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : khối thông báo trên SCR-06",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-06"
+    ],
+    "overview": "Danh sách, đánh dấu đã đọc.",
+    "acceptance": [
+      "Critical đứng đầu"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S08-T06"
+    ]
+  },
+  {
+    "key": "E04-S08-T04",
+    "type": "testdesign",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-25"
+    ],
+    "overview": "Viết ca kiểm thử cho thông báo người tham gia từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S08-T05",
+    "type": "testexecution",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-25"
+    ],
+    "overview": "Chạy ca kiểm thử của thông báo người tham gia trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12",
+    "type": "epic",
+    "title": "Báo cáo, in chứng từ, xuất kế toán",
+    "overview": "12 báo cáo cố định và CSV, in 受入票, 取引票, 照合表 qua trình duyệt, file kế toán đối soát ngày và 支払データ tải tay ở SCR-30. Ba màn chưa có spec."
+  },
+  {
+    "key": "E12-S01",
+    "type": "documentation",
+    "parent": "E12",
+    "title": "[SCR-28] Viết spec SCR-28",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-28",
+      "N-14",
+      "RC-37",
+      "DB 4.24",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 帳票・CSV出力: danh sách 12 báo cáo, báo cáo nào ngày, báo cáo nào tháng, vai nào xem gì (giả định Q-06), cột CSV, cách gộp RPT-09 tranh chấp.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-28 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E12-S02",
+    "type": "documentation",
+    "parent": "E12",
+    "title": "[SCR-29] Viết spec SCR-29",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-29",
+      "ADR-007",
+      "RC-32",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 証憑印刷: trường in của 受入票, 取引票, 照合表 khổ A4, mã nghiệp vụ, version 業務規程 đã áp, giờ in; ai in loại nào.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-29 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E12-S03",
+    "type": "documentation",
+    "parent": "E12",
+    "title": "[SCR-30] Viết spec SCR-30",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-30",
+      "N-15",
+      "ADR-005",
+      "RC-35",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 会計向けデータ出力: danh sách lần xuất, trạng thái, tải 2 file, nhắc quá 2 giờ chưa tải; cột file theo mặc định Q4-17.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-30 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E12-S04",
+    "type": "investigation",
+    "parent": "E12",
+    "title": "[Q4-17] Làm rõ: định dạng file kế toán và đẩy tự động",
+    "owner": "BrSE-A",
+    "spec_refs": [
+      "Q4-17",
+      "ADR-005",
+      "RC-35",
+      "G-01"
+    ],
+    "overview": "Hỏi khách mã ký tự, dấu phân cách, tên cột của file kế toán, 支払データ đi cùng file nào, đẩy tự động có là hạng mục thêm. Mặc định: CSV UTF-8 có BOM, hai file tải tay.",
+    "acceptance": [
+      "Câu Q4-17 dịch tiếng Nhật, gửi khách, có câu trả lời ghi vào bảng Q4",
+      "Issue chịu ảnh hưởng được sửa và ước lại nếu khách chọn khác mặc định",
+      "Ghi vào rủi ro trễ ở progress-report khi quá hạn"
+    ],
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "customer_wait": "Khách trả lời Q4-17 trước sprint có E12-S08, E12-S09; khác mặc định thì ước lại hai story này",
+    "rough_hours": 4
+  },
+  {
+    "key": "E12-S05",
+    "type": "story",
+    "parent": "E12",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-23",
+      "ADR-004",
+      "C-15",
+      "DB 4.24",
+      "RC-37",
+      "W10",
+      "G-05"
+    ],
+    "overview": "Chưa có TECH (G-05). Mỗi báo cáo một dòng report_runs; running quá 2 phút coi là chết, failed chạy lại trên cùng dòng; chỉ ngày có bản chụp đối soát và từ ngày go-live; khoá lại thì chạy lại báo cáo ngày đó. Nội dung từng báo cáo chờ spec SCR-28.",
+    "acceptance": [
+      "Báo cáo ngày xong trước 11:00 JST trên dữ liệu thử cỡ năm 1",
+      "Cron gọi trùng không sinh dòng report_runs trùng (UNIQUE)",
+      "Dòng running quá 2 phút được chạy lại",
+      "Audit report_run với người làm NULL, lý do system_job"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S01",
+      "E12-S01",
+      "E02-S09"
+    ]
+  },
+  {
+    "key": "E12-S05-T01",
+    "type": "documentation",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ADR-004",
+      "C-15",
+      "DB 4.24"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hàm nhận việc báo cáo, điều kiện chạy lại, chỗ lưu file (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S05-T02",
+    "type": "devtask",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : hàm DB nhận việc và chạy lại",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-004",
+      "C-15",
+      "DB 4.24"
+    ],
+    "overview": "Hàm chọn báo cáo cần chạy, đánh dấu running, chết, failed.",
+    "acceptance": [
+      "Test phủ running quá 2 phút, failed, khoá lại"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S05-T01"
+    ]
+  },
+  {
+    "key": "E12-S05-T03",
+    "type": "devtask",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : tạo CSV báo cáo ngày",
+    "owner": "BE-B",
+    "spec_refs": [
+      "RC-37",
+      "SCR-28"
+    ],
+    "overview": "Sinh CSV báo cáo ngày theo spec SCR-28, lưu Storage riêng tư.",
+    "acceptance": [
+      "Cột khớp spec SCR-28"
+    ],
+    "rough_hours": 12,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S05-T01"
+    ]
+  },
+  {
+    "key": "E12-S05-T04",
+    "type": "devtask",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : tạo CSV báo cáo tháng",
+    "owner": "BE-A",
+    "spec_refs": [
+      "RC-37",
+      "SCR-28"
+    ],
+    "overview": "Sinh CSV báo cáo tháng sau chốt kỳ.",
+    "acceptance": [
+      "Cột khớp spec SCR-28"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S05-T01"
+    ]
+  },
+  {
+    "key": "E12-S05-T05",
+    "type": "testdesign",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-004",
+      "DB 4.24"
+    ],
+    "overview": "Viết ca kiểm thử cho batch báo cáo từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S05-T06",
+    "type": "testexecution",
+    "parent": "E12-S05",
+    "title": "[N-23] Việc nền batch báo cáo ngày và tháng, chạy lại khi treo hoặc lỗi : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-004",
+      "DB 4.24"
+    ],
+    "overview": "Chạy ca kiểm thử của batch báo cáo trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 5,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S06",
+    "type": "story",
+    "parent": "E12",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-28",
+      "N-14",
+      "RC-37",
+      "D4-107"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-32 (tìm và danh sách). ROLE-SETTLEMENT xem báo cáo ngày, ROLE-REPORT-VIEW xem báo cáo tháng (giả định Q-06).",
+    "acceptance": [
+      "Mỗi vai chỉ thấy và tải báo cáo của mình theo ma trận",
+      "Xuất CSV ghi log đọc",
+      "ROLE-REPORT-VIEW gọi báo cáo ngày nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT",
+      "ROLE-REPORT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S01",
+      "E12-S05",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E12-S06-T01",
+    "type": "uidesign",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-28"
+    ],
+    "overview": "Thiết kế màn báo cáo theo spec SCR-28, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-28; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 6,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S06-T02",
+    "type": "devtask",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : API N-14",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-14"
+    ],
+    "overview": "Danh sách lần chạy, URL ký tải CSV, lọc theo vai.",
+    "acceptance": [
+      "403 đúng vai"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S06-T06"
+    ]
+  },
+  {
+    "key": "E12-S06-T03",
+    "type": "devtask",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : màn SCR-28",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-28"
+    ],
+    "overview": "Bộ lọc, danh sách, nút tải.",
+    "acceptance": [
+      "Trạng thái chạy, lỗi hiện rõ"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S06-T06"
+    ]
+  },
+  {
+    "key": "E12-S06-T04",
+    "type": "testdesign",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-28",
+      "N-14"
+    ],
+    "overview": "Viết ca kiểm thử cho màn báo cáo từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S06-T05",
+    "type": "testexecution",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-28",
+      "N-14"
+    ],
+    "overview": "Chạy ca kiểm thử của màn báo cáo trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S07",
+    "type": "story",
+    "parent": "E12",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-29",
+      "ADR-007",
+      "RC-32",
+      "D4-108"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-16 (chi tiết chỉ đọc). Không có API: trang in đọc dữ liệu bằng Server Component qua lớp đọc chung; chặn ở trang theo ma trận.",
+    "acceptance": [
+      "Trang in 照合表 chỉ mở cho ROLE-SETTLEMENT; 受入票, 取引票 chỉ mở cho ROLE-INTAKE, ROLE-TRADE, ROLE-DELIVERY",
+      "Vai bị chặn mở thẳng URL trang in nhận ForbiddenNotice, máy chủ không đọc dữ liệu (không có API nên chặn ở trang và lớp đọc)",
+      "In ra A4 có mã nghiệp vụ, version 業務規程 đã áp, giờ in; không lưu file in"
+    ],
+    "roles_allowed": [
+      "ROLE-INTAKE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-JUDGE",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S02",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E12-S07-T01",
+    "type": "uidesign",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-29"
+    ],
+    "overview": "Thiết kế trang chọn và 3 mẫu in A4 theo spec SCR-29, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-29; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 8,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S07-T02",
+    "type": "devtask",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : trang chọn và xem trước",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-29"
+    ],
+    "overview": "Chọn loại, mã, xem trước.",
+    "acceptance": [
+      "Chỉ hiện loại vai được in"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S07-T07"
+    ]
+  },
+  {
+    "key": "E12-S07-T03",
+    "type": "devtask",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : mẫu in 受入票, 取引票",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-29",
+      "ADR-007"
+    ],
+    "overview": "CSS @media print khổ A4.",
+    "acceptance": [
+      "In thử trên Windows và AirPrint iPadOS"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S07-T07"
+    ]
+  },
+  {
+    "key": "E12-S07-T04",
+    "type": "devtask",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : mẫu in 照合表",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-29",
+      "ADR-007"
+    ],
+    "overview": "CSS @media print khổ A4 cho bảng đối soát.",
+    "acceptance": [
+      "Bảng nhiều trang lặp tiêu đề cột"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S07-T07"
+    ]
+  },
+  {
+    "key": "E12-S07-T05",
+    "type": "testdesign",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-29"
+    ],
+    "overview": "Viết ca kiểm thử cho in chứng từ từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S07-T06",
+    "type": "testexecution",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-29"
+    ],
+    "overview": "Chạy ca kiểm thử của in chứng từ trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S08",
+    "type": "story",
+    "parent": "E12",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-23",
+      "ADR-005",
+      "ADR-004",
+      "C-15",
+      "DB 4.23",
+      "RC-35",
+      "W7",
+      "Q4-17",
+      "G-05"
+    ],
+    "overview": "Chưa có TECH (G-05). Ngày có sự kiện lock mới nhất và bản chụp đối soát mà chưa có batch cùng lock_seq thì tạo batch và file đối soát CSV; batch failed tạo lại trên cùng dòng và cảnh báo Critical. Định dạng theo mặc định Q4-17.",
+    "acceptance": [
+      "Mỗi lần khoá đúng một batch (UNIQUE business_day, lock_seq); cron gọi trùng không sinh batch trùng",
+      "Ngày đang mở lại sổ không xuất",
+      "Lần khoá sau mở lại sổ xuất lại cả ngày, dòng đổi là 調整済み",
+      "Tạo file lỗi: status failed, thông báo Critical cho ROLE-SETTLEMENT, ROLE-SYS-ADMIN; lần sau tạo lại thành created",
+      "Audit accounting_export với người làm NULL, lý do system_job"
+    ],
+    "depends_on": [
+      "E13-S01",
+      "E13-S03",
+      "E02-S07"
+    ]
+  },
+  {
+    "key": "E12-S08-T01",
+    "type": "documentation",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ADR-005",
+      "C-15",
+      "DB 4.23"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hàm tạo batch, thứ tự khoá, chỗ lưu file, điều kiện tạo lại (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E12-S08-T02",
+    "type": "devtask",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : hàm DB tạo batch và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-005",
+      "DB 4.23"
+    ],
+    "overview": "Chọn ngày cần xuất, tạo dòng batch, chống trùng.",
+    "acceptance": [
+      "Test phủ khoá lần 1, khoá lại, đang mở lại sổ, gọi trùng"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "depends_on": [
+      "E12-S08-T01"
+    ]
+  },
+  {
+    "key": "E12-S08-T03",
+    "type": "devtask",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : file đối soát CSV",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-005",
+      "RC-35",
+      "Q4-17"
+    ],
+    "overview": "Từ daily_reconciliation_snapshots, đủ trường tối thiểu, UTF-8 có BOM, tên cột tiếng Nhật.",
+    "acceptance": [
+      "Số dòng ghi vào row_count"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "depends_on": [
+      "E12-S08-T01"
+    ]
+  },
+  {
+    "key": "E12-S08-T04",
+    "type": "devtask",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : tạo lại batch failed và cảnh báo",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-15",
+      "ADR-004"
+    ],
+    "overview": "Tạo lại trên cùng dòng, sinh thông báo Critical.",
+    "acceptance": [
+      "Tạo lại không đổi batch_code"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "depends_on": [
+      "E12-S08-T01"
+    ]
+  },
+  {
+    "key": "E12-S08-T05",
+    "type": "testdesign",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-005",
+      "DB 4.23"
+    ],
+    "overview": "Viết ca kiểm thử cho tạo file kế toán từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E12-S08-T06",
+    "type": "testexecution",
+    "parent": "E12-S08",
+    "title": "[N-23] Việc nền tạo file kế toán đối soát ngày, tạo lại batch lỗi : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-005",
+      "DB 4.23"
+    ],
+    "overview": "Chạy ca kiểm thử của tạo file kế toán trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E12-S09",
+    "type": "story",
+    "parent": "E12",
+    "title": "[SCR-30, SCR-25] Phần 奨励金 của file kế toán: file 支払データ từ khoản trả",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-25",
+      "Q4-17",
+      "Q4-57",
+      "ADR-005",
+      "DB 4.17",
+      "DB 4.23",
+      "RC-35",
+      "W9"
+    ],
+    "overview": "File 支払データ cùng batch gồm mọi payment_records (SCR-25 ghi qua A49, A50) chưa có exported_batch_id; gán exported_batch_id trong cùng giao dịch DB để mỗi khoản xuất đúng một lần. Chênh lệch và kết quả 完納奨励金 không vào file theo mặc định Q4-57; khách chọn khác thì ước lại.",
+    "acceptance": [
+      "Mỗi khoản trả có trong đúng một file 支払データ",
+      "Khoản ghi sau lần khoá trước vào batch kế tiếp",
+      "Tạo lại batch failed chọn lại đúng các khoản đã gán exported_batch_id của batch đó (C-15)",
+      "payment_row_count ghi số dòng file 支払データ"
+    ],
+    "depends_on": [
+      "E12-S08",
+      "E11-S01"
+    ]
+  },
+  {
+    "key": "E12-S09-T01",
+    "type": "devtask",
+    "parent": "E12-S09",
+    "title": "[SCR-30, SCR-25] Phần 奨励金 của file kế toán: file 支払データ từ khoản trả : chọn khoản và gán exported_batch_id",
+    "owner": "BE-B",
+    "spec_refs": [
+      "DB 4.17",
+      "ADR-005",
+      "C-15"
+    ],
+    "overview": "Trong hàm tạo batch, chọn và gán khoản chưa xuất.",
+    "acceptance": [
+      "Test: gọi trùng, tạo lại batch failed, khoản ghi giữa hai lần khoá"
+    ],
+    "rough_hours": 8,
+    "team": "backend"
+  },
+  {
+    "key": "E12-S09-T02",
+    "type": "devtask",
+    "parent": "E12-S09",
+    "title": "[SCR-30, SCR-25] Phần 奨励金 của file kế toán: file 支払データ từ khoản trả : file CSV 支払データ",
+    "owner": "BE-B",
+    "spec_refs": [
+      "ADR-005",
+      "Q4-17"
+    ],
+    "overview": "Sinh file, ghi payment_file_path, payment_row_count.",
+    "acceptance": [
+      "Định dạng theo mặc định Q4-17"
+    ],
+    "rough_hours": 6,
+    "team": "backend"
+  },
+  {
+    "key": "E12-S09-T03",
+    "type": "testdesign",
+    "parent": "E12-S09",
+    "title": "[SCR-30, SCR-25] Phần 奨励金 của file kế toán: file 支払データ từ khoản trả : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "ADR-005"
+    ],
+    "overview": "Viết ca kiểm thử cho file 支払データ từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E12-S09-T04",
+    "type": "testexecution",
+    "parent": "E12-S09",
+    "title": "[SCR-30, SCR-25] Phần 奨励金 của file kế toán: file 支払データ từ khoản trả : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "ADR-005"
+    ],
+    "overview": "Chạy ca kiểm thử của file 支払データ trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E12-S10",
+    "type": "story",
+    "parent": "E12",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-30",
+      "N-15",
+      "ADR-005",
+      "RC-35",
+      "D4-79"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-21 (danh sách ngày và trạng thái). Tải bằng URL ký có hạn; mỗi lần tải ghi audit, đổi trạng thái downloaded; nhắc khi quá 2 giờ chưa tải.",
+    "acceptance": [
+      "Tải file ghi audit và log đọc, batch chuyển downloaded",
+      "Quá 2 giờ chưa tải có thông báo cho ROLE-SETTLEMENT",
+      "Vai khác ROLE-SETTLEMENT gọi N-15 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S03",
+      "E12-S08",
+      "E12-S09"
+    ]
+  },
+  {
+    "key": "E12-S10-T01",
+    "type": "uidesign",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-30"
+    ],
+    "overview": "Thiết kế màn xuất dữ liệu kế toán theo spec SCR-30, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-30; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 5,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S10-T02",
+    "type": "devtask",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : API N-15",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-15",
+      "ADR-005"
+    ],
+    "overview": "Danh sách batch, URL ký theo kind, ghi audit và đổi trạng thái.",
+    "acceptance": [
+      "URL hết hạn sau thời gian ở thiết kế ngắn"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S10-T07"
+    ]
+  },
+  {
+    "key": "E12-S10-T03",
+    "type": "devtask",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : nhắc quá 2 giờ chưa tải",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ADR-005",
+      "N-23"
+    ],
+    "overview": "Việc nền sinh thông báo, dedupe_key theo batch.",
+    "acceptance": [
+      "Không nhắc lại batch đã tải"
+    ],
+    "rough_hours": 4,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S10-T07"
+    ]
+  },
+  {
+    "key": "E12-S10-T04",
+    "type": "devtask",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : màn SCR-30",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-30"
+    ],
+    "overview": "Danh sách lần xuất, trạng thái, nút tải 2 file.",
+    "acceptance": [
+      "Batch failed hiện rõ, không có nút tải"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S10-T07"
+    ]
+  },
+  {
+    "key": "E12-S10-T05",
+    "type": "testdesign",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-30",
+      "N-15"
+    ],
+    "overview": "Viết ca kiểm thử cho xuất dữ liệu kế toán từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S10-T06",
+    "type": "testexecution",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-30",
+      "N-15"
+    ],
+    "overview": "Chạy ca kiểm thử của xuất dữ liệu kế toán trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E13",
+    "type": "epic",
+    "title": "Thông báo và việc nền",
+    "overview": "Khung việc nền Vercel Cron gọi /api/jobs/tick mỗi phút, gửi thông báo in_app và email có thử lại, gửi ngay thông báo Critical, khối thông báo trên SCR-02, màn cấu hình thông báo SCR-31."
+  },
+  {
+    "key": "E13-S01",
+    "type": "story",
+    "parent": "E13",
+    "title": "[N-23] Route /api/jobs/tick và khung chạy việc nền",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-23",
+      "ADR-004",
+      "C-14",
+      "C-15",
+      "G-05"
+    ],
+    "overview": "Cron mỗi phút gọi route; route kiểm CRON_SECRET, gửi nhịp cho dịch vụ đo, chạy thông báo trước rồi các việc khác trong giới hạn 60 giây, việc dở để lần sau. Việc nền ghi audit người làm NULL, lý do system_job.",
+    "acceptance": [
+      "Gọi không có bí mật đúng nhận 401, không chạy việc nào",
+      "proxy.ts cho route đi qua mà không cần phiên",
+      "Mỗi lần chạy gửi nhịp; chạy quá giới hạn thì dừng sạch, lần sau làm tiếp",
+      "Cron chỉ chạy ở production, staging gọi tay bằng lệnh có ghi ở README"
+    ]
+  },
+  {
+    "key": "E13-S01-T01",
+    "type": "devtask",
+    "parent": "E13-S01",
+    "title": "[N-23] Route /api/jobs/tick và khung chạy việc nền : route và khung chạy",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-23",
+      "ADR-004"
+    ],
+    "overview": "Route, bảng việc theo thứ tự, đo thời gian, gọi nhịp.",
+    "acceptance": [
+      "Test: bí mật sai, hết giờ, một việc lỗi không chặn việc khác"
+    ],
+    "rough_hours": 10,
+    "team": "backend"
+  },
+  {
+    "key": "E13-S01-T02",
+    "type": "devtask",
+    "parent": "E13-S01",
+    "title": "[N-23] Route /api/jobs/tick và khung chạy việc nền : cấu hình cron và bí mật",
+    "owner": "Infra-A",
+    "spec_refs": [
+      "ADR-004"
+    ],
+    "overview": "vercel.json, CRON_SECRET ở môi trường, lệnh gọi tay ở staging.",
+    "acceptance": [
+      "Người thứ hai làm theo được"
+    ],
+    "rough_hours": 4,
+    "team": "infrastructure"
+  },
+  {
+    "key": "E13-S01-T03",
+    "type": "testdesign",
+    "parent": "E13-S01",
+    "title": "[N-23] Route /api/jobs/tick và khung chạy việc nền : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-004"
+    ],
+    "overview": "Viết ca kiểm thử cho khung việc nền từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E13-S01-T04",
+    "type": "testexecution",
+    "parent": "E13-S01",
+    "title": "[N-23] Route /api/jobs/tick và khung chạy việc nền : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-004"
+    ],
+    "overview": "Chạy ca kiểm thử của khung việc nền trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S02",
+    "type": "story",
+    "parent": "E13",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-23",
+      "ADR-004",
+      "DB 4.27",
+      "RC-36",
+      "W6",
+      "G-08"
+    ],
+    "overview": "claim_notifications(limit) nhận việc bằng for update skip locked; gửi email qua dịch vụ gửi mail; 1 lần đầu và 3 lần thử lại; lần cuối lỗi thì escalated và sinh thông báo in_app Critical cho ROLE-SYS-ADMIN. Tài khoản dịch vụ gửi mail theo G-08.",
+    "acceptance": [
+      "Hai lần chạy chồng không gửi trùng một thông báo",
+      "attempt_count tối đa 4, sau đó status escalated",
+      "Mỗi email có bản in_app song song",
+      "Không dùng SMS, FAX"
+    ],
+    "depends_on": [
+      "E13-S01",
+      "E02-S06",
+      "E01-S08"
+    ]
+  },
+  {
+    "key": "E13-S02-T01",
+    "type": "devtask",
+    "parent": "E13-S02",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt : hàm DB nhận việc, đổi trạng thái và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "DB 4.27",
+      "ADR-004"
+    ],
+    "overview": "claim_notifications, ghi sent, failed, escalated, next_attempt_at.",
+    "acceptance": [
+      "Test chạy song song hai phiên"
+    ],
+    "rough_hours": 8,
+    "team": "backend"
+  },
+  {
+    "key": "E13-S02-T02",
+    "type": "devtask",
+    "parent": "E13-S02",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt : gửi email qua dịch vụ",
+    "owner": "BE-A",
+    "spec_refs": [
+      "RC-36",
+      "G-08"
+    ],
+    "overview": "Lớp gửi mail, mẫu tiêu đề và nội dung tiếng Nhật.",
+    "acceptance": [
+      "Lỗi dịch vụ ghi last_error"
+    ],
+    "rough_hours": 8,
+    "team": "backend"
+  },
+  {
+    "key": "E13-S02-T03",
+    "type": "devtask",
+    "parent": "E13-S02",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt : chuyển cảnh báo khi hết lượt",
+    "owner": "BE-B",
+    "spec_refs": [
+      "RC-36",
+      "ADR-004"
+    ],
+    "overview": "Sinh thông báo Critical cho ROLE-SYS-ADMIN.",
+    "acceptance": [
+      "Có dedupe_key"
+    ],
+    "rough_hours": 4,
+    "team": "backend"
+  },
+  {
+    "key": "E13-S02-T04",
+    "type": "testdesign",
+    "parent": "E13-S02",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "DB 4.27",
+      "RC-36"
+    ],
+    "overview": "Viết ca kiểm thử cho gửi thông báo từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S02-T05",
+    "type": "testexecution",
+    "parent": "E13-S02",
+    "title": "[N-23] Gửi thông báo email và in_app có thử lại, chuyển cảnh báo khi hết lượt : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "DB 4.27",
+      "RC-36"
+    ],
+    "overview": "Chạy ca kiểm thử của gửi thông báo trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E13-S03",
+    "type": "story",
+    "parent": "E13",
+    "title": "[C-15] Gửi ngay thông báo Critical trong request sinh sự kiện",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-15",
+      "ADR-004",
+      "RC-36",
+      "D4-125"
+    ],
+    "overview": "Chưa có TECH (G-05). claim_notification(id) nhận đúng dòng vừa sinh rồi gửi ngay để Critical xong trong 5 phút; lỗi thì để cron gửi lại.",
+    "acceptance": [
+      "Critical gửi trong request, không chờ cron",
+      "Gửi ngay và cron cùng lúc không gửi hai lần",
+      "Lỗi gửi không làm hỏng thao tác nghiệp vụ đã cam kết"
+    ],
+    "depends_on": [
+      "E13-S02"
+    ]
+  },
+  {
+    "key": "E13-S03-T01",
+    "type": "devtask",
+    "parent": "E13-S03",
+    "title": "[C-15] Gửi ngay thông báo Critical trong request sinh sự kiện : hàm claim_notification và helper gửi ngay",
+    "owner": "BE-A",
+    "spec_refs": [
+      "C-15",
+      "ADR-004"
+    ],
+    "overview": "Hàm DB và helper dùng chung cho các route sinh Critical.",
+    "acceptance": [
+      "Test tranh chấp với claim_notifications"
+    ],
+    "rough_hours": 8,
+    "team": "backend"
+  },
+  {
+    "key": "E13-S03-T02",
+    "type": "testdesign",
+    "parent": "E13-S03",
+    "title": "[C-15] Gửi ngay thông báo Critical trong request sinh sự kiện : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "C-15"
+    ],
+    "overview": "Viết ca kiểm thử cho gửi ngay Critical từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E13-S03-T03",
+    "type": "testexecution",
+    "parent": "E13-S03",
+    "title": "[C-15] Gửi ngay thông báo Critical trong request sinh sự kiện : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "C-15"
+    ],
+    "overview": "Chạy ca kiểm thử của gửi ngay Critical trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S04",
+    "type": "story",
+    "parent": "E13",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-02",
+      "N-16",
+      "DB 4.27",
+      "RC-36",
+      "PKT-02"
+    ],
+    "overview": "Mỗi người chỉ thấy thông báo in_app có người nhận là chính mình, Critical đứng đầu; đánh dấu đã đọc.",
+    "acceptance": [
+      "Request mang mã thông báo của người khác nhận 404",
+      "Đánh dấu đã đọc đặt read_at",
+      "ROLE-PARTICIPANT-VIEW gọi N-16 nhận 403 (dùng N-25)",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01"
+    ]
+  },
+  {
+    "key": "E13-S04-T01",
+    "type": "uidesign",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-02"
+    ],
+    "overview": "Thiết kế khối お知らせ theo wireframe LAB-4, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp wireframe LAB-4; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S04-T02",
+    "type": "devtask",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : API N-16",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-16"
+    ],
+    "overview": "GET danh sách, POST đã đọc.",
+    "acceptance": [
+      "Lọc người nhận ở máy chủ"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E13-S04-T06"
+    ]
+  },
+  {
+    "key": "E13-S04-T03",
+    "type": "devtask",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : khối お知らせ",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-02"
+    ],
+    "overview": "Bảng thông báo, nút 既読にする, mở màn liên quan.",
+    "acceptance": [
+      "Bàn phím theo wireframe"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "depends_on": [
+      "E13-S04-T06"
+    ]
+  },
+  {
+    "key": "E13-S04-T04",
+    "type": "testdesign",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-16"
+    ],
+    "overview": "Viết ca kiểm thử cho thông báo trong ứng dụng từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E13-S04-T05",
+    "type": "testexecution",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-16"
+    ],
+    "overview": "Chạy ca kiểm thử của thông báo trong ứng dụng trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S05",
+    "type": "documentation",
+    "parent": "E13",
+    "title": "[SCR-31] Viết spec SCR-31",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-31",
+      "N-17",
+      "RC-36",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 通知設定・送信状況: cấu hình người nhận theo loại sự kiện, ngưỡng (ví dụ N ngày biên nhận chưa xử lý), log gửi, hàng cảnh báo vận hành. Chốt bảng lưu cấu hình (DB design chưa có).",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-31 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E13-S06",
+    "type": "story",
+    "parent": "E13",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-31",
+      "N-17",
+      "RC-36",
+      "DB 4.27",
+      "W10"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-08 (form cấu hình) và SCR-32 (tìm log). Bảng lưu cấu hình chưa có ở DB design, chốt ở spec và thêm vào đợt 10.",
+    "acceptance": [
+      "Đổi cấu hình có audit trước / sau",
+      "Log gửi lọc theo trạng thái queued, sent, failed, escalated",
+      "API kiểm aal2",
+      "Vai khác ROLE-SYS-ADMIN gọi N-17 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S05",
+      "E13-S02"
+    ]
+  },
+  {
+    "key": "E13-S06-T01",
+    "type": "uidesign",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-31"
+    ],
+    "overview": "Thiết kế màn cấu hình và trạng thái thông báo theo spec SCR-31, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-31; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 6,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E13-S06-T02",
+    "type": "devtask",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : hàm DB cấu hình và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-17"
+    ],
+    "overview": "Hàm ghi cấu hình người nhận, ngưỡng, audit.",
+    "acceptance": [
+      "Test 42501 cho vai khác"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S06-T08"
+    ]
+  },
+  {
+    "key": "E13-S06-T03",
+    "type": "devtask",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : API N-17",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-17"
+    ],
+    "overview": "3 endpoint theo danh sách API.",
+    "acceptance": [
+      "403, 400 đúng mã"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S06-T08"
+    ]
+  },
+  {
+    "key": "E13-S06-T04",
+    "type": "devtask",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : form cấu hình",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-31"
+    ],
+    "overview": "Form người nhận, ngưỡng.",
+    "acceptance": [
+      "Câu báo đúng error-codes"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S06-T08"
+    ]
+  },
+  {
+    "key": "E13-S06-T05",
+    "type": "devtask",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : log gửi và hàng cảnh báo",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-31"
+    ],
+    "overview": "Bảng log gửi và hàng escalated.",
+    "acceptance": [
+      "Phân trang"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S06-T08"
+    ]
+  },
+  {
+    "key": "E13-S06-T06",
+    "type": "testdesign",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-31",
+      "N-17"
+    ],
+    "overview": "Viết ca kiểm thử cho cấu hình thông báo từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E13-S06-T07",
+    "type": "testexecution",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-31",
+      "N-17"
+    ],
+    "overview": "Chạy ca kiểm thử của cấu hình thông báo trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14",
+    "type": "epic",
+    "title": "Mất mạng và đồng bộ",
+    "overview": "Lớp ngoại tuyến cho 3 thao tác (tạo lô, ghi lần giao, ghi ngoại lệ giao nhận), hàng đợi gắn người ghi, màn hàng đợi và xử lý biên nhận đồng bộ bị từ chối hoặc xung đột."
+  },
+  {
+    "key": "E14-S01",
+    "type": "story",
+    "parent": "E14",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB",
+    "owner": "FE-A",
+    "spec_refs": [
+      "ADR-003",
+      "RC-30",
+      "D4-85",
+      "SCR-09",
+      "SCR-18",
+      "SCR-19",
+      "A12",
+      "A23",
+      "A25"
+    ],
+    "overview": "Service worker giữ khung trang, IndexedDB giữ hàng đợi có client_request_id, giờ thao tác, user_id người ghi; gửi khi online, khi mở trang, theo hẹn giờ; chỉ gửi khi phiên là đúng người ghi. Story này làm hàng đợi dùng chung; nối form và hàm DB nhận bản ghi tạm ở E05-S01, E07-S02, E07-S05.",
+    "acceptance": [
+      "Chỉ 3 thao tác được ghi tạm; màn khác báo cần mạng",
+      "Gửi lại cùng nội dung không tạo bản ghi trùng",
+      "Phiên khác người ghi thì không gửi; số bản ghi chờ hiện ở huy hiệu 未同期",
+      "Chạy được trên Safari iPadOS (không Background Sync)"
+    ],
+    "roles_allowed": [
+      "ROLE-INTAKE",
+      "ROLE-DELIVERY"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ]
+  },
+  {
+    "key": "E14-S01-T01",
+    "type": "documentation",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ADR-003"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: cấu trúc hàng đợi, cách băm payload, lịch gửi lại (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E14-S01-T02",
+    "type": "devtask",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : service worker giữ khung trang",
+    "owner": "FE-A",
+    "spec_refs": [
+      "ADR-003"
+    ],
+    "overview": "Đăng ký service worker, cache khung trang 3 màn.",
+    "acceptance": [
+      "Mất mạng vẫn mở được 3 màn"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "depends_on": [
+      "E14-S01-T01"
+    ]
+  },
+  {
+    "key": "E14-S01-T03",
+    "type": "devtask",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : hàng đợi IndexedDB: lưu bản ghi tạm và mã băm nội dung",
+    "owner": "FE-A",
+    "spec_refs": [
+      "ADR-003",
+      "RC-30"
+    ],
+    "overview": "Lưu bản ghi tạm vào hàng đợi trên máy khi mất mạng và tính mã băm nội dung để chống gửi trùng.",
+    "acceptance": [
+      "Bản ghi tạm lưu được khi mất mạng, còn sau khi tải lại trang",
+      "Cùng nội dung cho cùng mã băm, khác nội dung khác mã băm",
+      "Unit test cho hai ý trên chạy xanh"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "depends_on": [
+      "E14-S01-T01"
+    ]
+  },
+  {
+    "key": "E14-S01-T04",
+    "type": "devtask",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : huy hiệu 未同期 và số bản ghi chờ",
+    "owner": "FE-A",
+    "spec_refs": [
+      "D4-85",
+      "SCR-02"
+    ],
+    "overview": "Huy hiệu trên thanh trên, hàm đọc số chờ cho nút 交代.",
+    "acceptance": [
+      "Số khớp hàng đợi"
+    ],
+    "rough_hours": 4,
+    "team": "frontend",
+    "depends_on": [
+      "E14-S01-T01"
+    ]
+  },
+  {
+    "key": "E14-S01-T05",
+    "type": "testdesign",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-003"
+    ],
+    "overview": "Viết ca kiểm thử cho lớp ngoại tuyến từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E14-S01-T06",
+    "type": "testexecution",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-003"
+    ],
+    "overview": "Chạy ca kiểm thử của lớp ngoại tuyến trên tablet trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E14-S02",
+    "type": "documentation",
+    "parent": "E14",
+    "title": "[SCR-34] Viết spec SCR-34",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-34",
+      "N-20",
+      "N-21",
+      "ADR-003",
+      "C-15",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 同期待ちキュー・競合処理: hàng đợi của chính người ghi, huỷ bản ghi tạm có xác nhận, hàng xử lý biên nhận cho ROLE-SYS-ADMIN, 3 cách xử lý; chốt cột trỏ bản ghi mới khi re_entered.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-34 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E14-S03",
+    "type": "story",
+    "parent": "E14",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21)",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-34",
+      "N-21",
+      "ADR-003",
+      "C-14",
+      "D4-85",
+      "RC-30"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-17 (danh sách). Danh sách đọc trên máy; huỷ xoá khỏi IndexedDB và gửi audit sync_discard khi có mạng.",
+    "acceptance": [
+      "Huỷ phải xác nhận, ghi audit sync_discard với người ghi",
+      "Chỉ thấy hàng đợi của chính mình trên máy",
+      "Vai khác ROLE-INTAKE, ROLE-DELIVERY gọi N-21 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-INTAKE",
+      "ROLE-DELIVERY"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S02",
+      "E14-S01"
+    ]
+  },
+  {
+    "key": "E14-S03-T01",
+    "type": "uidesign",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-34"
+    ],
+    "overview": "Thiết kế phần hàng đợi của người ghi theo spec SCR-34, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-34; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S03-T02",
+    "type": "devtask",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : API N-21 và hàm ghi audit",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-21",
+      "C-14"
+    ],
+    "overview": "Route và hàm ghi audit sync_discard.",
+    "acceptance": [
+      "Test 42501, 403"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S03-T06"
+    ]
+  },
+  {
+    "key": "E14-S03-T03",
+    "type": "devtask",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : danh sách hàng đợi và huỷ",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-34"
+    ],
+    "overview": "Đọc IndexedDB, hộp xác nhận, gửi khi có mạng.",
+    "acceptance": [
+      "Mất mạng thì giữ audit chờ gửi"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S03-T06"
+    ]
+  },
+  {
+    "key": "E14-S03-T04",
+    "type": "testdesign",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-21"
+    ],
+    "overview": "Viết ca kiểm thử cho huỷ bản ghi tạm từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S03-T05",
+    "type": "testexecution",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-21"
+    ],
+    "overview": "Chạy ca kiểm thử của huỷ bản ghi tạm trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S04",
+    "type": "story",
+    "parent": "E14",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-34",
+      "N-20",
+      "ADR-003",
+      "C-15",
+      "DB 4.29",
+      "RC-30",
+      "W1",
+      "W10"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-24 (danh sách và quyết định). ROLE-SYS-ADMIN xem biên nhận from_queue rejected / conflict, ghi cách xử lý re_entered, discarded, paper_record bằng resolve_sync_receipt; cột trỏ bản ghi mới khi re_entered chưa có ở DB design.",
+    "acceptance": [
+      "Ghi cách xử lý bắt resolution_note, audit sync_resolve",
+      "Biên nhận đã xử lý không hiện ở hàng chờ và không vào cảnh báo khoá ngày, chốt kỳ",
+      "Không sửa được payload và kết quả đã lưu",
+      "API kiểm aal2",
+      "Vai khác ROLE-SYS-ADMIN gọi N-20 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S02"
+    ]
+  },
+  {
+    "key": "E14-S04-T01",
+    "type": "uidesign",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-34"
+    ],
+    "overview": "Thiết kế hàng xử lý biên nhận theo spec SCR-34, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-34; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S04-T02",
+    "type": "documentation",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "N-20",
+      "C-15",
+      "DB 4.29"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: hàm resolve_sync_receipt, cột trỏ bản ghi mới, mã lỗi (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S04-T03",
+    "type": "devtask",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : hàm resolve_sync_receipt và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-20",
+      "DB 4.29"
+    ],
+    "overview": "Hàm kiểm vai, ghi resolution, resolved_by, audit.",
+    "acceptance": [
+      "Test 42501 và xử lý hai lần"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S04-T02"
+    ]
+  },
+  {
+    "key": "E14-S04-T04",
+    "type": "devtask",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : API N-20",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-20"
+    ],
+    "overview": "GET danh sách, POST cách xử lý.",
+    "acceptance": [
+      "Danh sách đọc payload qua lớp đọc chung"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S04-T02"
+    ]
+  },
+  {
+    "key": "E14-S04-T05",
+    "type": "devtask",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : màn hàng xử lý",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-34"
+    ],
+    "overview": "Danh sách, chi tiết payload, form xử lý.",
+    "acceptance": [
+      "Câu báo đúng error-codes"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S04-T02"
+    ]
+  },
+  {
+    "key": "E14-S04-T06",
+    "type": "testdesign",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-20"
+    ],
+    "overview": "Viết ca kiểm thử cho xử lý biên nhận đồng bộ từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S04-T07",
+    "type": "testexecution",
+    "parent": "E14-S04",
+    "title": "[SCR-34] Xử lý biên nhận đồng bộ bị từ chối hoặc xung đột (N-20) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-20"
+    ],
+    "overview": "Chạy ca kiểm thử của xử lý biên nhận đồng bộ trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15",
+    "type": "epic",
+    "title": "Audit, lưu trữ, xoá theo hạn",
+    "overview": "Tìm kiếm audit theo vai trò, bảng chỉ thêm, chuyển kho lạnh, xoá vật lý có duyệt hai người, khôi phục từ kho lạnh, xử lý yêu cầu xoá dữ liệu cá nhân theo H-03."
+  },
+  {
+    "key": "E15-S01",
+    "type": "story",
+    "parent": "E15",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-32",
+      "A32",
+      "PKT-16",
+      "D4-108",
+      "RC-28",
+      "RC-33"
+    ],
+    "overview": "A32 lọc ở API: ROLE-SYS-ADMIN chỉ nhận loại personal_data_read, ROLE-SETTLEMENT không nhận loại này, ROLE-AUDIT-VIEW nhận mọi loại; ô loại thao tác đủ 56 loại; mở màn ghi log đọc.",
+    "acceptance": [
+      "ROLE-SYS-ADMIN gửi actionType khác personal_data_read vẫn chỉ nhận personal_data_read",
+      "ROLE-SETTLEMENT không nhận dòng personal_data_read dù lọc đúng loại",
+      "Màn chỉ xem, không có nút sửa xoá",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-RULE-ADMIN",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E03-S01",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E15-S01-T01",
+    "type": "documentation",
+    "parent": "E15-S01",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-32",
+      "PKT-16"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: lọc theo vai ở API, danh sách 56 loại và nhãn (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E15-S01-T02",
+    "type": "devtask",
+    "parent": "E15-S01",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32) : API A32 lọc theo vai và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A32",
+      "PKT-16"
+    ],
+    "overview": "Lọc loại thao tác ở máy chủ theo vai.",
+    "acceptance": [
+      "Test 3 vai được xem và 8 vai bị 403"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "depends_on": [
+      "E15-S01-T01"
+    ]
+  },
+  {
+    "key": "E15-S01-T03",
+    "type": "devtask",
+    "parent": "E15-S01",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32) : ô loại thao tác và nhãn mới",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-32"
+    ],
+    "overview": "56 loại, ẩn 個人情報の閲覧 với ROLE-SETTLEMENT.",
+    "acceptance": [
+      "Nhãn khớp wireframe"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "depends_on": [
+      "E15-S01-T01"
+    ]
+  },
+  {
+    "key": "E15-S01-T04",
+    "type": "testdesign",
+    "parent": "E15-S01",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-32",
+      "A32"
+    ],
+    "overview": "Viết ca kiểm thử cho tìm audit từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E15-S01-T05",
+    "type": "testexecution",
+    "parent": "E15-S01",
+    "title": "[SCR-32] Tìm audit theo vai trò, log đọc dữ liệu cá nhân (A32) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-32",
+      "A32"
+    ],
+    "overview": "Chạy ca kiểm thử của tìm audit trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E15-S02",
+    "type": "documentation",
+    "parent": "E15",
+    "title": "[SCR-33] Viết spec SCR-33",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18",
+      "ADR-008",
+      "C-13",
+      "H-03",
+      "Q4-10",
+      "RC-18",
+      "RC-29",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 保存期限・削除管理: đề nghị và duyệt xoá vật lý, khôi phục từ kho lạnh, mốc hết hạn kho lạnh (C-13), ghi nhận yêu cầu xoá dữ liệu cá nhân và trả lời từ chối trong hạn lưu (H-03).",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-33 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E15-S03",
+    "type": "investigation",
+    "parent": "E15",
+    "title": "[Q4-10] Làm rõ: yêu cầu xoá dữ liệu cá nhân khi phải lưu 7 năm",
+    "owner": "BrSE-A",
+    "spec_refs": [
+      "Q4-10",
+      "H-03",
+      "C-12",
+      "RC-33",
+      "G-01"
+    ],
+    "overview": "Hỏi khách cách xử lý 削除請求 với dữ liệu phải lưu 7 năm. Mặc định H-03: từ chối trong hạn lưu, ẩn danh hoá sau 7 năm, ghi yêu cầu vào audit, áp cả vùng legacy.",
+    "acceptance": [
+      "Câu Q4-10 dịch tiếng Nhật, gửi khách, có câu trả lời ghi vào bảng Q4",
+      "Issue chịu ảnh hưởng được sửa và ước lại nếu khách chọn khác mặc định",
+      "Ghi vào rủi ro trễ ở progress-report khi quá hạn"
+    ],
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "customer_wait": "Khách trả lời Q4-10 trước sprint có E15-S07; chọn ẩn danh hoá trong hạn thì thêm cơ chế và ước lại E15-S07",
+    "rough_hours": 4
+  },
+  {
+    "key": "E15-S04",
+    "type": "story",
+    "parent": "E15",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-33",
+      "N-18",
+      "ADR-008",
+      "DB 4.26",
+      "RC-18",
+      "RC-29",
+      "W10"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-21 (đề nghị và duyệt mở lại sổ, hai người khác nhau). ROLE-SYS-ADMIN đề nghị, ROLE-SETTLEMENT khác người đề nghị duyệt; chỉ đính kèm, không xoá giao dịch.",
+    "acceptance": [
+      "Người duyệt trùng người đề nghị bị hàm DB và CHECK từ chối",
+      "Đề nghị, duyệt có audit deletion_request, deletion_decide",
+      "Duyệt kiểm aal2",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN",
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S02",
+      "E02-S09"
+    ]
+  },
+  {
+    "key": "E15-S04-T01",
+    "type": "uidesign",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-33"
+    ],
+    "overview": "Thiết kế màn lưu trữ và xoá theo hạn theo spec SCR-33, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-33; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 6,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S04-T02",
+    "type": "devtask",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : hàm DB đề nghị, duyệt và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-18",
+      "DB 4.26"
+    ],
+    "overview": "Hai hàm mới, kiểm vai, kiểm khác người.",
+    "acceptance": [
+      "Test 42501 và tự duyệt"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S04-T07"
+    ]
+  },
+  {
+    "key": "E15-S04-T03",
+    "type": "devtask",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : API N-18 đề nghị, duyệt",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-18"
+    ],
+    "overview": "Hai route, kiểm aal2 khi duyệt.",
+    "acceptance": [
+      "403, 409 đúng mã"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S04-T07"
+    ]
+  },
+  {
+    "key": "E15-S04-T04",
+    "type": "devtask",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : màn SCR-33 phần xoá",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-33"
+    ],
+    "overview": "Form đề nghị, danh sách chờ duyệt.",
+    "acceptance": [
+      "Người đề nghị không thấy nút duyệt đề nghị của mình"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S04-T07"
+    ]
+  },
+  {
+    "key": "E15-S04-T05",
+    "type": "testdesign",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18"
+    ],
+    "overview": "Viết ca kiểm thử cho xoá theo hạn từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S04-T06",
+    "type": "testexecution",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18"
+    ],
+    "overview": "Chạy ca kiểm thử của xoá theo hạn trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S05",
+    "type": "story",
+    "parent": "E15",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-23",
+      "ADR-008",
+      "ADR-004",
+      "C-13",
+      "DB 4.25",
+      "DB 4.26",
+      "RC-29",
+      "G-08"
+    ],
+    "overview": "Chưa có TECH (G-05). File tới retain_until được chép sang kho lạnh ở Osaka, xoá bản ở Storage, ghi archived_at; đề nghị xoá đã duyệt thì xoá ở Storage, kho sao lưu và kho lạnh, ghi deleted_count. Mốc hết hạn kho lạnh (C-13) chốt ở spec SCR-33.",
+    "acceptance": [
+      "Chạy lại giữa chừng không mất file và không chép trùng",
+      "Xoá đã duyệt ghi executed_at, deleted_count, audit với lý do system_job",
+      "Lỗi kho ngoài sinh thông báo cho ROLE-SYS-ADMIN"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S01",
+      "E15-S02",
+      "E01-S05"
+    ]
+  },
+  {
+    "key": "E15-S05-T01",
+    "type": "documentation",
+    "parent": "E15-S05",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "ADR-008",
+      "C-13"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: thứ tự chép, xoá, cách đánh dấu dở dang, mốc hết hạn kho lạnh (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S05-T02",
+    "type": "devtask",
+    "parent": "E15-S05",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt : chuyển kho lạnh",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ADR-008",
+      "DB 4.25"
+    ],
+    "overview": "Chép sang kho lạnh, xoá ở Storage, ghi archived_at.",
+    "acceptance": [
+      "Test với kho thử"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S05-T01"
+    ]
+  },
+  {
+    "key": "E15-S05-T03",
+    "type": "devtask",
+    "parent": "E15-S05",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt : xoá đã duyệt",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ADR-008",
+      "DB 4.26"
+    ],
+    "overview": "Xoá file theo đề nghị đã duyệt ở cả ba nơi.",
+    "acceptance": [
+      "Không xoá file chưa hết hạn"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S05-T01"
+    ]
+  },
+  {
+    "key": "E15-S05-T04",
+    "type": "testdesign",
+    "parent": "E15-S05",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-008"
+    ],
+    "overview": "Viết ca kiểm thử cho chuyển kho lạnh và xoá từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S05-T05",
+    "type": "testexecution",
+    "parent": "E15-S05",
+    "title": "[N-23] Việc nền chuyển kho lạnh và xoá đã duyệt : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "ADR-008"
+    ],
+    "overview": "Chạy ca kiểm thử của chuyển kho lạnh và xoá trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 5,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S06",
+    "type": "story",
+    "parent": "E15",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18",
+      "ADR-008",
+      "RC-29"
+    ],
+    "overview": "Màn chưa có spec, ước theo SCR-21. ROLE-SYS-ADMIN mở yêu cầu khôi phục, việc nền đưa file về Storage, cam kết 2 ngày làm việc theo runbook.",
+    "acceptance": [
+      "Yêu cầu khôi phục có audit",
+      "File khôi phục tải về được qua A47 theo quyền của đối tượng chủ",
+      "Vai khác ROLE-SYS-ADMIN gọi API khôi phục nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S02",
+      "E15-S05"
+    ]
+  },
+  {
+    "key": "E15-S06-T01",
+    "type": "devtask",
+    "parent": "E15-S06",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18) : API khôi phục và việc nền",
+    "owner": "BE-A",
+    "spec_refs": [
+      "N-18",
+      "ADR-008"
+    ],
+    "overview": "Route POST restore, việc nền lấy file về.",
+    "acceptance": [
+      "Test 403 và file đã có ở Storage"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S06-T05"
+    ]
+  },
+  {
+    "key": "E15-S06-T02",
+    "type": "devtask",
+    "parent": "E15-S06",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18) : khối khôi phục trên SCR-33",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-33"
+    ],
+    "overview": "Nút yêu cầu và trạng thái.",
+    "acceptance": [
+      "Trạng thái chờ hiện rõ"
+    ],
+    "rough_hours": 6,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S06-T05"
+    ]
+  },
+  {
+    "key": "E15-S06-T03",
+    "type": "testdesign",
+    "parent": "E15-S06",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-18"
+    ],
+    "overview": "Viết ca kiểm thử cho khôi phục kho lạnh từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S06-T04",
+    "type": "testexecution",
+    "parent": "E15-S06",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "N-18"
+    ],
+    "overview": "Chạy ca kiểm thử của khôi phục kho lạnh trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S07",
+    "type": "story",
+    "parent": "E15",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu",
+    "owner": "BE-A",
+    "spec_refs": [
+      "H-03",
+      "Q4-10",
+      "C-12",
+      "C-19",
+      "ADR-008",
+      "RC-33"
+    ],
+    "overview": "Theo H-03: yêu cầu xoá trong hạn lưu bị từ chối và ghi vào audit; sau 7 năm ẩn danh hoá cột cá nhân, kể cả vùng legacy qua đường có duyệt (C-19). Chỗ ghi và loại audit chốt ở spec SCR-33.",
+    "acceptance": [
+      "Yêu cầu ghi vào audit với người ghi, người tham gia, kết quả từ chối",
+      "Việc ẩn danh hoá chỉ chạm dòng quá 7 năm, có duyệt",
+      "Dòng đã vào báo cáo chính thức không bị xoá cứng",
+      "Vai khác ROLE-SYS-ADMIN không ghi được yêu cầu",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SYS-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SETTLEMENT",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S02",
+      "E15-S03"
+    ]
+  },
+  {
+    "key": "E15-S07-T01",
+    "type": "documentation",
+    "parent": "E15-S07",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "H-03",
+      "C-19"
+    ],
+    "overview": "Viết thiết kế ngắn trong issue trước khi code: cột cá nhân bị ẩn danh, cách duyệt, đường riêng qua trigger chặn sửa (G-03, G-05).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, mã lỗi, audit, bảng và cột đọc ghi",
+      "Chỗ thiếu ở DB design hoặc error-codes ghi rõ và báo nhóm E02 nếu cần cột mới",
+      "Người làm story đọc và xác nhận đủ để code"
+    ],
+    "rough_hours": 6,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S07-T02",
+    "type": "devtask",
+    "parent": "E15-S07",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu : ghi nhận yêu cầu",
+    "owner": "BE-A",
+    "spec_refs": [
+      "H-03"
+    ],
+    "overview": "Hàm và route ghi yêu cầu vào audit.",
+    "acceptance": [
+      "Test 42501"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S07-T01"
+    ]
+  },
+  {
+    "key": "E15-S07-T03",
+    "type": "devtask",
+    "parent": "E15-S07",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu : hàm ẩn danh hoá và test",
+    "owner": "BE-A",
+    "spec_refs": [
+      "H-03",
+      "C-19"
+    ],
+    "overview": "Hàm ẩn danh hoá theo hạn, có duyệt.",
+    "acceptance": [
+      "Test không chạm dòng trong hạn"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S07-T01"
+    ]
+  },
+  {
+    "key": "E15-S07-T04",
+    "type": "testdesign",
+    "parent": "E15-S07",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "H-03"
+    ],
+    "overview": "Viết ca kiểm thử cho yêu cầu xoá dữ liệu cá nhân từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S07-T05",
+    "type": "testexecution",
+    "parent": "E15-S07",
+    "title": "[H-03] Ghi nhận yêu cầu xoá dữ liệu cá nhân và ẩn danh hoá sau hạn lưu : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "H-03"
+    ],
+    "overview": "Chạy ca kiểm thử của yêu cầu xoá dữ liệu cá nhân trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16",
+    "type": "epic",
+    "title": "Tranh chấp",
+    "overview": "Quản lý tranh chấp 紛争 ở SCR-22: mở, cập nhật, đóng, file bằng chứng, thông báo khi có tranh chấp mở; luôn gắn một giao dịch theo mặc định Q4-02."
+  },
+  {
+    "key": "E16-S01",
+    "type": "documentation",
+    "parent": "E16",
+    "title": "[SCR-22] Viết spec SCR-22",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10",
+      "DB 4.30",
+      "D4-77",
+      "RC-39",
+      "Q4-02",
+      "G-02",
+      "H-01"
+    ],
+    "overview": "Viết spec 紛争管理: danh sách tranh chấp mở, form mở, cập nhật, đóng, lịch sử từ audit, đính kèm, thông báo. Theo mặc định Q4-02.",
+    "acceptance": [
+      "Spec theo mẫu QC-01 như 11 màn đã có: SPEC, QA, wireframe",
+      "Ghi đủ vai được làm, vai bị chặn theo ma trận quyền, mã lỗi, audit",
+      "Qua soát (skill soát spec) và BA duyệt",
+      "SWP các issue xây dựng của SCR-22 được chấm lại, bỏ nhãn độ tin thấp khi khớp"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E16-S02",
+    "type": "investigation",
+    "parent": "E16",
+    "title": "[Q4-02] Làm rõ: luồng và hạn xử lý tranh chấp",
+    "owner": "BrSE-A",
+    "spec_refs": [
+      "Q4-02",
+      "D4-77",
+      "RC-39",
+      "G-01"
+    ],
+    "overview": "Hỏi khách luồng xử lý tranh chấp, 対応予定日 tính từ đâu, có luôn gắn một giao dịch. Mặc định: gắn một giao dịch, ROLE-SETTLEMENT mở và xử lý, due_date do người mở đặt.",
+    "acceptance": [
+      "Câu Q4-02 dịch tiếng Nhật, gửi khách, có câu trả lời ghi vào bảng Q4",
+      "Issue chịu ảnh hưởng được sửa và ước lại nếu khách chọn khác mặc định",
+      "Ghi vào rủi ro trễ ở progress-report khi quá hạn"
+    ],
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "customer_wait": "Khách trả lời Q4-02 trước sprint có E16-S03; khác mặc định thì sửa spec SCR-22 và ước lại E16-S03, E16-S04",
+    "rough_hours": 4
+  },
+  {
+    "key": "E16-S03",
+    "type": "story",
+    "parent": "E16",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-22",
+      "N-10",
+      "DB 4.30",
+      "D4-77",
+      "RC-39",
+      "RC-36",
+      "W10"
+    ],
+    "overview": "Màn chưa có spec, ước theo màn tương tự SCR-23 (lập phiếu) và SCR-24 (danh sách). open_dispute ghi disputes với mã DSP, gắn giao dịch, có thể gắn ngoại lệ giao nhận; sinh thông báo có tranh chấp mở.",
+    "acceptance": [
+      "Mã DSP-YYYYMMDD-nnnn không trùng",
+      "Mở có audit dispute_open, business_day theo JST",
+      "Không đổi số liệu giao dịch",
+      "Vai khác ROLE-SETTLEMENT gọi N-10 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S01",
+      "E13-S02",
+      "E02-S09"
+    ]
+  },
+  {
+    "key": "E16-S03-T01",
+    "type": "uidesign",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-22"
+    ],
+    "overview": "Thiết kế màn quản lý tranh chấp theo spec SCR-22, quy ước nhập và nhãn tiếng Nhật đã duyệt.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-22; nút và vùng bấm cao tối thiểu 48 px",
+      "Trạng thái đang tải, rỗng, lỗi có đủ; câu báo lấy từ error-codes",
+      "BA hoặc người dùng đại diện duyệt"
+    ],
+    "rough_hours": 8,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S03-T02",
+    "type": "devtask",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : hàm open_dispute và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-10",
+      "DB 4.30"
+    ],
+    "overview": "Kiểm vai, giao dịch, sinh mã, audit, thông báo.",
+    "acceptance": [
+      "Test 42501 và giao dịch không có"
+    ],
+    "rough_hours": 8,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S03-T07"
+    ]
+  },
+  {
+    "key": "E16-S03-T03",
+    "type": "devtask",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : API GET, POST disputes",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-10"
+    ],
+    "overview": "Danh sách lọc trạng thái, form mở.",
+    "acceptance": [
+      "Danh sách đọc qua lớp đọc chung"
+    ],
+    "rough_hours": 6,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S03-T07"
+    ]
+  },
+  {
+    "key": "E16-S03-T04",
+    "type": "devtask",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : danh sách và form mở",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-22"
+    ],
+    "overview": "Danh sách mở trước, form mở.",
+    "acceptance": [
+      "Câu báo đúng error-codes"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S03-T07"
+    ]
+  },
+  {
+    "key": "E16-S03-T05",
+    "type": "testdesign",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10"
+    ],
+    "overview": "Viết ca kiểm thử cho mở tranh chấp từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S03-T06",
+    "type": "testexecution",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10"
+    ],
+    "overview": "Chạy ca kiểm thử của mở tranh chấp trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S04",
+    "type": "story",
+    "parent": "E16",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR-22",
+      "N-10",
+      "DB 4.30",
+      "A45",
+      "A46",
+      "A47",
+      "RC-39",
+      "RC-29"
+    ],
+    "overview": "Màn chưa có spec, ước theo SCR-24. update_dispute, resolve_dispute; đóng bắt kết quả cuối; lịch sử đọc từ audit; file bằng chứng dùng A45..A47 với entity_type dispute.",
+    "acceptance": [
+      "Đóng thiếu outcome bị hàm từ chối; tranh chấp đã đóng không sửa được",
+      "Cập nhật, đóng có audit dispute_update, dispute_resolve",
+      "Tải lên file kiểm quyền ghi tranh chấp",
+      "Vai khác ROLE-SETTLEMENT gọi N-10 nhận 403",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-PARTY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-TRADE",
+      "ROLE-DELIVERY",
+      "ROLE-SYS-ADMIN",
+      "ROLE-RULE-ADMIN",
+      "ROLE-AUDIT-VIEW",
+      "ROLE-REPORT-VIEW",
+      "ROLE-PARTICIPANT-VIEW"
+    ],
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S03",
+      "E08-S03"
+    ]
+  },
+  {
+    "key": "E16-S04-T01",
+    "type": "devtask",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : hàm update_dispute, resolve_dispute và test",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-10",
+      "DB 4.30"
+    ],
+    "overview": "Hai hàm, kiểm trạng thái, audit.",
+    "acceptance": [
+      "Test 42501, đóng hai lần"
+    ],
+    "rough_hours": 10,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S04-T06"
+    ]
+  },
+  {
+    "key": "E16-S04-T02",
+    "type": "devtask",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : API PATCH và resolve",
+    "owner": "BE-B",
+    "spec_refs": [
+      "N-10"
+    ],
+    "overview": "Hai route.",
+    "acceptance": [
+      "400, 403, 409 đúng mã"
+    ],
+    "rough_hours": 5,
+    "team": "backend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S04-T06"
+    ]
+  },
+  {
+    "key": "E16-S04-T03",
+    "type": "devtask",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : chi tiết, lịch sử, đính kèm",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-22",
+      "A45"
+    ],
+    "overview": "Form cập nhật, đóng, lịch sử, tải file.",
+    "acceptance": [
+      "Ảnh JPEG, PDF tối đa 10 MB"
+    ],
+    "rough_hours": 10,
+    "team": "frontend",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S04-T06"
+    ]
+  },
+  {
+    "key": "E16-S04-T04",
+    "type": "testdesign",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10"
+    ],
+    "overview": "Viết ca kiểm thử cho cập nhật, đóng tranh chấp từ spec, TECH, ma trận quyền.",
+    "acceptance": [
+      "Ca phủ mọi nhánh và mã lỗi ghi ở nguồn",
+      "Có ca vai bị chặn gọi thẳng API và hàm DB, không chỉ thử trên giao diện",
+      "Có ca kiểm dòng audit (người làm, trước / sau, lý do) cho thao tác ghi",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 3,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S04-T05",
+    "type": "testexecution",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10"
+    ],
+    "overview": "Chạy ca kiểm thử của cập nhật, đóng tranh chấp trên staging, ghi kết quả vào issue.",
+    "acceptance": [
+      "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
+      "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
+      "Câu báo tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S09",
+    "type": "devtask",
+    "parent": "E04",
+    "team": "backend",
+    "title": "[SCR-05] Số ngày cảnh báo sắp hết hạn đọc từ version 業務規程, bỏ hằng số trong mã",
+    "owner": "BE-A",
+    "spec_refs": [
+      "ADR-012",
+      "RC-06",
+      "SCR-05",
+      "W2"
+    ],
+    "overview": "Phần cảnh báo hết hiệu lực tư cách tham gia còn đọc hằng số 30 ngày của prototype; chuyển sang tham số của version quy tắc.",
+    "acceptance": [
+      "Không còn chỗ nào đọc hằng số số ngày cảnh báo",
+      "Cảnh báo lúc bắt đầu giao dịch dùng số ngày của version áp cho ngày đó",
+      "Test chạy xanh"
+    ],
+    "depends_on": [
+      "E02-S02",
+      "E10-S06"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E03-S04-T01",
+    "type": "documentation",
+    "parent": "E03-S04",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "Thiết kế ngắn cho cờ máy hiện trường (S-07): cách gắn mã thiết bị vào chính máy, màn đặt khối cấp và thu hồi, API N-26, loại audit.",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code",
+      "Chốt cách cấp mã: ROLE-SYS-ADMIN đăng nhập ngay trên máy hiện trường để đăng ký máy đó (cookie được đặt trên chính máy); thu hồi làm được từ máy khác",
+      "Chốt màn đặt khối đăng ký máy và danh sách thiết bị để thu hồi"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S04-T02",
+    "type": "devtask",
+    "parent": "E03-S04",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2) : bảng thiết bị, cấp và kiểm mã thiết bị ở máy chủ",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "Bảng thiết bị dùng chung, API cấp và thu hồi mã thiết bị, máy chủ kiểm mã thiết bị ở mỗi request để áp hết phiên 30 phút.",
+    "acceptance": [
+      "Vai trò khác ROLE-SYS-ADMIN gọi API cấp hoặc thu hồi mã nhận 403",
+      "Mã thiết bị nằm trong cookie chỉ máy chủ đọc; xoá cookie ở trình duyệt thì máy về hạn 8 giờ của máy văn phòng, không kéo dài phiên",
+      "Mã bị thu hồi thì request tiếp theo không còn áp cờ hiện trường",
+      "Cấp, thu hồi mã ghi audit",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 5,
+    "team": "backend",
+    "depends_on": [
+      "E03-S04-T01"
+    ]
+  },
+  {
+    "key": "E03-S04-T03",
+    "type": "devtask",
+    "parent": "E03-S04",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2) : giao diện bộ đếm, nút 交代, khối đăng ký máy và danh sách thiết bị theo thiết kế T01",
+    "owner": "FE-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "Bộ đếm 30 phút và nút 交代 trên máy có cờ; khối đăng ký máy (làm trên chính máy) và danh sách thiết bị để thu hồi, đặt ở màn chốt tại T01.",
+    "acceptance": [
+      "Bộ đếm và nút 交代 chỉ hiện khi máy chủ báo máy có cờ",
+      "Khối cấp mã chỉ hiện với ROLE-SYS-ADMIN",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 5,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S04-T01"
+    ]
+  },
+  {
+    "key": "E03-S04-T04",
+    "type": "testdesign",
+    "parent": "E03-S04",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "Viết ca kiểm thử từ thiết kế của story.",
+    "acceptance": [
+      "Ca kiểm thử phủ các nhánh, mã lỗi ở thiết kế",
+      "Có ca: 9 vai nội bộ khác ROLE-SYS-ADMIN và ROLE-PARTICIPANT-VIEW gọi thẳng API N-26 nhận 403",
+      "Có ca: xoá cookie trên máy thì phiên không kéo dài quá 8 giờ",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S04-T05",
+    "type": "testexecution",
+    "parent": "E03-S04",
+    "title": "[SCR-02] Hết phiên 30 phút và nút 交代 trên máy hiện trường (A2) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A2",
+      "ADR-006",
+      "C-17",
+      "D4-85",
+      "N-26",
+      "PKT-05",
+      "S-07",
+      "SCR-02"
+    ],
+    "overview": "QA kiểm story trên staging.",
+    "acceptance": [
+      "Mọi ca kiểm thử đạt trên staging",
+      "Lỗi tìm ra ghi thành issue QA bug"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S05-T01",
+    "type": "documentation",
+    "parent": "E03-S05",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S05-T02",
+    "type": "devtask",
+    "parent": "E03-S05",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3) : API và lớp đọc máy chủ",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "Lớp API và lớp đọc máy chủ của story.",
+    "acceptance": [
+      "Test của lớp chạy xanh",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 3,
+    "team": "backend",
+    "depends_on": [
+      "E03-S05-T01"
+    ]
+  },
+  {
+    "key": "E03-S05-T03",
+    "type": "devtask",
+    "parent": "E03-S05",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3) : giao diện",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "Lớp giao diện của story.",
+    "acceptance": [
+      "Test của lớp chạy xanh",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 4,
+    "team": "frontend",
+    "depends_on": [
+      "E03-S05-T01"
+    ]
+  },
+  {
+    "key": "E03-S05-T04",
+    "type": "testdesign",
+    "parent": "E03-S05",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "Viết ca kiểm thử từ thiết kế của story.",
+    "acceptance": [
+      "Ca kiểm thử phủ các nhánh, mã lỗi ở thiết kế và vai trò bị chặn của story",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S05-T05",
+    "type": "testexecution",
+    "parent": "E03-S05",
+    "title": "[SCR-02] Trang chủ: ô số theo 業務規程 và lối vào cho vai trò mới (A3) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-02",
+      "A3",
+      "PKT-02",
+      "PKT-12",
+      "D4-27"
+    ],
+    "overview": "QA kiểm story trên staging.",
+    "acceptance": [
+      "Mọi ca kiểm thử đạt trên staging",
+      "Lỗi tìm ra ghi thành issue QA bug"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S01-T01",
+    "type": "documentation",
+    "parent": "E04-S01",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S01-T02",
+    "type": "devtask",
+    "parent": "E04-S01",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6) : API và lớp đọc máy chủ",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "Lớp API và lớp đọc máy chủ của story.",
+    "acceptance": [
+      "Test của lớp chạy xanh",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 3,
+    "team": "backend",
+    "depends_on": [
+      "E04-S01-T01"
+    ]
+  },
+  {
+    "key": "E04-S01-T03",
+    "type": "devtask",
+    "parent": "E04-S01",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6) : giao diện",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "Lớp giao diện của story.",
+    "acceptance": [
+      "Test của lớp chạy xanh",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 4,
+    "team": "frontend",
+    "depends_on": [
+      "E04-S01-T01"
+    ]
+  },
+  {
+    "key": "E04-S01-T04",
+    "type": "testdesign",
+    "parent": "E04-S01",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6) : ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "Viết ca kiểm thử từ thiết kế của story.",
+    "acceptance": [
+      "Ca kiểm thử phủ các nhánh, mã lỗi ở thiết kế và vai trò bị chặn của story",
+      "TL-A hoặc BA soát"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E04-S01-T05",
+    "type": "testexecution",
+    "parent": "E04-S01",
+    "title": "[SCR-03] Danh sách người tham gia: cảnh báo theo 業務規程, trạng thái 申請 (A6) : QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-03",
+      "A6",
+      "D4-27",
+      "RC-01",
+      "RC-04",
+      "W2"
+    ],
+    "overview": "QA kiểm story trên staging.",
+    "acceptance": [
+      "Mọi ca kiểm thử đạt trên staging",
+      "Lỗi tìm ra ghi thành issue QA bug"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S12-T01",
+    "type": "devtask",
+    "parent": "E03-S12",
+    "title": "[error-codes] Sửa câu báo và khoá chữ của prototype trong src/lib/i18n/text : sửa chữ trong mã",
+    "owner": "FE-A",
+    "spec_refs": [
+      "D4-134",
+      "C-23",
+      "SCR-01",
+      "SCR-02"
+    ],
+    "overview": "Lớp sửa chữ trong mã của story.",
+    "acceptance": [
+      "Test của lớp chạy xanh",
+      "TL-A review và gộp code"
+    ],
+    "rough_hours": 5,
+    "team": "frontend"
+  },
+  {
+    "key": "E03-S12-T02",
+    "type": "testexecution",
+    "parent": "E03-S12",
+    "title": "[error-codes] Sửa câu báo và khoá chữ của prototype trong src/lib/i18n/text : QA kiểm chữ trên màn",
+    "owner": "QA-A",
+    "spec_refs": [
+      "D4-134",
+      "C-23",
+      "SCR-01",
+      "SCR-02"
+    ],
+    "overview": "QA đối chiếu chữ trên màn với bảng đã duyệt.",
+    "acceptance": [
+      "Mọi ca kiểm thử đạt trên staging",
+      "Lỗi tìm ra ghi thành issue QA bug"
+    ],
+    "rough_hours": 2
+  },
+  {
+    "key": "E03-S06-T04",
+    "type": "documentation",
+    "parent": "E03-S06",
+    "title": "[SCR-07] Danh sách tài khoản: cột MFA, khoá tạm, người tham gia (A4) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-07",
+      "A4",
+      "PKT-04",
+      "PKT-05",
+      "PKT-10",
+      "RC-33"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E03-S08-T07",
+    "type": "documentation",
+    "parent": "E03-S08",
+    "title": "[SCR-08] Đổi vai trò, đình chỉ tài khoản theo 11 vai trò (A5) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-08",
+      "A5",
+      "PKT-01",
+      "QT-09",
+      "C-23",
+      "RC-07",
+      "RC-28"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E04-S06-T07",
+    "type": "documentation",
+    "parent": "E04-S06",
+    "title": "[SCR-06] Người tham gia bên ngoài xem thông tin tham gia của mình (N-03) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-03",
+      "PKT-11",
+      "ADR-014",
+      "C-12",
+      "Q4-30",
+      "RC-33"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S07-T04",
+    "type": "documentation",
+    "parent": "E04-S07",
+    "title": "[SCR-06] Nhân viên tra hộ thông tin tham gia của 買出人 (N-04) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-04",
+      "RC-33"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E04-S08-T06",
+    "type": "documentation",
+    "parent": "E04-S08",
+    "title": "[SCR-06] Khối thông báo của người tham gia bên ngoài (N-25) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-06",
+      "N-25",
+      "Q4-31",
+      "DB 4.27",
+      "RC-36",
+      "W6"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S06-T06",
+    "type": "documentation",
+    "parent": "E12-S06",
+    "title": "[SCR-28] Xem và xuất CSV báo cáo cố định (N-14) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-28",
+      "N-14",
+      "RC-37",
+      "D4-107"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S07-T07",
+    "type": "documentation",
+    "parent": "E12-S07",
+    "title": "[SCR-29] In 受入票, 取引票, 照合表 qua hộp in của trình duyệt : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-29",
+      "ADR-007",
+      "RC-32",
+      "D4-108"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E12-S10-T07",
+    "type": "documentation",
+    "parent": "E12-S10",
+    "title": "[SCR-30] Xem lần xuất và tải 2 file kế toán (N-15) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-30",
+      "N-15",
+      "ADR-005",
+      "RC-35",
+      "D4-79"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E13-S04-T06",
+    "type": "documentation",
+    "parent": "E13-S04",
+    "title": "[SCR-02] Khối お知らせ trên trang chủ (N-16) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-02",
+      "N-16",
+      "DB 4.27",
+      "RC-36",
+      "PKT-02"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E13-S06-T08",
+    "type": "documentation",
+    "parent": "E13-S06",
+    "title": "[SCR-31] Cấu hình thông báo, log gửi, hàng cảnh báo vận hành (N-17) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-31",
+      "N-17",
+      "RC-36",
+      "DB 4.27",
+      "W10"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S03-T06",
+    "type": "documentation",
+    "parent": "E14-S03",
+    "title": "[SCR-34] Xem hàng đợi của mình, huỷ bản ghi tạm có xác nhận (N-21) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-34",
+      "N-21",
+      "ADR-003",
+      "C-14",
+      "D4-85",
+      "RC-30"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S04-T07",
+    "type": "documentation",
+    "parent": "E15-S04",
+    "title": "[SCR-33] Đề nghị và duyệt xoá vật lý file hết hạn (N-18) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18",
+      "ADR-008",
+      "DB 4.26",
+      "RC-18",
+      "RC-29",
+      "W10"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E15-S06-T05",
+    "type": "documentation",
+    "parent": "E15-S06",
+    "title": "[SCR-33] Khôi phục file từ kho lạnh theo yêu cầu (N-18) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-33",
+      "N-18",
+      "ADR-008",
+      "RC-29"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S03-T07",
+    "type": "documentation",
+    "parent": "E16-S03",
+    "title": "[SCR-22] Mở tranh chấp và danh sách tranh chấp đang mở (N-10) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10",
+      "DB 4.30",
+      "D4-77",
+      "RC-39",
+      "RC-36",
+      "W10"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E16-S04-T06",
+    "type": "documentation",
+    "parent": "E16-S04",
+    "title": "[SCR-22] Cập nhật, đóng tranh chấp và file bằng chứng (N-10) : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-22",
+      "N-10",
+      "DB 4.30",
+      "A45",
+      "A46",
+      "A47",
+      "RC-39",
+      "RC-29"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi thứ tự kiểm, khoá, mã lỗi, audit, vai trò được làm và bị chặn",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E14-S01-T07",
+    "type": "devtask",
+    "parent": "E14-S01",
+    "title": "[ADR-003] Lớp ngoại tuyến: service worker và hàng đợi IndexedDB : hàng đợi trên máy: gửi lại và xử lý kết quả created, rejected, conflict",
+    "owner": "FE-B",
+    "spec_refs": [
+      "ADR-003",
+      "N-20",
+      "SCR-34"
+    ],
+    "overview": "Gửi lại bản ghi tạm khi có mạng, xử lý ba loại kết quả theo ADR-003.",
+    "acceptance": [
+      "Gửi lại theo thứ tự ghi, không gửi trùng",
+      "created thì xoá khỏi hàng đợi; rejected, conflict giữ lại kèm lý do",
+      "Unit test cho ba loại kết quả chạy xanh",
+      "Phiên khác người ghi thì không gửi"
+    ],
+    "rough_hours": 8,
+    "team": "frontend",
+    "depends_on": [
+      "E14-S01-T03",
+      "E14-S01-T01"
+    ]
+  }
+]

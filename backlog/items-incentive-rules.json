@@ -1,0 +1,2189 @@
+[
+  {
+    "key": "E10",
+    "type": "epic",
+    "title": "Version 業務規程 / 料率",
+    "overview": "Lập, nộp, duyệt, trả về, 却下 và rollback version 業務規程 / 料率 có ngày hiệu lực, tối đa 4 lần mỗi năm, người lập khác người duyệt (SCR-26, SCR-27, A41..A44). Thay hằng số cố định của prototype bằng version để mọi con số truy được version đã áp."
+  },
+  {
+    "key": "E10-S01",
+    "type": "documentation",
+    "parent": "E10",
+    "title": "[SCR-26] Viết spec màn danh sách version 業務規程 / 料率",
+    "owner": "BA-A",
+    "spec_refs": [
+      "SCR-26",
+      "G-02",
+      "H-01",
+      "A41",
+      "TM-19",
+      "RC-11"
+    ],
+    "overview": "SCR-26 chưa có spec ở LAB-4. Viết spec theo mẫu QC-01 như SCR-27 trước khi làm màn, rồi chấm lại SWP của issue xây dựng.",
+    "acceptance": [
+      "Có SCR_26_SPEC.md, QA và wireframe theo mẫu QC-01 như 11 màn đã có spec",
+      "Spec ghi rõ bộ lọc (loại, trạng thái), phân trang, cột hiển thị và đường sang SCR-27, dùng A41 chế độ danh sách, không thêm API mới",
+      "Ma trận quyền khớp TM-19: ROLE-RULE-ADMIN, ROLE-SETTLEMENT xem; vai khác bị chặn ở API",
+      "Qua soát và BA duyệt; SWP của E10-S02 được chấm lại"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S02",
+    "type": "story",
+    "parent": "E10",
+    "title": "[SCR-26] Màn danh sách version 業務規程 / 料率",
+    "owner": "FE-A",
+    "labels_extra": [
+      "độ tin thấp"
+    ],
+    "spec_refs": [
+      "SCR-26",
+      "A41",
+      "TM-19",
+      "G-02",
+      "RC-11",
+      "PKT-12"
+    ],
+    "overview": "Màn chỉ đọc liệt kê các version theo loại và trạng thái, mở SCR-27 để xem hoặc lập bản mới. Ước theo màn danh sách tương tự vì chưa có spec.",
+    "acceptance": [
+      "Liệt kê version theo loại, trạng thái, ngày hiệu lực, người lập, người duyệt (RC-11) qua A41 chế độ danh sách",
+      "Lọc theo loại và trạng thái, phân trang 50 dòng",
+      "ROLE-RULE-ADMIN thấy nút lập bản nháp mới; ROLE-SETTLEMENT chỉ xem",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN), không chỉ ẩn trang và menu"
+    ],
+    "roles_allowed": [
+      "ROLE-RULE-ADMIN",
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E10-S01",
+      "E10-S03"
+    ]
+  },
+  {
+    "key": "E10-S02-T01",
+    "type": "uidesign",
+    "parent": "E10-S02",
+    "title": "[SCR-26] Màn danh sách version: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-26",
+      "G-02"
+    ],
+    "overview": "Thiết kế giao diện màn danh sách theo spec mới.",
+    "acceptance": [
+      "Bản thiết kế khớp spec SCR-26 và quy ước nhập (nút cao tối thiểu 48 px)",
+      "BA duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S02-T02",
+    "type": "devtask",
+    "parent": "E10-S02",
+    "title": "[SCR-26] Màn danh sách version: giao diện",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-26",
+      "A41"
+    ],
+    "overview": "Trang `/rule-versions` đọc A41 chế độ danh sách, bộ lọc, phân trang, chuyển sang SCR-27.",
+    "acceptance": [
+      "Trang, menu chỉ hiện cho hai vai được xem",
+      "Nhãn tiếng Nhật đúng bảng đã duyệt",
+      "Rỗng và lỗi đọc hiện câu theo spec"
+    ],
+    "rough_hours": 10,
+    "depends_on": [
+      "E10-S02-T05"
+    ]
+  },
+  {
+    "key": "E10-S02-T03",
+    "type": "testdesign",
+    "parent": "E10-S02",
+    "title": "[SCR-26] Màn danh sách version: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-26",
+      "TM-19"
+    ],
+    "overview": "Viết ca kiểm thử từ spec SCR-26.",
+    "acceptance": [
+      "Phủ lọc, phân trang, rỗng, và 9 vai bị chặn gọi thẳng A41"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E10-S02-T04",
+    "type": "testexecution",
+    "parent": "E10-S02",
+    "title": "[SCR-26] Màn danh sách version: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-26"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt trên staging, lỗi có issue"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E10-S03",
+    "type": "story",
+    "parent": "E10",
+    "title": "[SCR-27] Đọc một version và ngữ cảnh lập bản nháp (A41)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A41",
+      "N-13",
+      "SCR-27",
+      "TM-19",
+      "PKT-12",
+      "RC-11",
+      "C-24"
+    ],
+    "overview": "Route đọc dùng chung cho SCR-26, SCR-27: một version, ngữ cảnh lập bản nháp (version áp tại 発効日, số lần đổi trong năm, version đã duyệt chờ hiệu lực), danh sách có phân trang.",
+    "acceptance": [
+      "Ba chế độ đúng A41: `id`, `view=context` (bắt `ruleKind`), danh sách lọc `ruleKind`, `status`, phân trang 50 dòng có `hasMore`",
+      "Ngữ cảnh trả tham số version áp tại 発効日, số lần đổi trong năm theo `rule_change_count` (bỏ version rollback và version 1), các version `approved` chờ hiệu lực",
+      "Lịch sử E-1 chỉ gồm dòng audit `success`; cột quyết định đọc từ `rule_versions` (C-24)",
+      "Tham số sai trả 400 `INVALID_INPUT`, không có trả 404",
+      "Thêm A41 vào `ACTIONS` cho ROLE-RULE-ADMIN, ROLE-SETTLEMENT (PKT-12)",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN), không chỉ ẩn trang và menu"
+    ],
+    "roles_allowed": [
+      "ROLE-RULE-ADMIN",
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E02-S08"
+    ]
+  },
+  {
+    "key": "E10-S03-T01",
+    "type": "devtask",
+    "parent": "E10-S03",
+    "title": "[SCR-27] A41 chế độ một version và ngữ cảnh lập: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A41",
+      "SCR-27",
+      "W8",
+      "DB 4.15"
+    ],
+    "overview": "Route GET `/api/rule-versions` chế độ `id` và `view=context`.",
+    "acceptance": [
+      "Trả đủ trường cho A-2..A-10, B-2, B-3, D-5, E-1 của SCR-27",
+      "Test route phủ mọi mã ở A41 mục 4",
+      "Thêm A41 vào `ACTIONS`"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S03-T02",
+    "type": "devtask",
+    "parent": "E10-S03",
+    "title": "[SCR-27] A41 chế độ danh sách: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A41",
+      "SCR-26"
+    ],
+    "overview": "Danh sách version có lọc và phân trang cho SCR-26.",
+    "acceptance": [
+      "Sắp `created_at desc, id desc`, đọc 51 dòng để biết `hasMore`",
+      "Test lọc, trang ngoài khoảng"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E10-S03-T03",
+    "type": "testexecution",
+    "parent": "E10-S03",
+    "title": "[SCR-27] A41: QA kiểm API đọc",
+    "owner": "QA-A",
+    "spec_refs": [
+      "A41"
+    ],
+    "overview": "Kiểm A41 theo ca của E10-S04, E10-S06 và ca vai bị chặn.",
+    "acceptance": [
+      "9 vai bị chặn nhận 403",
+      "Ba chế độ đúng dữ liệu mẫu trên staging"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E10-S04",
+    "type": "story",
+    "parent": "E10",
+    "title": "[SCR-27] Lưu bản nháp version và lập bản rollback (A42)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_SAVE_RULE_VERSION_DRAFT_TECH.md",
+      "A42",
+      "N-13",
+      "SCR-27",
+      "TM-17",
+      "W8",
+      "RC-08",
+      "RC-10",
+      "RC-11",
+      "PKT-12",
+      "ADR-012",
+      "C-08"
+    ],
+    "overview": "Hàm `save_rule_version_draft` theo ba cách gọi: lập mới (cấp 版番号), lưu lại bản nháp, lập bản nháp rollback từ version đã duyệt mới nhất. Bản nháp chưa có hiệu lực.",
+    "acceptance": [
+      "Lập mới cấp `version_no` = max + 1 trong khoá theo `rule_kind`, chống tạo trùng bằng `clientRequestId` (`SYNC_REQUEST_MISMATCH`)",
+      "Kiểm đủ 4 khoá `params` và khoảng giá trị; 料率 đủ 3 dòng 仲卸, 売買参加者, 買出人, không nhận 卸売業者",
+      "発効日 đã qua trả `EFFECTIVE_DATE_PASSED`, là ngày đã khoá trả `EFFECTIVE_DATE_LOCKED`",
+      "Lưu lại: bản không còn `draft` trả `NOT_DRAFT`, người khác người lập trả `NOT_DRAFTER`",
+      "Rollback: 5 nguyên nhân `ROLLBACK_NOT_ALLOWED` (is_rollback, not_approved, not_latest, draft_exists, no_previous); bản bị thay chưa đổi trạng thái",
+      "Mỗi lần ghi có audit `rule_version_create` trong cùng giao dịch DB",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-RULE-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E02-S08",
+      "E10-S03"
+    ]
+  },
+  {
+    "key": "E10-S04-T01",
+    "type": "uidesign",
+    "parent": "E10-S04",
+    "title": "[SCR-27] Lập version (khối A, B, C-1, F): thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-27"
+    ],
+    "overview": "Thiết kế khối thông tin version, bảng tham số 業務規程, bảng 料率, nạp CSV 料率, nút lưu và rollback theo wireframe 0.1.0.",
+    "acceptance": [
+      "Khớp wireframe SCR-27 và quy ước nhập (nút cao tối thiểu 48 px)",
+      "BA duyệt"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E10-S04-T02",
+    "type": "devtask",
+    "parent": "E10-S04",
+    "title": "[SCR-27] `save_rule_version_draft` nhánh lập mới và lưu lại: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_SAVE_RULE_VERSION_DRAFT_TECH.md",
+      "W8",
+      "DB 4.15",
+      "DB 4.16"
+    ],
+    "overview": "Thân hàm theo TECH SAVE mục 4, gồm `rule_kind_lock_key`; viết vào migration đợt 8 do E02 chạy.",
+    "acceptance": [
+      "Test SQL phủ mọi mã lỗi nhánh `new`, `update` ở TECH SAVE",
+      "Ghi đủ `drafted_by`, `create_request_id`, 3 dòng `incentive_rates`",
+      "Audit cùng giao dịch"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E10-S04-T03",
+    "type": "devtask",
+    "parent": "E10-S04",
+    "title": "[SCR-27] `save_rule_version_draft` nhánh rollback: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_SAVE_RULE_VERSION_DRAFT_TECH.md",
+      "W8",
+      "RC-10"
+    ],
+    "overview": "Lập bản nháp rollback chép nội dung version áp ngay trước bản bị thay, gồm `latest_approved_rule_version`.",
+    "acceptance": [
+      "Test đủ 5 nguyên nhân `ROLLBACK_NOT_ALLOWED`",
+      "Chỉ mục một bản rollback mở cho mỗi bản bị thay chặn hai lần gọi cùng lúc",
+      "Nội dung chép đúng version trước"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E10-S04-T04",
+    "type": "devtask",
+    "parent": "E10-S04",
+    "title": "[SCR-27] A42 lưu bản nháp: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A42",
+      "PKT-12"
+    ],
+    "overview": "Route POST `/api/rule-versions`: kiểm request, gọi hàm, ánh xạ mã lỗi; thêm A42 vào `ACTIONS` cho ROLE-RULE-ADMIN (PKT-12).",
+    "acceptance": [
+      "Kiểm `aal2`, `Origin`, `Content-Type`, dạng số, có cả `id` và `rollbackOfId`",
+      "Test route phủ mã HTTP ở A42"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E10-S04-T05",
+    "type": "devtask",
+    "parent": "E10-S04",
+    "title": "[SCR-27] Khối A, B-1, B-2, C-1: giao diện",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-27",
+      "A41",
+      "A42"
+    ],
+    "overview": "Form lập version: loại, 発効日 kèm câu gợi ý, tóm tắt, bảng tham số 業務規程 so với version áp tại 発効日, điền lại khi đổi ngày.",
+    "acceptance": [
+      "Ô người lập chưa sửa được điền lại khi đổi 発効日, ô đã sửa giữ nguyên",
+      "Nhãn, câu báo tiếng Nhật đúng bảng đã duyệt",
+      "Chống bấm hai lần"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S04-T06",
+    "type": "devtask",
+    "parent": "E10-S04",
+    "title": "[SCR-27] Bảng 料率 B-3, nạp CSV 料率 B-4, rollback F-1: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-27",
+      "A42"
+    ],
+    "overview": "Bảng 3 dòng theo loại bên mua, đọc CSV ở trình duyệt điền vào bảng, nút lập bản rollback theo điều kiện hiển thị.",
+    "acceptance": [
+      "CSV sai cột, sai loại, thừa dòng hiện lỗi, không gửi",
+      "F-1 chỉ hiện ở version `approved` mới nhất, không phải rollback, chưa có bản rollback mở"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S04-T07",
+    "type": "testdesign",
+    "parent": "E10-S04",
+    "title": "[SCR-27] Lưu bản nháp và rollback: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-27",
+      "SCR_27_SAVE_RULE_VERSION_DRAFT_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ SPEC SCR-27 và TECH SAVE.",
+    "acceptance": [
+      "Phủ các nhánh lập, lưu lại, rollback, mã lỗi ở TECH SAVE, và 10 vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S04-T08",
+    "type": "testexecution",
+    "parent": "E10-S04",
+    "title": "[SCR-27] Lưu bản nháp và rollback: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-27"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt trên staging, có dòng audit cho mỗi lần ghi"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E10-S05",
+    "type": "story",
+    "parent": "E10",
+    "title": "[SCR-27] Nộp version chờ duyệt (A43)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_SUBMIT_RULE_VERSION_TECH.md",
+      "A43",
+      "N-13",
+      "SCR-27",
+      "TM-17",
+      "W8",
+      "RC-09",
+      "RC-10",
+      "C-08"
+    ],
+    "overview": "Hàm `submit_rule_version` chuyển bản nháp sang `pending_approval` kèm 発効日, cả lần nộp lại sau 差戻し; chặn sớm giới hạn 4 lần trong năm.",
+    "acceptance": [
+      "Giới hạn 年間最大四回 đếm riêng từng loại theo năm dương lịch của 発効日, không tính version rollback và version 1; lần thứ 5 trả `RULE_CHANGE_LIMIT`",
+      "発効日 trống trả `FIELD_REQUIRED`, đã qua trả `EFFECTIVE_DATE_PASSED`, là ngày đã khoá trả `EFFECTIVE_DATE_LOCKED`",
+      "Nộp lại sau 差戻し giữ ngày cũ được nếu vẫn hợp lệ; audit `rule_version_submit` ghi ngày cũ và mới",
+      "Bản không `draft` trả `NOT_DRAFT`, người khác người lập trả `NOT_DRAFTER`",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-RULE-ADMIN"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-SETTLEMENT",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E10-S04"
+    ]
+  },
+  {
+    "key": "E10-S05-T01",
+    "type": "devtask",
+    "parent": "E10-S05",
+    "title": "[SCR-27] `submit_rule_version` và `rule_change_count`: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_SUBMIT_RULE_VERSION_TECH.md",
+      "W8",
+      "RC-09"
+    ],
+    "overview": "Thân hàm theo TECH SUBMIT, viết vào migration đợt 8.",
+    "acceptance": [
+      "Test SQL phủ mọi mã lỗi ở TECH SUBMIT",
+      "Test biên 4 lần: lần 4 qua, lần 5 bị chặn; version rollback không tính"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S05-T02",
+    "type": "devtask",
+    "parent": "E10-S05",
+    "title": "[SCR-27] A43 nộp version: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A43",
+      "PKT-12"
+    ],
+    "overview": "Route POST `/api/rule-versions/:id/submit`, thêm A43 vào `ACTIONS`.",
+    "acceptance": [
+      "Test route phủ mã HTTP ở A43",
+      "Kiểm `aal2`"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S05-T03",
+    "type": "devtask",
+    "parent": "E10-S05",
+    "title": "[SCR-27] Nút nộp C-2 và dòng đếm A-6: giao diện",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-27",
+      "A43"
+    ],
+    "overview": "Nút 承認を依頼する, dòng số lần đổi trong năm, câu lỗi theo mã.",
+    "acceptance": [
+      "A-6 hiện đúng số đếm từ A41",
+      "Câu lỗi tiếng Nhật đúng bảng đã duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S05-T04",
+    "type": "testdesign",
+    "parent": "E10-S05",
+    "title": "[SCR-27] Nộp version: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR_27_SUBMIT_RULE_VERSION_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ TECH SUBMIT.",
+    "acceptance": [
+      "Phủ biên 4 lần, ngày đã qua, ngày đã khoá, nộp lại sau 差戻し, vai bị chặn"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E10-S05-T05",
+    "type": "testexecution",
+    "parent": "E10-S05",
+    "title": "[SCR-27] Nộp version: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-27"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt trên staging"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S06",
+    "type": "story",
+    "parent": "E10",
+    "title": "[SCR-27] Duyệt, trả về, 却下 version (A44)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_DECIDE_RULE_VERSION_TECH.md",
+      "A44",
+      "N-13",
+      "SCR-27",
+      "TM-18",
+      "W8",
+      "RC-09",
+      "RC-10",
+      "RC-11",
+      "QT-05",
+      "Q4-27",
+      "C-24"
+    ],
+    "overview": "Người duyệt khác người lập ra một trong ba quyết định cho bản `pending_approval`; duyệt bản rollback đổi bản bị thay sang `rolled_back` trong cùng giao dịch DB.",
+    "acceptance": [
+      "Người lập tự duyệt, trả về, 却下 trả `SELF_APPROVAL` và có audit lần thử; CHECK `approved_by <> drafted_by` ở DB",
+      "Duyệt kiểm lại 発効日 (`EFFECTIVE_DATE_PASSED`, `EFFECTIVE_DATE_LOCKED`), giới hạn 4 lần (`RULE_CHANGE_LIMIT`), bản bị thay của rollback còn là version đã duyệt mới nhất",
+      "Trả về và 却下 bắt ghi chú (`REASON_REQUIRED`); bản đã đổi trạng thái trả `ALREADY_DECIDED`",
+      "Ghi cột quyết định (`decision`, `decided_by`, `decided_at`, `decision_note`) và audit `rule_version_approve`, `rule_version_return`, `rule_version_reject`",
+      "API kiểm lại `aal2` ngay trước thao tác duyệt",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E10-S05"
+    ]
+  },
+  {
+    "key": "E10-S06-T01",
+    "type": "uidesign",
+    "parent": "E10-S06",
+    "title": "[SCR-27] Khối duyệt D, lịch sử E, hộp G: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-27"
+    ],
+    "overview": "Thiết kế khu người duyệt, dòng quyết định A-7, bảng lịch sử, hộp xác nhận.",
+    "acceptance": [
+      "Khớp wireframe SCR-27",
+      "BA duyệt"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S06-T02",
+    "type": "devtask",
+    "parent": "E10-S06",
+    "title": "[SCR-27] `approve_rule_version`: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_27_DECIDE_RULE_VERSION_TECH.md",
+      "W8",
+      "DB 4.15"
+    ],
+    "overview": "Duyệt bản thường và bản rollback theo TECH DECIDE, viết vào migration đợt 8.",
+    "acceptance": [
+      "Test SQL phủ mọi mã lỗi nhánh duyệt",
+      "Bản rollback được duyệt thì bản bị thay sang `rolled_back` cùng giao dịch, vẫn áp cho ngày trước đó"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E10-S06-T03",
+    "type": "devtask",
+    "parent": "E10-S06",
+    "title": "[SCR-27] `return_rule_version`, `reject_rule_version`: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_27_DECIDE_RULE_VERSION_TECH.md",
+      "W8"
+    ],
+    "overview": "Trả về đưa bản về `draft`, 却下 đưa sang `rejected`.",
+    "acceptance": [
+      "Test `REASON_REQUIRED`, `SELF_APPROVAL`, `ALREADY_DECIDED`",
+      "Bản `rejected` không bao giờ có hiệu lực ở `rule_version_for_day`"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E10-S06-T04",
+    "type": "devtask",
+    "parent": "E10-S06",
+    "title": "[SCR-27] A44 quyết định version: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A44"
+    ],
+    "overview": "Route POST `/api/rule-versions/:id/decision` gọi một trong ba hàm theo `decision`; thêm A44 vào `ACTIONS` cho ROLE-SETTLEMENT.",
+    "acceptance": [
+      "`decision` ngoài ba giá trị trả `INVALID_DECISION`",
+      "Kiểm lại `aal2`",
+      "Test route phủ mã HTTP ở A44"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E10-S06-T05",
+    "type": "devtask",
+    "parent": "E10-S06",
+    "title": "[SCR-27] Khối D, A-7, E-1, hộp G: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-27",
+      "A41",
+      "A44"
+    ],
+    "overview": "Ghi chú quyết định, ba nút, câu không tự duyệt D-5, bảng lịch sử, hộp xác nhận.",
+    "acceptance": [
+      "Người lập thấy D-5 thay ba nút",
+      "Trả về hoặc 却下 thiếu ghi chú thì G-3 hiện, không gửi"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E10-S06-T06",
+    "type": "testdesign",
+    "parent": "E10-S06",
+    "title": "[SCR-27] Duyệt version: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR_27_DECIDE_RULE_VERSION_TECH.md",
+      "QT-05"
+    ],
+    "overview": "Ca kiểm thử từ TECH DECIDE.",
+    "acceptance": [
+      "Phủ tự duyệt, ba quyết định, duyệt rollback, hai người duyệt cùng lúc, vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E10-S06-T07",
+    "type": "testexecution",
+    "parent": "E10-S06",
+    "title": "[SCR-27] Duyệt version: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-27"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt trên staging, audit đủ"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E10-S07",
+    "type": "investigation",
+    "parent": "E10",
+    "title": "[Q4-27] Làm rõ vai trò người duyệt version 業務規程 / 料率",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-27",
+      "G-01",
+      "TM-18",
+      "SCR-27"
+    ],
+    "overview": "Thiết kế cho ROLE-SETTLEMENT khác người lập duyệt; khách chọn vai trò riêng thì thêm vai trò thứ 12 và sửa ma trận quyền.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa ma trận quyền và ước lại E10-S06"
+    ],
+    "customer_wait": "Khách xác nhận ai duyệt version (照合事務 khác người lập hay vai trò riêng cho 照合部門長), trước sprint làm E10-S06",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11",
+    "type": "epic",
+    "title": "完納奨励金",
+    "overview": "Ghi ngày và số tiền bên mua trả, tính 完納奨励金 theo tháng, người xác nhận kết quả, chênh lệch sau xác nhận sang kỳ sau (SCR-25, A48..A53, đợt migration 9). Chia theo từng biến nghiệp vụ, mỗi biến có tiêu chí xong riêng."
+  },
+  {
+    "key": "E11-S01",
+    "type": "devtask",
+    "parent": "E11",
+    "title": "[W9] Migration đợt 9: bảng 完納奨励金",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W9",
+      "DB 4.17",
+      "DB 4.18",
+      "DB 4.19",
+      "D4-142",
+      "D4-146"
+    ],
+    "overview": "Tạo `payment_records`, `incentive_results`, `incentive_adjustments` cùng CHECK, chỉ mục, trigger; vá `reset_demo_data`. Hàm của đợt viết ở các story E11-S02 tới E11-S07.",
+    "acceptance": [
+      "Chạy được trên DB đợt 8; prototype và mọi route còn sống vẫn chạy sau đợt",
+      "TL-A duyệt migration; ghi rõ không tách a / b"
+    ],
+    "depends_on": [
+      "E02-S08"
+    ]
+  },
+  {
+    "key": "E11-S01-T01",
+    "type": "devtask",
+    "parent": "E11-S01",
+    "title": "[W9] Ba bảng, CHECK, chỉ mục, RLS",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W9",
+      "DB 4.17",
+      "DB 4.18",
+      "DB 4.19",
+      "D4-146"
+    ],
+    "overview": "Bảng theo DB design 4.17..4.19: 3 CHECK của `payment_records`, 5 của `incentive_results`, 4 của `incentive_adjustments` (`cause` gồm `carry_forward`); chỉ mục `payment_records_business_idx` là chỉ mục thường, không UNIQUE (D4-146).",
+    "acceptance": [
+      "Bật RLS trong migration tạo bảng",
+      "Khoá UNIQUE `incentive_results` là (`period_month`, `participant_id`, `incentive_rate_version_id`), không có `business_rule_version_id`",
+      "FK `exported_batch_id` tới `accounting_export_batches` của đợt 7",
+      "Test chèn dòng vi phạm từng CHECK bị từ chối"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S01-T02",
+    "type": "devtask",
+    "parent": "E11-S01",
+    "title": "[W9] Trigger, vá `reset_demo_data`, kiểm chạy trên DB đợt 8",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "W9",
+      "DB 4.18",
+      "DB 4.19"
+    ],
+    "overview": "Trigger `forbid_confirmed_incentive_change`, `forbid_row_change` cho chênh lệch; thêm 3 bảng vào câu `truncate` của `reset_demo_data`.",
+    "acceptance": [
+      "Dòng `confirmed` không sửa, không xoá được; dòng chênh lệch không sửa được",
+      "Nút đặt lại demo chạy được sau đợt 9",
+      "`supabase db reset` tới hết đợt 9 rồi chạy kịch bản hàm còn sống đạt"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S02",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Ghi trả tiền nhập tay (A49)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_RECORD_PAYMENT_TECH.md",
+      "A49",
+      "N-11",
+      "SCR-25",
+      "TM-15",
+      "W9",
+      "DB 4.17",
+      "RC-27"
+    ],
+    "overview": "Ghi ngày và số tiền bên mua trả cho một giao dịch 確定; là dữ liệu đầu vào của điều kiện được thưởng. Kỳ đã chốt vẫn ghi được (D4-48).",
+    "acceptance": [
+      "Giao dịch không có trả 404 `NOT_FOUND`, 取消 trả `TRADE_CANCELLED`, chưa 確定 trả `TRADE_NOT_CONFIRMED`",
+      "入金日 tương lai trả `FUTURE_DAY`, trước 業務日 trả `PAID_BEFORE_TRADE_DAY`; kỳ đã chốt không chặn",
+      "Trả vượt số còn phải trả vẫn ghi, trả `overpaidJpy` để màn cảnh báo",
+      "Gửi lại cùng `clientRequestId` trả kết quả lần đầu `replayed: true`, khác nội dung trả `SYNC_REQUEST_MISMATCH`",
+      "Ghi `payment_records` và audit `payment_record` trong cùng giao dịch DB",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S01"
+    ]
+  },
+  {
+    "key": "E11-S02-T01",
+    "type": "uidesign",
+    "parent": "E11-S02",
+    "title": "[SCR-25] Khối B ghi trả tay: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-25",
+      "D4-148"
+    ],
+    "overview": "Thiết kế khối 入金の記録 và hộp G cảnh báo trùng theo wireframe 0.1.0, nhãn đã duyệt (D4-148).",
+    "acceptance": [
+      "Khớp wireframe SCR-25 và quy ước nhập (nút cao tối thiểu 48 px)",
+      "BA duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E11-S02-T02",
+    "type": "devtask",
+    "parent": "E11-S02",
+    "title": "[SCR-25] `record_payment`: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_RECORD_PAYMENT_TECH.md",
+      "W9",
+      "DB 4.17"
+    ],
+    "overview": "Khoá dòng giao dịch rồi khoá tháng chia sẻ (không qua `is_period_closed`), kiểm theo TECH RECORD 4.3, ghi và audit.",
+    "acceptance": [
+      "Test SQL phủ mọi mã lỗi ở TECH RECORD 4.3 trừ phần trùng khoản",
+      "`recorded_at` lấy `clock_timestamp()` sau khoá tháng",
+      "Chống gửi trùng theo `clientRequestId`"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S02-T03",
+    "type": "devtask",
+    "parent": "E11-S02",
+    "title": "[SCR-25] Biến khoản trả trùng: cảnh báo `PAYMENT_DUPLICATE`, xác nhận mới ghi (nhập tay)",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_RECORD_PAYMENT_TECH.md",
+      "D4-146",
+      "Q4-62",
+      "DB 4.17"
+    ],
+    "overview": "Đã có khoản cùng giao dịch, cùng 入金日, cùng 入金額 (tay hay CSV) thì cảnh báo, chưa ghi; `confirmDuplicate = true` thì ghi dòng mới (D4-146).",
+    "acceptance": [
+      "Lần đầu trả 409 `PAYMENT_DUPLICATE` kèm `recordedAt`, `count`, không ghi",
+      "Gửi lại với `confirmDuplicate = true` ghi thêm một dòng, audit có `duplicateConfirmed: true`",
+      "Hai khoản thật cùng ngày cùng số tiền ghi được thành hai dòng (ví dụ hai đợt 44,000)",
+      "Hai lần ghi cùng lúc đều thấy nhau nhờ khoá dòng giao dịch"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S02-T04",
+    "type": "devtask",
+    "parent": "E11-S02",
+    "title": "[SCR-25] A49 ghi trả tay: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A49",
+      "TM-15"
+    ],
+    "overview": "Route POST `/api/payments`, thêm A49 vào `ACTIONS` cho ROLE-SETTLEMENT.",
+    "acceptance": [
+      "Kiểm `aal2`, `Origin`, dạng ngày, số nguyên an toàn",
+      "Test route phủ mã HTTP ở A49"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S02-T05",
+    "type": "devtask",
+    "parent": "E11-S02",
+    "title": "[SCR-25] Khối B ghi trả tay và hộp G trùng: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-25",
+      "A48",
+      "A49"
+    ],
+    "overview": "Ô mã giao dịch đọc A48 hiện B-2, B-6; ô ngày, số tiền; nút ghi; hộp G khi trùng, gửi lại dùng lại `clientRequestId`.",
+    "acceptance": [
+      "Sinh `clientRequestId` mới sau mỗi lần ghi thành công",
+      "Câu `payment.recorded`, `payment.replayed` đúng bảng đã duyệt",
+      "Giao dịch 取消 hoặc chưa 確定 thì nút ghi tắt"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S02-T06",
+    "type": "testdesign",
+    "parent": "E11-S02",
+    "title": "[SCR-25] Ghi trả tay: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR_25_RECORD_PAYMENT_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ SPEC 4.2 B, mục 5 và TECH RECORD.",
+    "acceptance": [
+      "Phủ mọi mã lỗi, trùng khoản, gửi lại, kỳ đã xác nhận (B-6), 10 vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S02-T07",
+    "type": "testexecution",
+    "parent": "E11-S02",
+    "title": "[SCR-25] Ghi trả tay: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt, có audit cho mỗi lần ghi"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S03",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Nạp CSV ngày và số tiền trả (A50)",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md",
+      "A50",
+      "N-11",
+      "SCR-25",
+      "TM-15",
+      "W9",
+      "Q4-56",
+      "D4-146"
+    ],
+    "overview": "Nạp một file trả tiền; một dòng lỗi thì không nạp dòng nào; dòng trùng khoản đã ghi chỉ ghi khi người dùng xác nhận cả lô.",
+    "acceptance": [
+      "Lỗi mức file (quá 1 MB, quá 5,000 dòng, dòng đầu sai, không UTF-8, 0 dòng) trả `CSV_INVALID` với `errors[0].reason`",
+      "Có một dòng lỗi (không có giao dịch, chưa 確定, 取消, ngày tương lai, trước 業務日, một 取引番号 hai dòng) thì trả `CSV_INVALID` kèm danh sách dòng, không ghi dòng nào",
+      "File cùng nội dung đã nạp với mã khác trả `CSV_ALREADY_IMPORTED`; gửi lại cùng mã trả `replayed: true`",
+      "Ghi mọi dòng và một audit `payment_record` (`entity_id` = `import_batch`) trong cùng giao dịch DB",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S02"
+    ]
+  },
+  {
+    "key": "E11-S03-T01",
+    "type": "uidesign",
+    "parent": "E11-S03",
+    "title": "[SCR-25] Khối C nạp CSV: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-25",
+      "D4-148"
+    ],
+    "overview": "Thiết kế ô chọn file, bảng xem trước C-2, tô dòng lỗi, dòng trùng.",
+    "acceptance": [
+      "Khớp wireframe SCR-25",
+      "BA duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E11-S03-T02",
+    "type": "devtask",
+    "parent": "E11-S03",
+    "title": "[SCR-25] `import_payment_csv` kiểm từng dòng, một dòng lỗi không nạp cả file: hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md",
+      "W9",
+      "Q4-56"
+    ],
+    "overview": "Khoá giao dịch theo `id` tăng dần, khoá tháng chia sẻ theo tháng tăng dần, kiểm từng dòng cùng luật `record_payment`, gom lỗi.",
+    "acceptance": [
+      "File có một dòng lỗi giữa nhiều dòng đúng: 0 dòng được ghi",
+      "Test chống nạp trùng file và gửi lại",
+      "Không treo khi hai file nạp cùng lúc"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S03-T03",
+    "type": "devtask",
+    "parent": "E11-S03",
+    "title": "[SCR-25] Biến khoản trả trùng ở CSV: cảnh báo cả lô, `confirmedLines`",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md",
+      "D4-146",
+      "Q4-62"
+    ],
+    "overview": "Không có dòng lỗi mà có dòng trùng khoản đã ghi thì cảnh báo, chưa ghi; xác nhận thì so lại tập dòng trùng sau khoá (D4-146).",
+    "acceptance": [
+      "Trả 409 `PAYMENT_DUPLICATE` kèm `duplicates[]`, không ghi dòng nào",
+      "Dòng lỗi được xét trước dòng trùng",
+      "Tập trùng tính lại khác `confirmedLines` (so theo tập) thì lại 409 với danh sách mới"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S03-T04",
+    "type": "devtask",
+    "parent": "E11-S03",
+    "title": "[SCR-25] A50 nạp CSV: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A50",
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md"
+    ],
+    "overview": "Route POST `/api/payments/import`: kiểm file, bỏ BOM, tạo `import_batch` = tên file + 12 ký tự đầu SHA-256, tách dòng; thêm A50 vào `ACTIONS`.",
+    "acceptance": [
+      "Route kiểm lại toàn bộ, không tin kết quả trình duyệt",
+      "Test route phủ 5 lỗi mức file và lỗi dòng dạng"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S03-T05",
+    "type": "devtask",
+    "parent": "E11-S03",
+    "title": "[SCR-25] Khối C nạp CSV và hộp G trùng: giao diện",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-25",
+      "A50"
+    ],
+    "overview": "Đọc file ở trình duyệt, bảng xem trước, tô dòng lỗi máy chủ trả, hộp G xác nhận cả lô.",
+    "acceptance": [
+      "Ô 確認結果 chỉ hiện vế đầu câu lỗi, dòng đạt hiện `問題なし`",
+      "Có lỗi dạng phía trình duyệt thì nút nạp tắt",
+      "Câu `payment.imported` đúng bảng đã duyệt"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S03-T06",
+    "type": "testdesign",
+    "parent": "E11-S03",
+    "title": "[SCR-25] Nạp CSV: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ SPEC C-1..C-3 và TECH IMPORT.",
+    "acceptance": [
+      "Có file một dòng lỗi giữa file đúng, file trùng, file lớn, file Shift_JIS, vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S03-T07",
+    "type": "testexecution",
+    "parent": "E11-S03",
+    "title": "[SCR-25] Nạp CSV: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt; file có dòng lỗi không để lại dòng nào"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S04",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Đọc trạng thái kỳ, kết quả, chênh lệch và khung màn (A48)",
+    "owner": "FE-A",
+    "spec_refs": [
+      "A48",
+      "N-12",
+      "SCR-25",
+      "TM-16",
+      "RC-11",
+      "RC-38",
+      "D4-147"
+    ],
+    "overview": "Khung màn `/incentives` và API đọc: trạng thái kỳ theo bảng 6.2, version đã áp, kết quả, giao dịch không tính, chênh lệch đi và đến, tổng 差引.",
+    "acceptance": [
+      "Trạng thái kỳ đúng 8 dòng bảng SPEC 6.2, gồm `対象取引なし` xét trước `未計算` và tháng chỉ có chênh lệch nhận vào",
+      "A-5 hiện version 料率 và 業務規程 đã áp (RC-11)",
+      "E-2 `差引` = 奨励金 + chênh lệch nhận vào trừ dòng `繰越` đi ra, tính trên hợp người tham gia",
+      "ROLE-AUDIT-VIEW chỉ thấy khối A, E, F; gọi `tradeCode` bị từ chối",
+      "Mỗi lần đọc ghi log đọc dữ liệu cá nhân qua lớp đọc chung",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN), không chỉ ẩn trang và menu"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT",
+      "ROLE-AUDIT-VIEW"
+    ],
+    "roles_blocked": [
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S01",
+      "E03-S10"
+    ]
+  },
+  {
+    "key": "E11-S04-T01",
+    "type": "uidesign",
+    "parent": "E11-S04",
+    "title": "[SCR-25] Khung màn, khối A, E, F: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-25",
+      "D4-148"
+    ],
+    "overview": "Thiết kế khung màn, kỳ và trạng thái, bảng kết quả, bảng giao dịch không tính, hai bảng chênh lệch.",
+    "acceptance": [
+      "Khớp wireframe SCR-25 cả biến thể theo bảng 6.2",
+      "BA duyệt"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S04-T02",
+    "type": "devtask",
+    "parent": "E11-S04",
+    "title": "[SCR-25] A48 trạng thái kỳ, 最終支払期日, version, `pendingChange`: API",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A48",
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md"
+    ],
+    "overview": "Phần đầu của A48: `periodClosed`, `status` (`not_calculated`, `none`, `calculated`, `confirmed`, có chênh lệch), `maxDueOn`, `confirmableFrom`, `versions`, `pendingChange`; thêm A48 vào `ACTIONS`.",
+    "acceptance": [
+      "Test từng dòng bảng SPEC 6.2",
+      "`pendingChange` đúng khi có bút toán hoặc trả tiền ghi sau mốc cuối",
+      "Tháng ngoài khoảng trả `OUT_OF_RANGE`"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S04-T03",
+    "type": "devtask",
+    "parent": "E11-S04",
+    "title": "[SCR-25] A48 kết quả, chênh lệch, khối giao dịch theo `tradeCode`: API",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "A48",
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md"
+    ],
+    "overview": "Phần dữ liệu của A48: E-1..E-3, F-1, F-2, tổng E-2, khối `trade` cho B-2, B-6 (chỉ ROLE-SETTLEMENT).",
+    "acceptance": [
+      "Tổng E-2 đúng ví dụ X9 (trước xác nhận −2,200, sau xác nhận 0)",
+      "Khối `trade` trả 請求額, 支払期日, 入金済 theo số hiệu lực"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S04-T04",
+    "type": "devtask",
+    "parent": "E11-S04",
+    "title": "[SCR-25] Khung màn, khối A, E, F, quyền theo vai: giao diện",
+    "team": "frontend",
+    "owner": "FE-A",
+    "spec_refs": [
+      "SCR-25",
+      "A48"
+    ],
+    "overview": "Trang `/incentives?month=`, ô chọn tháng, câu A-6 theo trạng thái, các bảng chỉ xem, menu 照合事務.",
+    "acceptance": [
+      "Ô chọn tháng không cho chọn ngoài khoảng",
+      "Số âm hiện dấu trừ, không cắt về 0",
+      "Vai không có quyền thấy khối không có quyền, không đọc dữ liệu"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E11-S04-T05",
+    "type": "testdesign",
+    "parent": "E11-S04",
+    "title": "[SCR-25] Đọc kỳ và kết quả: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Ca kiểm thử từ SPEC 6.1, 6.2, 6.5.",
+    "acceptance": [
+      "Phủ 8 trạng thái kỳ, ROLE-AUDIT-VIEW chỉ xem, 9 vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S04-T06",
+    "type": "testexecution",
+    "parent": "E11-S04",
+    "title": "[SCR-25] Đọc kỳ và kết quả: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt, có log đọc dữ liệu cá nhân"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S05",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Chạy tính 完納奨励金 của một tháng (A51)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "A51",
+      "N-12",
+      "SCR-25",
+      "TM-16",
+      "W9",
+      "RC-11",
+      "RC-27",
+      "Q4-23"
+    ],
+    "overview": "Tính tạm `仮計算` cho mọi bên mua sau khi chốt kỳ, chạy lại được tới khi xác nhận. Công thức chia thành từng biến nghiệp vụ, mỗi biến một sub-issue có tiêu chí riêng; công thức chỉ ở một hàm `incentive_amount_jpy`.",
+    "acceptance": [
+      "Kỳ chưa chốt trả 409 `PERIOD_NOT_CLOSED`; kỳ đã xác nhận trả `ALREADY_DECIDED`",
+      "Mọi ví dụ số ở TECH RUN 4.6 cho đúng kết quả bằng test tự động",
+      "Kết quả `confirmed` không bao giờ bị ghi đè",
+      "Ghi `incentive_results` và audit `incentive_calculate` trong cùng giao dịch DB",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S01",
+      "E09-S06"
+    ]
+  },
+  {
+    "key": "E11-S05-T01",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Biến điều kiện được thưởng: trả đủ 請求額 trong hạn, `期日超過`, `入金不足` (`incentive_calc_lines`)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "Q4-55",
+      "Q4-59",
+      "RC-27",
+      "DB 4.17"
+    ],
+    "overview": "Một dòng mỗi giao dịch 確定 của tháng: 金額 hiệu lực theo bút toán tới mốc, 請求額 có thuế, số đã trả trong hạn, tiền đủ điều kiện và lý do.",
+    "acceptance": [
+      "Trả đủ 請求額 có thuế với 入金日 không quá 支払期日 thì tính bằng 金額 trước thuế; thiếu thì 0",
+      "Thiếu tiền và đã qua hạn hoặc có khoản trả sau hạn: lý do `期日超過`, ưu tiên hơn `入金不足`",
+      "Chỉ giao dịch quá hạn bằng 0, phần còn lại của kỳ vẫn tính (cách đọc mặc định, ví dụ X12)",
+      "Test V4, V4b, V6"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S05-T02",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Biến hạn trả: 支払期日 = 業務日 + `payment_due_days` đếm ngày lịch JST",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "Q4-61",
+      "ADR-012"
+    ],
+    "overview": "Hạn trả theo version 業務規程 ở 業務日 từng giao dịch, đếm ngày lịch kể cả ngày chợ nghỉ; trả đúng ngày hạn là trong hạn; `maxDueOn` của kỳ.",
+    "acceptance": [
+      "`due_on` = 業務日 + `payment_due_days` bằng phép cộng ngày lịch",
+      "Kỳ đổi version 業務規程 giữa tháng thì mỗi giao dịch dùng hạn của version mình",
+      "`maxDueOn` NULL khi tháng không có giao dịch",
+      "Test V4b (trả đúng ngày hạn)"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S05-T03",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Biến công thức: so ngưỡng trước thuế, nhân tỷ lệ, nhân 110/100, cắt phần lẻ một lần (`incentive_amount_jpy`)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "Q4-63",
+      "RC-27",
+      "D4-143"
+    ],
+    "overview": "Hàm `immutable` duy nhất chứa công thức, tính bằng `numeric` và `div`; kiểm số nguyên an toàn.",
+    "acceptance": [
+      "Đúng ngưỡng cũng có thưởng (V1 = 11,000), dưới 1 JPY thì 0 (V1b)",
+      "Cắt một lần sau cùng: V3 = 1,697, V3b = 1,649 (không phải 1,648)",
+      "Thương lớn chính xác (X11)",
+      "Vượt 9,007,199,254,740,991 trả `OUT_OF_RANGE` (V8)"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S05-T04",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Biến version 料率: gộp theo (người tham gia, version 料率), kỳ có hai version so ngưỡng riêng (`incentive_calc_groups`)",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "Q4-58",
+      "RC-11",
+      "DB 4.16",
+      "DB 4.18"
+    ],
+    "overview": "Gộp dòng giao dịch theo người tham gia và version 料率 áp ở 業務日; không chia theo version 業務規程; lưu loại người tham gia, ngưỡng, tỷ lệ đã áp; version chưa có dòng cho loại thì `料率なし`.",
+    "acceptance": [
+      "Kỳ đổi version 料率 giữa tháng ra hai dòng, mỗi dòng so ngưỡng của version mình (V5)",
+      "Hai version 業務規程 cùng một version 料率 cộng chung một 対象額 (X2)",
+      "Tháng đã có dòng `confirmed` thì dùng loại người tham gia đã lưu",
+      "Version 1 chưa có dòng 料率 thì 0, cờ `no_rate` (V7)"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S05-T05",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Tính tạm trước 最終支払期日, tính lại nhiều lần (`calculate_incentive_period`): hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "W9",
+      "Q4-23",
+      "RC-38"
+    ],
+    "overview": "Khoá tháng độc quyền, kiểm kỳ đã chốt và đã xác nhận, lấy mốc sau khoá, ghi đè kết quả tạm cũ, dòng không còn nhóm về 0, audit, chống gửi trùng.",
+    "acceptance": [
+      "Trước 最終支払期日 vẫn tính được, kết quả là `calculated`",
+      "Chạy lại thay kết quả tạm cũ, không xoá dòng (dòng cũ về 0)",
+      "Ghi trả tiền cùng tháng phải chờ khoá khi đang tính",
+      "Gửi lại cùng mã trả `replayed: true`, đếm đúng số dòng"
+    ],
+    "rough_hours": 12
+  },
+  {
+    "key": "E11-S05-T06",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Kỳ không có giao dịch `対象取引なし` và tháng chỉ có chênh lệch nhận vào",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "D4-147"
+    ],
+    "overview": "Tháng không có giao dịch 確定 và không có chênh lệch nhận vào: không ghi, không audit, trả `status = none`. Người chỉ có chênh lệch hoặc `繰越` nhận vào: chèn dòng 0 (D4-147).",
+    "acceptance": [
+      "`対象取引なし` xét trước `未計算`",
+      "Dòng 0 có version 料率 hiệu lực ngày cuối tháng và loại người tham gia lúc tính",
+      "Test cả hai nhánh"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S05-T07",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] A51 chạy tính: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A51"
+    ],
+    "overview": "Route POST `/api/incentives/:month/run`, thêm A51 vào `ACTIONS`.",
+    "acceptance": [
+      "Test route phủ mã HTTP ở A51",
+      "Tháng sai dạng trả `INVALID_INPUT`"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S05-T08",
+    "type": "uidesign",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Khối D, hộp G: thiết kế giao diện",
+    "owner": "Design-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Thiết kế ba nút tính, xác nhận, chênh lệch và hộp xác nhận theo trạng thái kỳ.",
+    "acceptance": [
+      "Khớp wireframe SCR-25 và bảng 6.2",
+      "BA duyệt"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E11-S05-T09",
+    "type": "devtask",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Nút D-1 và hộp G chạy tính: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-25",
+      "A51"
+    ],
+    "overview": "Nút 計算を実行 hiện theo bảng 6.2, hộp G, câu `incentive.calculated`, tải lại kết quả.",
+    "acceptance": [
+      "D-1 chỉ hiện ở `未計算`, `仮計算`",
+      "Chống bấm hai lần bằng `clientRequestId`"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S05-T10",
+    "type": "testdesign",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Bộ ví dụ biên DS-INC-EDGE-01 thành test tự động",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md",
+      "RC-27",
+      "Q4-59",
+      "Q4-63"
+    ],
+    "overview": "Chuyển mọi vector ở TECH RUN 4.6 (V1..V8, X2, X11, X12) thành dữ liệu và kết quả mong đợi cho test SQL; X12 ghi cả kết quả theo cách đọc khác để đổi nhanh khi khách trả lời Q4-59.",
+    "acceptance": [
+      "Mỗi vector một ca có số vào, phép tính, số ra như TECH",
+      "TL-A soát; BE dùng bộ này cho test của T01..T06"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S05-T11",
+    "type": "testdesign",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Chạy tính qua màn và API: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "A51"
+    ],
+    "overview": "Ca kiểm thử luồng chạy tính, mã lỗi, vai bị chặn.",
+    "acceptance": [
+      "Phủ kỳ chưa chốt, đã xác nhận, `対象取引なし`, tính lại, 10 vai bị chặn"
+    ],
+    "rough_hours": 3
+  },
+  {
+    "key": "E11-S05-T12",
+    "type": "testexecution",
+    "parent": "E11-S05",
+    "title": "[SCR-25] Chạy tính: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR_25_RUN_INCENTIVE_CALCULATION_TECH.md"
+    ],
+    "overview": "Chạy ca kiểm thử và bộ ví dụ biên trên staging.",
+    "acceptance": [
+      "Mọi vector và ca đạt trên staging"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S06",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Xác nhận kết quả theo thứ tự tháng (A52)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md",
+      "A52",
+      "N-12",
+      "SCR-25",
+      "TM-16",
+      "W9",
+      "RC-27",
+      "RC-38",
+      "Q4-54"
+    ],
+    "overview": "照合事務 xác nhận kết quả tạm sau 最終支払期日 (RC-38); xác nhận theo thứ tự tháng; kết quả tạm phải còn đúng; phần âm chuyển kỳ sau.",
+    "acceptance": [
+      "Thứ tự kiểm: chốt kỳ, có dòng (`INCENTIVE_NOT_CALCULATED`), đã xác nhận (`ALREADY_DECIDED`), tháng trước (`PERIOD_OUT_OF_ORDER`), 最終支払期日 (`PAYMENT_DUE_NOT_PASSED`)",
+      "Sau xác nhận dòng `confirmed` không sửa, không xoá được",
+      "Ghi trạng thái và audit `incentive_confirm` trong cùng giao dịch DB",
+      "API kiểm lại `aal2`",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S05"
+    ]
+  },
+  {
+    "key": "E11-S06-T01",
+    "type": "devtask",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Biến xác nhận theo thứ tự tháng và cổng 最終支払期日 (`confirm_incentive_period`): hàm DB và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md",
+      "W9",
+      "Q4-57",
+      "Q4-23"
+    ],
+    "overview": "Khoá tháng độc quyền, kiểm theo thứ tự ở TECH CONFIRM 4.3, ghi `confirmed`, audit.",
+    "acceptance": [
+      "Tháng trước có giao dịch hoặc chênh lệch nhận vào mà chưa xác nhận trả `PERIOD_OUT_OF_ORDER` với `expected` sớm nhất",
+      "Tháng trước `対象取引なし` được bỏ qua",
+      "`today_jst() <= maxDueOn` trả `PAYMENT_DUE_NOT_PASSED`; tháng chỉ có chênh lệch nhận vào không có cổng này",
+      "Người chạy tính và người xác nhận có thể là một người (mặc định Q4-54)"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S06-T02",
+    "type": "devtask",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Kết quả tạm còn đúng (`INCENTIVE_STALE`) và trigger khoá dòng đã xác nhận",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md",
+      "W9",
+      "RC-27"
+    ],
+    "overview": "Tính lại tại mốc sau khoá, so với dòng đã lưu bằng `full join` và `is distinct from`; khác thì không ghi.",
+    "acceptance": [
+      "Ví dụ CONFIRM 4.4 No 4 (trả tiền sau lần tính) trả `INCENTIVE_STALE`",
+      "Đổi loại người tham gia sau lần tính trả `INCENTIVE_STALE` (No 5)",
+      "Test trigger `forbid_confirmed_incentive_change` chặn `update`, `delete`"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S06-T03",
+    "type": "devtask",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Biến phần âm chuyển kỳ sau (`carry_forward`) khi xác nhận",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md",
+      "Q4-60",
+      "D4-147",
+      "DB 4.19"
+    ],
+    "overview": "Theo hợp người tham gia có kết quả hoặc có chênh lệch nhận vào; `net` âm thì ghi dòng `carry_forward` bằng đúng số âm vào kỳ chưa xác nhận kế tiếp; không thu lại tiền.",
+    "acceptance": [
+      "Ví dụ X9: 2026-11 `net` −2,200 sinh `carry_forward` −2,200 vào 2026-12, `差引` sau xác nhận bằng 0",
+      "Ví dụ No 7: người không có giao dịch ở kỳ đích vẫn được xét",
+      "Dòng `carry_forward` không làm kỳ thành `確定（差額あり）`",
+      "`totalJpy` hoặc `net` vượt số nguyên an toàn trả `OUT_OF_RANGE`, không ghi"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S06-T04",
+    "type": "devtask",
+    "parent": "E11-S06",
+    "title": "[SCR-25] A52 xác nhận: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A52"
+    ],
+    "overview": "Route POST `/api/incentives/:month/confirm`, kiểm lại `aal2`, thêm A52 vào `ACTIONS`.",
+    "acceptance": [
+      "Test route phủ mã HTTP ở A52"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S06-T05",
+    "type": "devtask",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Nút D-2 và hộp G xác nhận: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-25",
+      "A52"
+    ],
+    "overview": "Nút 結果を確定 chỉ ở `仮計算` đã qua 最終支払期日 hoặc tháng chỉ có chênh lệch nhận vào; hộp G hiện tổng và số người.",
+    "acceptance": [
+      "Câu A-6 trước hạn hiện ngày xác nhận được",
+      "`INCENTIVE_STALE` hiện câu hướng dẫn tính lại"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S06-T06",
+    "type": "testdesign",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Xác nhận: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR_25_CONFIRM_INCENTIVE_RESULT_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ TECH CONFIRM, gồm ví dụ X9 và No 7.",
+    "acceptance": [
+      "Phủ thứ tự tháng, cổng hạn, kết quả cũ, phần âm, hai người xác nhận cùng lúc, vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S06-T07",
+    "type": "testexecution",
+    "parent": "E11-S06",
+    "title": "[SCR-25] Xác nhận: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt, có audit `incentive_confirm`"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S07",
+    "type": "story",
+    "parent": "E11",
+    "title": "[SCR-25] Tính chênh lệch sau xác nhận sang kỳ sau (A53)",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md",
+      "A53",
+      "N-12",
+      "SCR-25",
+      "TM-16",
+      "W9",
+      "RC-27"
+    ],
+    "overview": "Có phiếu sửa duyệt sau xác nhận hoặc trả tiền ghi muộn thì sinh chênh lệch vào kỳ chưa xác nhận kế tiếp, kết quả đã xác nhận giữ nguyên.",
+    "acceptance": [
+      "Kỳ chưa xác nhận trả `PERIOD_NOT_CONFIRMED`; kỳ đích vừa được xác nhận trả `INCENTIVE_STALE`",
+      "Kết quả đã xác nhận của kỳ nguồn không đổi",
+      "Ghi chênh lệch và audit `incentive_adjust` trong cùng giao dịch DB, 0 dòng vẫn ghi audit",
+      "Vai bị chặn gọi thẳng API bị chặn ở API (403 FORBIDDEN) và ở hàm DB (require_actor), không chỉ ẩn nút"
+    ],
+    "roles_allowed": [
+      "ROLE-SETTLEMENT"
+    ],
+    "roles_blocked": [
+      "ROLE-AUDIT-VIEW",
+      "ROLE-DELIVERY",
+      "ROLE-INTAKE",
+      "ROLE-JUDGE",
+      "ROLE-PARTICIPANT-VIEW",
+      "ROLE-PARTY",
+      "ROLE-REPORT-VIEW",
+      "ROLE-RULE-ADMIN",
+      "ROLE-SYS-ADMIN",
+      "ROLE-TRADE"
+    ],
+    "depends_on": [
+      "E11-S06",
+      "E08-S06"
+    ]
+  },
+  {
+    "key": "E11-S07-T01",
+    "type": "devtask",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Biến kỳ đích: `incentive_target_month`, khoá tháng nguồn và đích",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md",
+      "Q4-57",
+      "D4-147"
+    ],
+    "overview": "Chọn tháng sau nhỏ nhất chưa xác nhận, bỏ qua tháng `対象取引なし`; khoá tháng tăng dần.",
+    "acceptance": [
+      "Kỳ đích là kỳ chưa xác nhận sớm nhất sau kỳ nguồn",
+      "Kỳ đích bị xác nhận giữa lúc tìm và lúc khoá trả `INCENTIVE_STALE`",
+      "Không treo với xác nhận của tháng đích"
+    ],
+    "rough_hours": 6
+  },
+  {
+    "key": "E11-S07-T02",
+    "type": "devtask",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Biến chênh lệch do phiếu sửa sau xác nhận (`cause = correction`) và kiểm bất biến",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md",
+      "RC-27"
+    ],
+    "overview": "Tính lại cả nhóm theo từng phiếu theo thứ tự bút toán, mỗi phiếu một dòng; kiểm tổng đã xác nhận cộng chênh lệch đã ghi bằng kết quả tại mốc trước.",
+    "acceptance": [
+      "V2: phiếu giảm 150,000 làm mất cả 13,200, dòng `correction` −13,200",
+      "Bất biến sai thì `raise`, log mức `error`",
+      "Không nhân phần đổi với tỷ lệ"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S07-T03",
+    "type": "devtask",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Biến trả tiền ghi muộn (`cause = late_payment`), ghi chênh lệch: `calculate_incentive_adjustments` và test",
+    "team": "backend",
+    "owner": "BE-A",
+    "spec_refs": [
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md",
+      "W9",
+      "DB 4.19"
+    ],
+    "overview": "Phần còn lại do trả tiền ghi sau mốc thành một dòng; ghi `incentive_adjustments` với `created_at` chung làm mốc lần sau; chống gửi trùng.",
+    "acceptance": [
+      "V9: trả muộn trong hạn sinh dòng `late_payment` dương",
+      "V10: hai dòng `correction` −13,200 và `late_payment` +11,440",
+      "V2b: chạy lại không có gì mới ra 0 dòng"
+    ],
+    "rough_hours": 8
+  },
+  {
+    "key": "E11-S07-T04",
+    "type": "devtask",
+    "parent": "E11-S07",
+    "title": "[SCR-25] A53 tính chênh lệch: API",
+    "team": "backend",
+    "owner": "BE-B",
+    "spec_refs": [
+      "A53"
+    ],
+    "overview": "Route POST `/api/incentives/:month/adjustments`, thêm A53 vào `ACTIONS`.",
+    "acceptance": [
+      "Test route phủ mã HTTP ở A53"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S07-T05",
+    "type": "devtask",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Nút D-3, câu D-4 và hộp G chênh lệch: giao diện",
+    "team": "frontend",
+    "owner": "FE-B",
+    "spec_refs": [
+      "SCR-25",
+      "A53"
+    ],
+    "overview": "D-3 hiện khi kỳ đã xác nhận và A48 trả `pendingChange`; câu `incentive.adjusted`, `incentive.noAdjustment`.",
+    "acceptance": [
+      "F-1 thêm dòng sau khi tính",
+      "A-3 đổi `確定（差額あり）` khi có dòng khác `carry_forward`"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S07-T06",
+    "type": "testdesign",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Chênh lệch: ca kiểm thử",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR_25_CALCULATE_INCENTIVE_ADJUSTMENT_TECH.md"
+    ],
+    "overview": "Ca kiểm thử từ TECH ADJUSTMENT 4.6 (V2, V2b, V9, V10, X9).",
+    "acceptance": [
+      "Mỗi vector một ca có số ra như TECH",
+      "Có ca vai bị chặn"
+    ],
+    "rough_hours": 4
+  },
+  {
+    "key": "E11-S07-T07",
+    "type": "testexecution",
+    "parent": "E11-S07",
+    "title": "[SCR-25] Chênh lệch: QA kiểm",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25"
+    ],
+    "overview": "Chạy ca kiểm thử trên staging.",
+    "acceptance": [
+      "Mọi ca đạt, kết quả kỳ nguồn không đổi"
+    ],
+    "rough_hours": 5
+  },
+  {
+    "key": "E11-S08",
+    "type": "testexecution",
+    "parent": "E11",
+    "title": "[SCR-25] Kiểm thử đầu cuối 完納奨励金 qua ba tháng",
+    "owner": "QA-A",
+    "spec_refs": [
+      "SCR-25",
+      "SCR-21",
+      "SCR-24",
+      "SCR-27",
+      "RC-27",
+      "RC-38"
+    ],
+    "overview": "Luồng đi qua SCR-21, SCR-24, SCR-25: chốt kỳ, ghi trả tay và CSV, tính tạm, xác nhận, phiếu sửa sau xác nhận, chênh lệch, phần âm chuyển kỳ sau, đổi version 料率 giữa kỳ.",
+    "acceptance": [
+      "Ba tháng liền theo kịch bản V2, X9 cho đúng số ở mọi bước",
+      "Mọi thao tác ghi có audit",
+      "Kỳ đã xác nhận không đổi sau phiếu sửa"
+    ],
+    "depends_on": [
+      "E11-S03",
+      "E11-S04",
+      "E11-S07",
+      "E10-S06",
+      "E09-S06"
+    ],
+    "rough_hours": 10
+  },
+  {
+    "key": "E11-S09",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-55] Làm rõ: Nghĩa của trả đủ khi tính 完納奨励金",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-55",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Mặc định: đủ 請求額 có thuế trong hạn mới tính, thiếu thì 0; khác thì sửa E11-S05-T01 và bộ ví dụ biên.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S05-T01"
+    ],
+    "customer_wait": "Khách trả lời Q4-55 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S10",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-58] Làm rõ: Kỳ có hai version 料率",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-58",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Mặc định: so ngưỡng riêng từng version; khác thì sửa E11-S05-T04 và cấu trúc `incentive_results`.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S05-T04"
+    ],
+    "customer_wait": "Khách trả lời Q4-58 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S11",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-59] Làm rõ: Trả quá hạn: bỏ một giao dịch hay cả kỳ",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-59",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Mặc định: chỉ giao dịch quá hạn bằng 0; khác thì sửa E11-S05-T01, dùng kết quả cách đọc khác của X12.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S05-T01"
+    ],
+    "customer_wait": "Khách trả lời Q4-59 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S12",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-60] Làm rõ: Tổng kỳ âm sau khi nhận chênh lệch",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-60",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Mặc định: hiện số âm, chuyển phần âm sang kỳ sau, không thu lại; khác thì sửa E11-S06-T03.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S06-T03"
+    ],
+    "customer_wait": "Khách trả lời Q4-60 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S13",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-63] Làm rõ: Thứ tự so ngưỡng, nhân thuế, làm tròn",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-63",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Mặc định: so ngưỡng trước thuế, cắt phần lẻ một lần; khác thì sửa E11-S05-T03 và bộ ví dụ biên.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S05-T03"
+    ],
+    "customer_wait": "Khách trả lời Q4-63 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S14",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-64] Làm rõ: Huỷ khoản trả ghi nhầm",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-64",
+      "G-01",
+      "SCR-25",
+      "H-04"
+    ],
+    "overview": "Bản đầu chưa có thao tác huỷ, không có issue xây dựng (H-04); khách cần thì thêm story dòng đảo có lý do, người khác duyệt, ước lại lúc đó.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khách cần thao tác huỷ thì tạo story mới ở E11 và ước lại"
+    ],
+    "customer_wait": "Khách trả lời Q4-64 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S15",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-56] Làm rõ: Mẫu file CSV khoản trả, dòng lỗi",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-56",
+      "G-01",
+      "SCR-25",
+      "SCR_25_IMPORT_PAYMENT_CSV_TECH.md"
+    ],
+    "overview": "Mặc định: UTF-8, dấu phẩy, một dòng lỗi thì không nạp cả file. Khách chọn nạp dòng đúng, bỏ dòng sai thì đổi phần kiểm và báo lỗi của nạp CSV.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S03-T02, E11-S03-T03, E11-S03-T05"
+    ],
+    "customer_wait": "Khách trả lời Q4-56 trước sprint làm phần nạp CSV khoản trả",
+    "rough_hours": 2
+  },
+  {
+    "key": "E10-S02-T05",
+    "type": "documentation",
+    "parent": "E10-S02",
+    "title": "[SCR-26] Màn danh sách version 業務規程 / 料率 : thiết kế kỹ thuật ngắn",
+    "owner": "TL-A",
+    "spec_refs": [
+      "SCR-26",
+      "A41",
+      "TM-19",
+      "G-02",
+      "RC-11",
+      "PKT-12"
+    ],
+    "overview": "Màn không có TECH: TL-A viết thiết kế ngắn trong issue trước khi code (PREMISE G-03, G-02).",
+    "acceptance": [
+      "Thiết kế ghi nguồn dữ liệu đọc, bộ lọc, quyền xem theo vai trò, trạng thái rỗng và lỗi",
+      "TL-A duyệt trước khi code"
+    ],
+    "rough_hours": 4,
+    "labels_extra": [
+      "độ tin thấp"
+    ]
+  },
+  {
+    "key": "E11-S16",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-57] Làm rõ: Kỳ nhận chênh lệch sau xác nhận",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-57",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Câu khách chưa trả lời đổi một biến của 完納奨励金; khác mặc định LAB-4 thì sửa E11-S07-T01 và phần 奨励金 của file kế toán E12-S09.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S07-T01, E12-S09"
+    ],
+    "customer_wait": "Khách trả lời Q4-57 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  },
+  {
+    "key": "E11-S17",
+    "type": "investigation",
+    "parent": "E11",
+    "title": "[Q4-61] Làm rõ: Hạn trả đếm ngày lịch hay ngày làm việc",
+    "owner": "BrSE-A",
+    "labels_extra": [
+      "chờ khách"
+    ],
+    "spec_refs": [
+      "Q4-61",
+      "G-01",
+      "SCR-25"
+    ],
+    "overview": "Câu khách chưa trả lời đổi một biến của 完納奨励金; khác mặc định LAB-4 thì sửa E11-S05-T02.",
+    "acceptance": [
+      "Khách trả lời, câu trả lời ghi vào bảng Q4",
+      "Khác mặc định thì sửa và ước lại E11-S05-T02"
+    ],
+    "customer_wait": "Khách trả lời Q4-61 trước sprint làm phần 完納奨励金 liên quan",
+    "rough_hours": 2
+  }
+]
