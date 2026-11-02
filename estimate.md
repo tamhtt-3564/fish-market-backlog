@@ -164,16 +164,16 @@ So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estim
 
 Đội và lịch của LAB-1 không đủ cho GĐ2. Với đội 5,8 người như giả lập Sprint 1 (cam kết 85% năng lực), phần xây dựng E01..E16 còn lại sau Sprint 1 cần số sprint theo từng vai như dưới; GĐ2 còn 7 sprint tính từ Sprint 2:
 
-| Vai | Giờ còn lại (E01..E16) | Năng lực mỗi sprint (giờ) | Sprint cần | Người cần thêm để xong trong 7 sprint |
+| Vai | Giờ còn lại (E01..E16) | Năng lực mỗi sprint (giờ) | Sprint cần | Người cần thêm, vào từ Sprint 3 |
 |---|---|---|---|---|
-| BE-A, BE-B | 743,1 + 727,8 | 51,0 + 51,0 | 14,6; 14,3 | 1,1 + 1,0 |
-| QA-A | 763,0 | 51,0 | 15,0 | 1,1 |
+| BE-A, BE-B | 743,1 + 727,8 | 51,0 + 51,0 | 14,6; 14,3 | 1,3 + 1,2 |
+| QA-A | 763,0 | 51,0 | 15,0 | 1,3 |
 | Design-A | 162,8 | 10,2 | 16,0 | 0,3 |
 | FE-B | 346,7 | 25,5 | 13,6 | 0,5 |
-| FE-A, TL-A, BA-A, Infra-A, BrSE-A | | | 1,1 tới 7,7 | 0 |
-| **Tổng** | | | | **khoảng 4 người** |
+| FE-A, TL-A, BA-A, Infra-A, BrSE-A | | | 1,1 tới 7,7 | 0 (BA-A cần 7,7 sprint, thiếu khoảng 0,02 người, bỏ qua) |
+| **Tổng** | | | | **khoảng 4,7 người** |
 
-Cách tính: giờ còn lại = `estimated-hours.json` của việc lá E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = giờ còn lại / (7 × 60 × 0,85) − số người hiện có. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
+Cách tính: giờ còn lại = `estimated-hours.json` của việc lá E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = (giờ còn lại − năng lực Sprint 2 của đội hiện có) / (6 sprint × 60 × 0,85) − số người hiện có, vì người mới vào từ Sprint 3 chỉ còn 6 sprint. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
 
 Ngoài ra, 3 việc lá sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ thô bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
 

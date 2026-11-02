@@ -1,7 +1,7 @@
 """Ghi kết quả giả lập Sprint 1 (backlog/sprint-1-simulation.json) lên Project #1.
 
 Chạy từ gốc repo:  python scripts/write-sprint-1-to-project.py
-Mỗi việc cam kết: Target version = Sprint 1, Status cuối sprint, Due Date = 2027-01-22,
+Mỗi việc cam kết: Target version = Sprint 1, Status cuối sprint, Due Date = 2027-01-22 (việc chờ khách còn treo: hạn trả lời),
 Start Date = ngày bắt đầu giả lập (việc đã bắt đầu), Spent time = giờ đã làm trong sprint.
 Đóng issue có Status Closed, mở lại issue khác nếu đang đóng (D5-25). Ghi lại cùng giá trị thì không đổi gì nên chạy lại được.
 """
@@ -52,11 +52,18 @@ def main():
     f = {x["name"]: x for x in proj["fields"]["nodes"] if x}
     status_opt = {o["name"]: o["id"] for o in f["Status"]["options"]}
     sprint = next(i["id"] for i in f["Target version"]["configuration"]["iterations"] if i["title"] == sim["sprint"])
+    items = {i["key"]: i for p in sorted((REPO / "backlog").glob("items-*.json"))
+             for i in json.loads(p.read_text(encoding="utf-8"))}
+
+    def due(key, r):
+        """Việc chờ khách còn treo: hạn là hạn trả lời; việc khác: ngày cuối sprint."""
+        return items[key].get("answer_due") if r["status"] == "Pending" and items[key].get("answer_due") else sim["end"]
+
     sets = []
     for key, r in sim["items"].items():
         values = [(f["Target version"]["id"], f'iterationId:"{sprint}"'),
                   (f["Status"]["id"], f'singleSelectOptionId:"{status_opt[r["status"]]}"'),
-                  (f["Due Date"]["id"], f'date:"{sim["end"]}"'),
+                  (f["Due Date"]["id"], f'date:"{due(key, r)}"'),
                   (f["Spent time"]["id"], f'number:{r["spent_hours"]}')]
         if r["start_day"] < len(sim["workdays"]):
             values.append((f["Start Date"]["id"], f'date:"{sim["workdays"][int(r["start_day"])]}"'))

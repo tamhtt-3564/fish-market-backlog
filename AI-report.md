@@ -32,14 +32,14 @@ Công cụ chính: Claude Code (agent chính) chạy trong project luyện tập
 - Mọi số đưa vào file được đọc ngược từ Project, kèm lệnh đếm.
 - Trước khi nộp: một lượt soát độc lập theo 9 vai dùng bài (người chấm, khách, PM, BrSE, BA, TL, dev, QA, Infra), tìm 5 lỗi Nặng; người dùng chọn sửa 3 (so ước lượng theo giai đoạn và theo vai, tóm tắt SCR-25 trong repo, theo dõi issue làm rõ), 2 lỗi còn lại ghi ở mục 3.
 
-**Phát hiện gì, xử lý thế nào.** Nhật ký có 37 lỗi AI.
-- Theo kênh phát hiện (đếm theo cột "Phát hiện thế nào" của nhật ký): 21 lỗi do soát độc lập bắt, 12 lỗi do agent chính tự kiểm lại trước khi trình, 3 lỗi do agent con tự báo, 1 lỗi phát hiện khi gộp bảng phủ.
+**Phát hiện gì, xử lý thế nào.** Nhật ký có 40 lỗi AI.
+- Theo kênh phát hiện (đếm theo cột "Phát hiện thế nào" của nhật ký): 24 lỗi do soát độc lập bắt, 12 lỗi do agent chính tự kiểm lại trước khi trình, 3 lỗi do agent con tự báo, 1 lỗi phát hiện khi gộp bảng phủ.
 - Theo kiểu lỗi:
 
 | Kiểu lỗi | Lỗi | Xử lý chung |
 |---|---|---|
-| Viết hoặc kết luận trước khi đọc nguồn hay đếm | L-01, L-02, L-03, L-06, L-09, L-17, L-19, L-24, L-26, L-29, L-32, L-33, L-34 | Mỗi số trong file kèm lệnh đếm; mở nguồn trước khi viết lý do; kết luận dự báo phải theo số đã đo (L-26, L-29) |
-| Script hoặc mô hình máy làm sai nghĩa nghiệp vụ | L-14, L-15, L-21, L-22, L-23, L-25, L-27 | Soát kết quả máy theo nghĩa nghiệp vụ, không chỉ chạy được; lỗi nặng nhất là L-25: giả lập cho 14 việc kiểm thử, giao diện xong trước khi có mã, báo cáo kết luận "đi gần đúng kế hoạch". Sửa bằng 456 phụ thuộc bổ sung vào backlog (người dùng chọn sửa vào dữ liệu thay vì chỉ sửa giả lập), chạy lại giả lập |
+| Viết hoặc kết luận trước khi đọc nguồn hay đếm | L-01, L-02, L-03, L-06, L-09, L-17, L-19, L-24, L-26, L-29, L-32, L-33, L-34, L-38, L-40 | Mỗi số trong file kèm lệnh đếm; mở nguồn trước khi viết lý do; kết luận dự báo phải theo số đã đo (L-26, L-29) |
+| Script hoặc mô hình máy làm sai nghĩa nghiệp vụ | L-14, L-15, L-21, L-22, L-23, L-25, L-27, L-39 | Soát kết quả máy theo nghĩa nghiệp vụ, không chỉ chạy được; lỗi nặng nhất là L-25: giả lập cho 14 việc kiểm thử, giao diện xong trước khi có mã, báo cáo kết luận "đi gần đúng kế hoạch". Sửa bằng 456 phụ thuộc bổ sung vào backlog (người dùng chọn sửa vào dữ liệu thay vì chỉ sửa giả lập), chạy lại giả lập |
 | Chia việc bằng nhiều agent | L-04, L-05, L-07, L-12 | Việc nằm giữa hai nhóm, tiêu chí chép đồng loạt, sub trùng: gộp rồi soát chéo; agent con được phép không làm theo brief sai (L-04) |
 | Dẫn mã sai, bảng thiếu mã hay thiếu liên kết, dùng cách xử lý ngoài đề | L-08, L-20, L-30, L-31, L-35, L-36 | Đối chiếu cột "issue bị ảnh hưởng" của PREMISE và đếm đủ danh sách mã A1..A53, N-01..N-25 bằng lệnh |
 | Sửa một chỗ không lan, sửa không đủ | L-13, L-16, L-28 | Sửa xong tìm mọi chỗ dùng cùng ý; kiểm lại đúng ví dụ người soát đã nêu |
@@ -50,12 +50,12 @@ Công cụ chính: Claude Code (agent chính) chạy trong project luyện tập
 **Chỗ tin là hiệu quả.**
 - Một nguồn dữ liệu duy nhất (`backlog/items-*.json`), mọi bảng, issue, SWP, giờ sinh bằng script. Sửa dữ liệu một chỗ rồi chạy lại là mọi nơi khớp; chạy lại không tạo trùng (kiểm 792 issue, 0 trùng).
 - Đọc ngược Project sau mỗi lần ghi, so với file (Story Point, Estimated time, trạng thái Sprint 1 đều 0 mục lệch). Số trong báo cáo vì vậy có bằng chứng từ Project, không từ trí nhớ của agent.
-- Soát độc lập bằng agent không tham gia soạn bắt được hơn nửa số lỗi (21/37), trong đó có lỗi nặng mà người soạn không thấy (L-25).
+- Soát độc lập bằng agent không tham gia soạn bắt được hơn nửa số lỗi (24/40), trong đó có lỗi nặng mà người soạn không thấy (L-25).
 - Giả lập có hạt ngẫu nhiên cố định nên người soát chạy lại được và ra cùng kết quả; lệch kế hoạch đến từ mô hình, không viết tay.
 - Đưa người dùng câu hỏi có phương án và số liệu đi kèm (ví dụ cách quy giờ) giúp quyết nhanh mà vẫn là người quyết.
 
 **Chỗ chưa tốt, cần cải thiện khi làm thật.**
-- Lỗi lặp lại nhiều lần cùng kiểu: viết hoặc kết luận trước khi đọc nguồn hay đếm (13 lỗi); sửa một chỗ không lan, sửa không đủ (3 lỗi). Làm thật nên đưa vào cổng máy phép đối chiếu chéo số đếm giữa các file, thay vì chỉ dựa vào soát.
+- Lỗi lặp lại nhiều lần cùng kiểu: viết hoặc kết luận trước khi đọc nguồn hay đếm (15 lỗi); sửa một chỗ không lan, sửa không đủ (3 lỗi). Làm thật nên đưa vào cổng máy phép đối chiếu chéo số đếm giữa các file, thay vì chỉ dựa vào soát.
 - Thứ tự phụ thuộc trong story (kiểm thử chờ mã, giao diện chờ API, việc cần staging chờ môi trường) chỉ được bổ sung ở bước 6, sau khi giả lập lộ lỗi. Làm thật nên đặt luật này ngay khi chia task ở bước 2.
 - SWP phân biệt việc to nhỏ kém: 415/654 việc cùng 3 SWP, tương quan với giờ thô 0,52. Skill giới hạn 5 issue mẫu, 4 trong 5 là việc ngoại lệ; phải kiểm thêm 2 issue ngoài skill. Làm thật nên chọn mẫu theo từng nhóm việc chính.
 - Agent chấm riêng của skill không có quyền đọc file nên phải thay bằng agent thường (L-18, ghi ở caveats của báo cáo HTML).
@@ -114,3 +114,6 @@ Chép từ nhật ký lỗi AI của LAB-5, đánh số theo thứ tự ghi.
 | L-35 | 2026-11-02 | 2, 6 | 16/18 issue làm rõ không nối tới issue chịu ảnh hưởng, không có hạn trả lời; 7 câu Closed trong giả lập mà không ghi câu trả lời, vẫn mang nhãn chờ khách | Soát độc lập theo 9 vai trước khi nộp (vai BrSE) | `scripts/record-clarification-follow-up.py`: ghi issue chịu ảnh hưởng, hạn, câu trả lời giả lập, gỡ nhãn; cập nhật thân issue |
 | L-36 | 2026-11-02 | 1..7 | File nộp dẫn mã sổ quyết định và mã báo cáo soát (D5-xx, V6, N3) nằm ngoài repo, người chấm không kiểm được; spec SCR-25 mà backlog dựa nhiều nhất chỉ ở repo private | Soát độc lập theo 9 vai trước khi nộp (vai người chấm) | Thay mã bằng lý do ngắn; thêm tóm tắt SCR-25 tự viết ở `spec-summary/`, trỏ từ PREMISE S-01 |
 | L-37 | 2026-11-02 | Sửa trước nộp | Chạy script cập nhật thân issue rồi chuyển đầu ra sang lệnh `head -1`: script bị dừng sau dòng in đầu, không cập nhật issue nào mà vẫn tưởng xong | Lần chạy kiểm thứ hai vẫn báo 17 issue cũ; so thân một issue với bản sinh từ file | Chạy lại không cắt đầu ra, kiểm còn 0 issue cũ |
+| L-38 | 2026-11-02 | Sửa trước nộp | Phương án (a) ghi "tăng đội từ Sprint 3" nhưng số người theo vai lấy từ bảng tính cho 7 sprint bắt đầu Sprint 2 (4 người thay vì 4,7); ô BA ghi 0 người khi còn thiếu 0,02 (kết luận không theo đúng mốc đã nêu) | Kiểm độc lập phần sửa theo vai | Tính lại theo 6 sprint cho người vào từ Sprint 3: 4,7 người (BE 2,5, QA 1,3, FE 0,5, Design 0,3); ghi chú BA |
+| L-39 | 2026-11-02 | Sửa trước nộp | Script theo dõi issue làm rõ chỉ đặt Due Date cho việc ngoài sprint: 3 câu còn chờ trong Sprint 1 (#83, #135, #138) mang Due Date cuối sprint, lệch hạn trả lời ghi trong thân issue | Kiểm độc lập phần sửa theo vai, so Project với JSON | Đặt Due Date cho mọi câu chưa trả lời; script ghi sprint dùng hạn trả lời cho việc Pending |
+| L-40 | 2026-11-02 | Sửa trước nộp | Tóm tắt SCR-25 viết rộng hơn nguồn: "file kế toán đọc từ các bảng này" (thật: chỉ khoản trả, chênh lệch không vào file kế toán, SCR-30 chưa có spec) và ghi "đếm ngày lịch" như đã chốt (thật: giả định chờ Q4-61) | Kiểm độc lập phần sửa theo vai, đối chiếu spec gốc | Sửa hai câu theo nguồn |

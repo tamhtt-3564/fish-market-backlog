@@ -17,7 +17,7 @@ Bộ spec LAB-4 nằm ở repo private `fish-market-prototype` (nhánh `lab4-spe
 
 ## 2. Quy tắc tính (RC-27)
 
-1. Giao dịch đã xác nhận trong tháng mới được xét. Mỗi giao dịch có hạn trả = ngày nghiệp vụ cộng số ngày theo version 業務規程, đếm ngày lịch giờ Nhật; trả đúng ngày hạn vẫn là trong hạn.
+1. Giao dịch đã xác nhận trong tháng mới được xét. Mỗi giao dịch có hạn trả = ngày nghiệp vụ cộng số ngày theo version 業務規程, đếm ngày lịch giờ Nhật (giả định, chờ khách ở Q4-61); trả đúng ngày hạn vẫn là trong hạn.
 2. Giao dịch được tính khi tổng tiền trả trong hạn đủ số phải trả (có thuế). Quá hạn hoặc thiếu tiền thì giao dịch đó không tính; không có ân hạn. Một giao dịch quá hạn chỉ làm giao dịch đó bằng 0, không làm cả kỳ bằng 0 (cách đọc này chờ khách, Q4-59).
 3. Cộng tiền trước thuế của các giao dịch được tính theo người tham gia và version 料率. So với ngưỡng của loại người tham gia: bằng hoặc vượt ngưỡng thì có thưởng.
 4. Thưởng = tổng trước thuế × tỷ lệ × hệ số thuế 110/100, cắt phần lẻ yên một lần ở bước cuối. Thứ tự phép tính này quyết định kết quả nên chỉ có một hàm DB chứa công thức (thứ tự chờ khách xác nhận, Q4-63).
@@ -36,7 +36,7 @@ Bộ spec LAB-4 nằm ở repo private `fish-market-prototype` (nhánh `lab4-spe
 
 - Đợt migration 9: 3 bảng mới (khoản trả, kết quả theo kỳ, chênh lệch), ràng buộc, chỉ mục, quyền đọc theo dòng, trigger chặn sửa kết quả đã xác nhận.
 - 5 TECH: ghi khoản trả, nạp CSV, chạy tính, xác nhận, tính chênh lệch; mỗi TECH có thứ tự kiểm, mã lỗi, audit, ví dụ số.
-- File kế toán (SCR-30) có phần 奨励金 đọc từ các bảng này.
+- File kế toán (SCR-30, chưa có spec ở LAB-4) có phần 奨励金 lấy khoản trả ghi ở màn này (issue E12-S09); chênh lệch không đưa vào file kế toán (câu QA của màn).
 
 ## 5. Câu hỏi khách còn mở và issue làm rõ
 

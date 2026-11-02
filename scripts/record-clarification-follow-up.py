@@ -4,8 +4,8 @@ Chạy từ gốc repo:  python scripts/record-clarification-follow-up.py [--git
 1. Ghi vào backlog/items-*.json: `affects` (mã issue chịu ảnh hưởng, lấy từ nội dung issue, thêm tay chỗ nội dung
    không ghi mã), `answer_due` (hạn trả lời), và với việc đã Closed trong giả lập Sprint 1: `answer` (câu trả lời
    giả lập) và gỡ nhãn `chờ khách` (giữ `customer_wait` làm lịch sử).
-2. --github: gỡ nhãn `chờ khách` trên GitHub cho việc đã trả lời; đặt Due Date trên Project = `answer_due` cho việc
-   chưa vào sprint. Thân issue cập nhật bằng `python scripts/create-project-issues.py --refresh-bodies`.
+2. --github: gỡ nhãn `chờ khách` trên GitHub cho việc đã trả lời; đặt Due Date trên Project = `answer_due` cho mọi
+   việc chưa có câu trả lời. Thân issue cập nhật bằng `python scripts/create-project-issues.py --refresh-bodies`.
 Hạn trả lời: việc trong Sprint 1 còn chờ thì theo bảng rủi ro của progress-report.md; việc chưa vào sprint dùng hạn
 tạm hết Sprint 2 (2027-02-05), dời sớm hơn khi xếp sprint cho issue chịu ảnh hưởng.
 """
@@ -64,7 +64,7 @@ def sync_github(items, answered, sim):
     proj = gql("""query{user(login:"tamhtt-3564"){projectV2(number:1){id field(name:"Due Date"){... on ProjectV2Field{id}}}}}""")
     pid, fid = proj["user"]["projectV2"]["id"], proj["user"]["projectV2"]["field"]["id"]
     for key, it in sorted(items.items()):
-        if it["type"] == "investigation" and key not in sim["items"]:
+        if it["type"] == "investigation" and not it.get("answer"):  # chưa trả lời, kể cả việc chờ trong Sprint 1
             gql("mutation($p:ID!,$i:ID!,$f:ID!,$d:Date!){updateProjectV2ItemFieldValue(input:{projectId:$p,itemId:$i,fieldId:$f,value:{date:$d}}){clientMutationId}}",
                 {"p": pid, "i": state[key]["item"], "f": fid, "d": it["answer_due"]})
             print(f"Due Date {it['answer_due']}: {key} #{state[key]['number']}", flush=True)

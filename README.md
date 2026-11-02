@@ -28,7 +28,7 @@
 | `task-breakdown.md` | Nguyên tắc chia task; bảng spec → issue; hạng mục 完納奨励金; chỗ hở của spec LAB-4 |
 | `estimate.md` | Báo cáo HTML, issue mẫu đã duyệt, cách quy giờ, tổng theo epic, so với LAB-1 |
 | `progress-report.md` | Báo cáo tiến độ Sprint 1 giả lập: trạng thái, burndown, rủi ro trễ |
-| `AI-report.md` | Skill, prompt đã dùng cho từng việc (kể cả cách ghi SWP lên Project); cách review và 37 lỗi AI đã bắt; chỗ hiệu quả, chỗ cần cải thiện |
+| `AI-report.md` | Skill, prompt đã dùng cho từng việc (kể cả cách ghi SWP lên Project); cách review và 40 lỗi AI đã bắt; chỗ hiệu quả, chỗ cần cải thiện |
 | `backlog/` | Dữ liệu gốc của backlog: 5 file `items-*.json` (792 mục, khuôn ở `backlog-item-format.md`), số issue GitHub (`issue-numbers.json`), SWP và giờ đã chốt (`story-points.json`, `estimated-hours.json`), quan hệ blocked by đã nối và phần vượt giới hạn GitHub, kết quả giả lập Sprint 1 |
 | `estimate/` | `reports/`: báo cáo HTML của skill `tkm:sun-estimate` |
 | `scripts/` | Script tạo issue, gắn link, kiểm dữ liệu, bổ sung phụ thuộc, quy giờ, ghi SWP và giờ lên Project, giả lập và ghi Sprint 1; mỗi script ghi cách chạy ở đầu file |
