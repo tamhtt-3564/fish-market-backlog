@@ -92,6 +92,8 @@ Trạng thái đi theo mẫu. Việc xây dựng: `In Progress` → `In Review` 
 | E18 | Kiểm thử hệ thống và phi chức năng | Kiến trúc mục 8, NFR, ma trận quyền (QT-xx) |
 | E19 | Vận hành, đào tạo, hỗ trợ UAT, bàn giao | C-18, C-20; kiến trúc 8.1, 8.3; mục 1.3 |
 
+Trên Project #1 (https://github.com/users/tamhtt-3564/projects/1): 19 epic, 161 issue, 612 sub-issue, cộng 792 mục (đếm: `python scripts/validate-backlog-items.py --summary`, tầng tính theo số dấu `-` của mã; trên GitHub cùng 792 issue, 0 trùng).
+
 ## 2. Spec → issue
 
 Bảng sinh từ dữ liệu backlog bằng `python scripts/render-spec-to-issue-table.py <thư mục specs LAB-4>`; cột Issue ghi mã mục, mỗi mã là link tới issue trên GitHub (gắn bằng `python scripts/link-backlog-keys-to-issues.py task-breakdown.md PREMISE.md`, số issue lấy ở `backlog/issue-numbers.json`). Đơn vị spec: 27 TECH, 34 màn, 10 đợt migration, 8 việc LAB-4 chuyển sang LAB-5. API, câu Q4, PKT, ADR đối chiếu ở bảng phủ của từng nhóm khi chia; mọi API đều nằm trong issue của TECH hoặc màn tương ứng (kiểm bằng lệnh: 53 mã A1..A53 và 25 mã N-01..N-25 đều có trong `spec_refs` hoặc tiêu đề của ít nhất một mục).
