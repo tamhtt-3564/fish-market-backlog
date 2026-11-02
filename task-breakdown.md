@@ -79,16 +79,16 @@ Thứ tự bổ sung sau soát bước 6 (D5-25, D5-26; quan hệ blocked by tr�
 | E03 | Đăng nhập, tài khoản, phân quyền | SCR-01, 02, 07, 08; A1..A5, N-01, N-02; ADR-006, 014, 019; PKT-11 |
 | E04 | Người tham gia và tư cách tham gia | SCR-03..06; A6..A9, A15, N-03, N-04, N-25; ADR-011 |
 | E05 | Tiếp nhận lô và 目利き | SCR-09..12; A10..A14; H-02 |
-| E06 | Giao dịch 相対 / せり | SCR-13..16; A16..A20, A33, A34 |
-| E07 | Giao nhận | SCR-17..19; A21..A25, A37 |
-| E08 | Phiếu điều chỉnh và file đính kèm | SCR-23, 24; A29..A31, A35, A36, A45..A47 |
-| E09 | Đối soát, khoá ngày, mở lại sổ, chốt kỳ | SCR-20, 21; A26..A28, A38..A40, N-24; ADR-009 |
-| E10 | Version 業務規程 / 料率 | SCR-26, 27; A41..A44; ADR-012 |
-| E11 | **完納奨励金** | SCR-25; A48..A53; đợt migration 9; Q4-55, 56, 57, 58, 59, 60, 61, 63, 64 |
+| E06 | Giao dịch 相対 / せり | SCR-13..16; A16..A20, A33, A34, N-05 |
+| E07 | Giao nhận | SCR-17..19; A21..A25, A37, N-07 |
+| E08 | Phiếu điều chỉnh và file đính kèm | SCR-23, 24; A29..A31, A35, A36, A45..A47, N-06, N-19 |
+| E09 | Đối soát, khoá ngày, mở lại sổ, chốt kỳ | SCR-20, 21; A26..A28, A38..A40, N-08, N-09, N-24; ADR-009 |
+| E10 | Version 業務規程 / 料率 | SCR-26, 27; A41..A44, N-13; ADR-012 |
+| E11 | **完納奨励金** | SCR-25; A48..A53, N-11, N-12; đợt migration 9; Q4-55, 56, 57, 58, 59, 60, 61, 63, 64 |
 | E12 | Báo cáo, in chứng từ, xuất kế toán | SCR-28..30; N-14, N-15; ADR-005, 007 |
 | E13 | Thông báo và việc nền | SCR-31; N-16, N-17, N-23; ADR-004; G-05 |
 | E14 | Mất mạng và đồng bộ | SCR-34; N-20, N-21; ADR-003 |
-| E15 | Audit, lưu trữ, xoá theo hạn | SCR-32, 33; N-18; ADR-008, 015; H-03 |
+| E15 | Audit, lưu trữ, xoá theo hạn | SCR-32, 33; A32, N-18; ADR-008, 015; H-03 |
 | E16 | Tranh chấp | SCR-22; N-10 |
 | E17 | Chuyển đổi dữ liệu và vùng lịch sử | ADR-017; C-16, C-19; N-22 |
 | E18 | Kiểm thử hệ thống và phi chức năng | Kiến trúc mục 8, NFR, ma trận quyền (QT-xx) |
