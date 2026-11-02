@@ -63,6 +63,12 @@ def body(it):
                   f"- Bị chặn (chặn ở hàm DB hoặc API): {', '.join(it.get('roles_blocked', [])) or 'không có'}", ""]
     if it.get("customer_wait"):
         lines += ["## Chờ khách", it["customer_wait"], ""]
+    if it.get("affects"):  # issue làm rõ: #số để GitHub tự nối hai chiều
+        numbers = json.loads(STATE.read_text(encoding="utf-8")) if STATE.exists() else {}
+        refs = [f"#{numbers[k]['number']} ({k})" if k in numbers else k for k in it["affects"]]
+        lines += ["## Issue chịu ảnh hưởng", ", ".join(refs), "", f"Hạn trả lời: {it['answer_due']}", ""]
+    if it.get("answer"):
+        lines += ["## Câu trả lời của khách", it["answer"], ""]
     if it.get("team"):
         lines += ["## Technical Approach", f"Team: {it['team']}", ""]
     lines.append(f"Mã backlog: `{it['key']}`. Nguồn: `backlog/items-*.json` của repo này.")

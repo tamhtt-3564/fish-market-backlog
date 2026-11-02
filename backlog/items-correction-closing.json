@@ -2437,16 +2437,19 @@
       "SCR-21",
       "SCR_21_LOCK_BUSINESS_DAY_TECH.md"
     ],
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "overview": "Hỏi khách ai quản lý lịch chợ và hệ thống có cần biết ngày nghỉ không. Mặc định LAB-4 không giữ lịch, cảnh báo chỉ bật khi ngày có dữ liệu; khách chọn khác thì thêm màn quản lý lịch và đổi cảnh báo khoá ngày.",
     "acceptance": [
       "Câu trả lời của khách ghi vào bảng Q4",
       "Nếu khác mặc định: ước lại E09-S03 và thêm issue màn quản lý lịch"
     ],
     "customer_wait": "Khách trả lời Q4-46 trước sprint làm E09-S03 (cảnh báo chưa khoá ngày)",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E09-S03"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-20: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E09-S11",

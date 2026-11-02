@@ -128,6 +128,7 @@ def main():
     check_ai_punctuation(files + backlog_data_files(), errors)
     # Báo cáo HTML của skill chấm SWP chứa tiêu đề, lý do chấm: quét chép RFP; dấu câu do skill sinh nên không quét
     skill_files = sorted(p for p in (REPO / "skills").rglob("*") if p.suffix in {".md", ".py"})
+    skill_files += sorted((REPO / "spec-summary").rglob("*.md"))  # tóm tắt spec tự viết: quét như file nộp
     check_rfp_copy(files + backlog_data_files() + sorted((REPO / "estimate").rglob("*.html")) + skill_files, errors, warnings)
     check_ai_punctuation(skill_files, errors)
     check_secrets(errors)

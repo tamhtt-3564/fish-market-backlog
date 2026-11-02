@@ -1,23 +1,23 @@
 # Báo cáo dùng AI (LAB-5)
 
-Công cụ chính: Claude Code (agent chính) chạy trong project luyện tập, gọi skill của bộ Takumi, agent con và script trong `scripts/`. Mã lỗi L-xx dẫn tới bảng nhật ký lỗi AI ở cuối file. Mã D5-xx là dòng sổ quyết định LAB-5 (ghi ở project luyện tập, tóm tắt trong cột "Sửa thế nào" của nhật ký).
+Công cụ chính: Claude Code (agent chính) chạy trong project luyện tập, gọi skill của bộ Takumi, agent con và script trong `scripts/`. Mã lỗi L-xx dẫn tới bảng nhật ký lỗi AI ở cuối file. Mã D5-xx còn trong bảng nhật ký là dòng sổ quyết định LAB-5, sổ này ở project luyện tập, không nộp; nội dung quyết định đã tóm tắt ngay trong câu chứa mã.
 
 ## 1. Skill và prompt cho từng việc
 
 | Việc | Skill, agent, script | Prompt viết thế nào |
 |---|---|---|
 | Lập kế hoạch, PREMISE (bước 0, 1) | Agent chính; skill tự viết `lab5-review-backlog-output` (thư mục `skills/`) để soát | Mỗi bước có một prompt ngắn nêu đầu vào (bộ spec LAB-4 commit `21bbe4b`, sổ D4-xx, estimate LAB-1), đầu ra, luật repo public (không chép RFP, không dữ liệu cá nhân). Chỗ cần người quyết thì agent hỏi bằng câu chọn có 2 tới 4 phương án và một phương án đề xuất |
-| Chia task (bước 2) | 5 agent con chạy song song, mỗi agent một nhóm epic; `scripts/validate-backlog-items.py`, `render-spec-to-issue-table.py`; skill `tkm:ask-expert` soát nguyên tắc chia việc theo từng vai | Brief cho mỗi agent gồm: nhóm epic và danh sách file spec phải đọc, khuôn JSON (`backlog/backlog-item-format.md`), luật độ hạt (việc lá tối đa 14 giờ, tức 2 ngày), 11 vai phụ trách, nhãn, vai trò người dùng được làm và bị chặn, file đầu ra. Agent chính gộp 5 file, chạy script kiểm và bảng phủ hai chiều spec ↔ issue. Prompt `tkm:ask-expert`: "review trước mấy nguyên tắc trên đủ mọi role tham gia dự án", ra 7 điểm sửa (D5-14) |
+| Chia task (bước 2) | 5 agent con chạy song song, mỗi agent một nhóm epic; `scripts/validate-backlog-items.py`, `render-spec-to-issue-table.py`; skill `tkm:ask-expert` soát nguyên tắc chia việc theo từng vai | Brief cho mỗi agent gồm: nhóm epic và danh sách file spec phải đọc, khuôn JSON (`backlog/backlog-item-format.md`), luật độ hạt (việc lá tối đa 14 giờ, tức 2 ngày), 11 vai phụ trách, nhãn, vai trò người dùng được làm và bị chặn, file đầu ra. Agent chính gộp 5 file, chạy script kiểm và bảng phủ hai chiều spec ↔ issue. Prompt `tkm:ask-expert`: "review trước mấy nguyên tắc trên đủ mọi role tham gia dự án", ra 7 điểm sửa, người dùng chọn sửa cả 7 |
 | Tạo issue (bước 3) | `scripts/create-project-issues.py` qua `gh api graphql` | Agent chính viết script từ khuôn JSON: tạo issue cha trước con, gắn sub-issue, nhãn, Status, Phụ trách; ghi số issue dần vào file nên chạy lại được sau khi bị ngắt; đi chậm dưới giới hạn tạo nội dung của GitHub |
-| Chấm SWP (bước 4, soát góc PM đầu bước 5) | Skill `tkm:sun-estimate`; 5 agent con chấm 5 lô; `tkm:ask-expert` soát dưới góc PM | Prompt gọi skill: "Chấm SWP cho backlog trên Project #1 (792 mục), ra báo cáo HTML trong `estimate/`; người dùng chốt issue mẫu trước khi ghi Story Point". Mỗi agent chấm nhận một file luật chấm (ma trận Scope × Complexity, từ vựng dấu hiệu, mức tin) và một file lô, chỉ đọc ghi trong thư mục tạm, tự kiểm JSON trước khi trả. Skill tự chọn 5 issue mẫu; người duyệt từng issue qua hai câu hỏi (mức khó, rồi điểm cụ thể). Prompt `tkm:ask-expert`: "review bước 4 as an expert PM", ra 3 vấn đề và khuyến nghị kiểm thêm 2 issue QA, FE (D5-22) |
+| Chấm SWP (bước 4, soát góc PM đầu bước 5) | Skill `tkm:sun-estimate`; 5 agent con chấm 5 lô; `tkm:ask-expert` soát dưới góc PM | Prompt gọi skill: "Chấm SWP cho backlog trên Project #1 (792 mục), ra báo cáo HTML trong `estimate/`; người dùng chốt issue mẫu trước khi ghi Story Point". Mỗi agent chấm nhận một file luật chấm (ma trận Scope × Complexity, từ vựng dấu hiệu, mức tin) và một file lô, chỉ đọc ghi trong thư mục tạm, tự kiểm JSON trước khi trả. Skill tự chọn 5 issue mẫu; người duyệt từng issue qua hai câu hỏi (mức khó, rồi điểm cụ thể). Prompt `tkm:ask-expert`: "review bước 4 as an expert PM", ra 3 vấn đề và khuyến nghị kiểm thêm 2 issue QA, FE (người dùng chọn làm) |
 | Ghi SWP lên Project | Agent chính chạy `scripts/write-story-points-to-project.py` | Skill chấm SWP chỉ đọc, không ghi Project. Sau khi người duyệt issue mẫu, agent chính xuất SWP đã duyệt từ payload đã kiểm của skill ra `backlog/story-points.json` (một lệnh chạy một lần, không có script riêng trong repo), rồi chạy script ghi Story Point cho 792 mục, thêm Scope, Complexity cho 654 việc lá (gộp 10 lệnh `updateProjectV2ItemFieldValue` mỗi lần gọi, chạy nền). Ghi xong, agent đọc ngược trường Story Point của 792 mục từ Project, so với file: 0 mục lệch, tổng 19 epic bằng tổng 654 việc lá (2.187). Không giao bước ghi cho agent con, để agent chính đối chiếu được ngay |
-| Quy giờ (bước 5) | `scripts/convert-story-points-to-hours.py` (tính giờ, ghi `backlog/estimated-hours.json`), `write-story-points-to-project.py --only-hours` (ghi Estimated time lên Project); agent con soát độc lập | Agent chính đưa người dùng 3 cách quy kèm số liệu lệch theo vai (một hệ số chung làm QA dư khoảng 32%, FE-B thiếu khoảng 32%); người dùng chọn hệ số theo vai (D5-22). Script áp một quy tắc cho mọi việc; script thứ hai ghi Estimated time lên Project; agent đọc ngược kiểm 0 lệch |
+| Quy giờ (bước 5) | `scripts/convert-story-points-to-hours.py` (tính giờ, ghi `backlog/estimated-hours.json`), `write-story-points-to-project.py --only-hours` (ghi Estimated time lên Project); agent con soát độc lập | Agent chính đưa người dùng 3 cách quy kèm số liệu lệch theo vai (một hệ số chung làm QA dư khoảng 32%, FE-B thiếu khoảng 32%); người dùng chọn hệ số theo vai. Script áp một quy tắc cho mọi việc; script thứ hai ghi Estimated time lên Project; agent đọc ngược kiểm 0 lệch |
 | Báo cáo tiến độ (bước 6) | `scripts/simulate-sprint-1.py` (hạt ngẫu nhiên cố định), `write-sprint-1-to-project.py`, `add-implicit-story-dependencies.py`; agent con soát 2 lượt | Giả định của giả lập ghi trong mã và chép sang mục 1 của báo cáo. Báo cáo viết từ số đọc ngược trên Project, không từ trí nhớ của agent. Prompt soát dặn riêng: tìm việc Closed trước khi việc phụ thuộc xong, kiểm phép tính dự báo, câu chữ gửi khách được |
 | Soát từng bước (bước 0 tới 8) | Skill tự viết `lab5-review-backlog-output`: cổng máy `run-lab5-backlog-gate.py` và câu hỏi B1..B9. Bước 2, 5, 6, 7, 8 có agent con soát độc lập; bước 0, 1, 3, 4 do agent chính tự soát theo skill | Prompt soát theo một khuôn: đường dẫn làm việc, nơi ghi báo cáo, phạm vi bước, các phép kiểm bắt buộc (đếm lại, đọc Project chỉ bằng query, đối chiếu nguồn), ràng buộc "chỉ ghi báo cáo soát, không sửa file nộp, không sửa Project", đầu ra (kết luận, số lỗi theo mức, dòng đề xuất nhật ký) |
 
 ## 2. Review output của AI
 
-**Người review ở đâu.** Trong 26 quyết định D5-xx, 18 do người dùng chọn hoặc duyệt. Các chặng người quyết:
+**Người review ở đâu.** Trong 26 quyết định ghi ở sổ quyết định LAB-5, 18 do người dùng chọn hoặc duyệt. Các chặng người quyết:
 - chốt phạm vi, cách xử lý 9 màn chưa có spec và câu hỏi khách (bước 1);
 - duyệt từng bước sau khi máy soát Đạt; chọn theo mẫu Project công ty; chọn cách sửa khi soát ra lỗi;
 - duyệt 5 issue mẫu của skill và 2 issue kiểm thêm;
@@ -30,39 +30,44 @@ Công cụ chính: Claude Code (agent chính) chạy trong project luyện tập
 - Script kiểm dữ liệu backlog chạy sau mỗi lần sửa.
 - Agent con soát độc lập, không tham gia soạn, ở bước 2 (3 lượt), 5, 6 (2 lượt), 7, 8. Bước 0, 1, 3, 4 do agent chính tự soát theo skill; bước 4 có thêm lượt `tkm:ask-expert` soát góc PM.
 - Mọi số đưa vào file được đọc ngược từ Project, kèm lệnh đếm.
+- Trước khi nộp: một lượt soát độc lập theo 9 vai dùng bài (người chấm, khách, PM, BrSE, BA, TL, dev, QA, Infra), tìm 5 lỗi Nặng; người dùng chọn sửa 3 (so ước lượng theo giai đoạn và theo vai, tóm tắt SCR-25 trong repo, theo dõi issue làm rõ), 2 lỗi còn lại ghi ở mục 3.
 
-**Phát hiện gì, xử lý thế nào.** Nhật ký có 33 lỗi AI.
-- Theo kênh phát hiện (đếm theo cột "Phát hiện thế nào" của nhật ký): 18 lỗi do soát độc lập bắt, 11 lỗi do agent chính tự kiểm lại trước khi trình, 3 lỗi do agent con tự báo, 1 lỗi phát hiện khi gộp bảng phủ.
+**Phát hiện gì, xử lý thế nào.** Nhật ký có 37 lỗi AI.
+- Theo kênh phát hiện (đếm theo cột "Phát hiện thế nào" của nhật ký): 21 lỗi do soát độc lập bắt, 12 lỗi do agent chính tự kiểm lại trước khi trình, 3 lỗi do agent con tự báo, 1 lỗi phát hiện khi gộp bảng phủ.
 - Theo kiểu lỗi:
 
 | Kiểu lỗi | Lỗi | Xử lý chung |
 |---|---|---|
-| Viết hoặc kết luận trước khi đọc nguồn hay đếm | L-01, L-02, L-03, L-06, L-09, L-17, L-19, L-24, L-26, L-29, L-32, L-33 | Mỗi số trong file kèm lệnh đếm; mở nguồn trước khi viết lý do; kết luận dự báo phải theo số đã đo (L-26, L-29) |
-| Script hoặc mô hình máy làm sai nghĩa nghiệp vụ | L-14, L-15, L-21, L-22, L-23, L-25, L-27 | Soát kết quả máy theo nghĩa nghiệp vụ, không chỉ chạy được; lỗi nặng nhất là L-25: giả lập cho 14 việc kiểm thử, giao diện xong trước khi có mã, báo cáo kết luận "đi gần đúng kế hoạch". Sửa bằng 456 phụ thuộc bổ sung vào backlog (D5-25, D5-26), chạy lại giả lập |
+| Viết hoặc kết luận trước khi đọc nguồn hay đếm | L-01, L-02, L-03, L-06, L-09, L-17, L-19, L-24, L-26, L-29, L-32, L-33, L-34 | Mỗi số trong file kèm lệnh đếm; mở nguồn trước khi viết lý do; kết luận dự báo phải theo số đã đo (L-26, L-29) |
+| Script hoặc mô hình máy làm sai nghĩa nghiệp vụ | L-14, L-15, L-21, L-22, L-23, L-25, L-27 | Soát kết quả máy theo nghĩa nghiệp vụ, không chỉ chạy được; lỗi nặng nhất là L-25: giả lập cho 14 việc kiểm thử, giao diện xong trước khi có mã, báo cáo kết luận "đi gần đúng kế hoạch". Sửa bằng 456 phụ thuộc bổ sung vào backlog (người dùng chọn sửa vào dữ liệu thay vì chỉ sửa giả lập), chạy lại giả lập |
 | Chia việc bằng nhiều agent | L-04, L-05, L-07, L-12 | Việc nằm giữa hai nhóm, tiêu chí chép đồng loạt, sub trùng: gộp rồi soát chéo; agent con được phép không làm theo brief sai (L-04) |
-| Dẫn mã sai, bảng thiếu mã, dùng cách xử lý ngoài đề | L-08, L-20, L-30, L-31 | Đối chiếu cột "issue bị ảnh hưởng" của PREMISE và đếm đủ danh sách mã A1..A53, N-01..N-25 bằng lệnh |
+| Dẫn mã sai, bảng thiếu mã hay thiếu liên kết, dùng cách xử lý ngoài đề | L-08, L-20, L-30, L-31, L-35, L-36 | Đối chiếu cột "issue bị ảnh hưởng" của PREMISE và đếm đủ danh sách mã A1..A53, N-01..N-25 bằng lệnh |
 | Sửa một chỗ không lan, sửa không đủ | L-13, L-16, L-28 | Sửa xong tìm mọi chỗ dùng cùng ý; kiểm lại đúng ví dụ người soát đã nêu |
-| Thao tác công cụ, bảo mật | L-10, L-11, L-18 | Không dùng `git reset --hard` khi còn sửa đổi chưa commit; email commit đổi sang địa chỉ noreply, viết lại lịch sử, cổng thêm kiểm email commit; kiểm quyền công cụ của agent trước khi giao việc |
+| Thao tác công cụ, bảo mật | L-10, L-11, L-18, L-37 | Không dùng `git reset --hard` khi còn sửa đổi chưa commit; email commit đổi sang địa chỉ noreply, viết lại lịch sử, cổng thêm kiểm email commit; kiểm quyền công cụ của agent trước khi giao việc; không cắt đầu ra của script đang ghi dữ liệu |
 
 ## 3. Điểm đặc biệt trong cách dùng AI
 
 **Chỗ tin là hiệu quả.**
 - Một nguồn dữ liệu duy nhất (`backlog/items-*.json`), mọi bảng, issue, SWP, giờ sinh bằng script. Sửa dữ liệu một chỗ rồi chạy lại là mọi nơi khớp; chạy lại không tạo trùng (kiểm 792 issue, 0 trùng).
 - Đọc ngược Project sau mỗi lần ghi, so với file (Story Point, Estimated time, trạng thái Sprint 1 đều 0 mục lệch). Số trong báo cáo vì vậy có bằng chứng từ Project, không từ trí nhớ của agent.
-- Soát độc lập bằng agent không tham gia soạn bắt được hơn nửa số lỗi (18/33), trong đó có lỗi nặng mà người soạn không thấy (L-25).
+- Soát độc lập bằng agent không tham gia soạn bắt được hơn nửa số lỗi (21/37), trong đó có lỗi nặng mà người soạn không thấy (L-25).
 - Giả lập có hạt ngẫu nhiên cố định nên người soát chạy lại được và ra cùng kết quả; lệch kế hoạch đến từ mô hình, không viết tay.
 - Đưa người dùng câu hỏi có phương án và số liệu đi kèm (ví dụ cách quy giờ) giúp quyết nhanh mà vẫn là người quyết.
 
 **Chỗ chưa tốt, cần cải thiện khi làm thật.**
-- Lỗi lặp lại nhiều lần cùng kiểu: viết hoặc kết luận trước khi đọc nguồn hay đếm (12 lỗi); sửa một chỗ không lan, sửa không đủ (3 lỗi). Làm thật nên đưa vào cổng máy phép đối chiếu chéo số đếm giữa các file, thay vì chỉ dựa vào soát.
+- Lỗi lặp lại nhiều lần cùng kiểu: viết hoặc kết luận trước khi đọc nguồn hay đếm (13 lỗi); sửa một chỗ không lan, sửa không đủ (3 lỗi). Làm thật nên đưa vào cổng máy phép đối chiếu chéo số đếm giữa các file, thay vì chỉ dựa vào soát.
 - Thứ tự phụ thuộc trong story (kiểm thử chờ mã, giao diện chờ API, việc cần staging chờ môi trường) chỉ được bổ sung ở bước 6, sau khi giả lập lộ lỗi. Làm thật nên đặt luật này ngay khi chia task ở bước 2.
-- SWP phân biệt việc to nhỏ kém: 415/654 việc cùng 3 SWP, tương quan với giờ thô 0,52. Skill giới hạn 5 issue mẫu, 4 trong 5 là việc ngoại lệ; phải kiểm thêm ngoài skill (D5-22). Làm thật nên chọn mẫu theo từng nhóm việc chính.
+- SWP phân biệt việc to nhỏ kém: 415/654 việc cùng 3 SWP, tương quan với giờ thô 0,52. Skill giới hạn 5 issue mẫu, 4 trong 5 là việc ngoại lệ; phải kiểm thêm 2 issue ngoài skill. Làm thật nên chọn mẫu theo từng nhóm việc chính.
 - Agent chấm riêng của skill không có quyền đọc file nên phải thay bằng agent thường (L-18, ghi ở caveats của báo cáo HTML).
 - Giới hạn của GitHub tốn thời gian:
   - tạo 792 issue mất hơn 10 giờ (đi chậm để tránh bị chặn, máy ngủ ban đêm);
   - lỗi 502 khi gộp nhiều lệnh;
   - một issue chỉ chặn được tối đa 100 issue, nên 10 quan hệ chờ E01-S02 chỉ ghi trong thân issue.
 - Token: chia việc bằng 5 agent và soát nhiều lượt tốn nhiều. Bước 6 soát 2 lượt vì lượt sửa đầu chưa đủ (L-28); kiểm lại đúng ví dụ người soát nêu trước khi gửi soát lại thì đỡ một lượt.
+
+- Hai lỗi Nặng của lượt soát theo vai chưa sửa, người dùng chọn để lại:
+  - 16 việc dev được tính Closed khi chưa có staging. Tuỳ cách hiểu định nghĩa xong: nếu QA kiểm trên máy của đội thì đúng; nếu bắt kiểm trên staging thì tốc độ Sprint 1 còn thấp hơn.
+  - Báo cáo tiến độ viết tiếng Việt cho lớp học; gửi khách Nhật thật thì cần bản 1 trang tiếng Nhật, bỏ lệnh đếm và chuyện phân bổ giờ nội bộ.
 
 **Chưa có ý tưởng:** cách để AI tự nhận ra chỗ "kết quả máy đúng cú pháp nhưng sai nghĩa nghiệp vụ" (L-25) mà không cần một lượt soát riêng.
 
@@ -105,3 +110,7 @@ Chép từ nhật ký lỗi AI của LAB-5, đánh số theo thứ tự ghi.
 | L-31 | 2026-11-02 | 7 | Bảng epic mục 1.6 của `task-breakdown.md` (bước 2) thiếu A32 và 9 mã N (N-05..09, N-11..13, N-19); README chép lại nên thiếu theo (tái phạm chép bảng tóm tắt không đối chiếu danh sách mã đầy đủ). Người soát bước 7 chỉ bắt A32 | Soát độc lập bước 7 (A32); tác giả đếm đủ A1..A53, N-01..N-25 trên cả hai bảng | Bổ sung 10 mã vào cả hai bảng, đếm lại còn thiếu 0 |
 | L-32 | 2026-11-02 | 8 | AI-report viết "mỗi bước có agent con soát độc lập" trong khi bước 0, 1, 3, 4 chỉ có agent chính tự soát; đếm kênh phát hiện 15/12 thay vì 16/11; viết "đọc ngược bắt được lần ghi dở" khi chưa lần nào bắt (tái phạm viết trước khi đọc nguồn, nhận vượt bằng chứng) | Soát độc lập bước 8, đối chiếu dòng "Người soát" của docs/lab5/reviews/step-00..04 | Ghi đúng các bước có soát độc lập, sửa số đếm, viết lại câu theo việc đã xảy ra |
 | L-33 | 2026-11-02 | 8 | Mô tả script không khớp mã: gán việc ghi Estimated time lên Project cho `convert-story-points-to-hours.py`; ghi Scope, Complexity "cho 792 mục" trong khi script chỉ ghi cho 654 việc lá | Soát độc lập bước 8, đọc mã hai script | Sửa câu mục 1 theo mã |
+| L-34 | 2026-11-02 | 5, 6 | So LAB-1 chỉ theo tổng (+7,5%) nên che chỗ vượt 52% của giai đoạn xây dựng; báo cáo lấy chỗ nghẽn của Sprint 1 (BE, TL) làm chẩn đoán cho cả dự án, trong khi theo giờ còn lại thì BE, QA, Design thiếu người nhiều nhất (kết luận không theo số đã có) | Soát độc lập theo 9 vai trước khi nộp (vai PM) | Thêm bảng so theo giai đoạn và theo vai vào `estimate.md` mục 5, phương án tăng người ghi theo vai |
+| L-35 | 2026-11-02 | 2, 6 | 16/18 issue làm rõ không nối tới issue chịu ảnh hưởng, không có hạn trả lời; 7 câu Closed trong giả lập mà không ghi câu trả lời, vẫn mang nhãn chờ khách | Soát độc lập theo 9 vai trước khi nộp (vai BrSE) | `scripts/record-clarification-follow-up.py`: ghi issue chịu ảnh hưởng, hạn, câu trả lời giả lập, gỡ nhãn; cập nhật thân issue |
+| L-36 | 2026-11-02 | 1..7 | File nộp dẫn mã sổ quyết định và mã báo cáo soát (D5-xx, V6, N3) nằm ngoài repo, người chấm không kiểm được; spec SCR-25 mà backlog dựa nhiều nhất chỉ ở repo private | Soát độc lập theo 9 vai trước khi nộp (vai người chấm) | Thay mã bằng lý do ngắn; thêm tóm tắt SCR-25 tự viết ở `spec-summary/`, trỏ từ PREMISE S-01 |
+| L-37 | 2026-11-02 | Sửa trước nộp | Chạy script cập nhật thân issue rồi chuyển đầu ra sang lệnh `head -1`: script bị dừng sau dòng in đầu, không cập nhật issue nào mà vẫn tưởng xong | Lần chạy kiểm thứ hai vẫn báo 17 issue cũ; so thân một issue với bản sinh từ file | Chạy lại không cắt đầu ra, kiểm còn 0 issue cũ |

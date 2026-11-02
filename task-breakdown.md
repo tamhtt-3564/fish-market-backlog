@@ -1,6 +1,6 @@
 # Chia việc: từ bộ spec LAB-4 tới backlog trên GitHub Project
 
-Đầu vào: bộ spec LAB-4 bản `21bbe4b` và các giả định, hướng chốt ở `PREMISE.md`. Phạm vi: mọi việc kỹ thuật (D5-11); quản lý dự án và buffer không thành issue.
+Đầu vào: bộ spec LAB-4 bản `21bbe4b` và các giả định, hướng chốt ở `PREMISE.md`. Phạm vi: mọi việc kỹ thuật (người dùng chọn ở bước 1); quản lý dự án và buffer không thành issue.
 
 ## 1. Nguyên tắc chia task
 
@@ -68,7 +68,7 @@ Trạng thái đi theo mẫu. Việc xây dựng: `In Progress` → `In Review` 
 | Làm rõ | Khách trả lời, câu trả lời ghi vào bảng Q4; issue chịu ảnh hưởng được sửa và ước lại |
 | Hạ tầng, vận hành | Cấu hình hoặc runbook có trong repo, người thứ hai làm theo được |
 
-Thứ tự bổ sung sau soát bước 6 (D5-25, D5-26; quan hệ blocked by trên Project), áp bằng `python scripts/add-implicit-story-dependencies.py`: trong cùng một story, việc giao diện chờ mọi việc BE và thiết kế giao diện, việc kiểm thử chờ các việc làm mã; việc lá nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02. Thêm 456 phụ thuộc (310 rồi 146), tổng 757. Trên GitHub nối được 747 quan hệ blocked by: GitHub cho một issue chặn tối đa 100 issue, nên 10 việc chờ E01-S02 chỉ ghi phụ thuộc trong thân issue (danh sách: `backlog/blocked-by-over-github-limit.json`).
+Thứ tự bổ sung sau soát bước 6 (sau hai lượt soát độc lập bước 6; quan hệ blocked by trên Project), áp bằng `python scripts/add-implicit-story-dependencies.py`: trong cùng một story, việc giao diện chờ mọi việc BE và thiết kế giao diện, việc kiểm thử chờ các việc làm mã; việc lá nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02. Thêm 456 phụ thuộc (310 rồi 146), tổng 757. Trên GitHub nối được 747 quan hệ blocked by: GitHub cho một issue chặn tối đa 100 issue, nên 10 việc chờ E01-S02 chỉ ghi phụ thuộc trong thân issue (danh sách: `backlog/blocked-by-over-github-limit.json`).
 
 ### 1.6 Danh sách epic
 
@@ -186,7 +186,7 @@ Bảng sinh từ dữ liệu backlog bằng `python scripts/render-spec-to-issue
 
 | Phần | Vì sao không thành issue |
 |---|---|
-| Quản lý dự án (PM) | Không gán việc được cho chính người lập sprint; công tính ở `estimate.md` (D5-11) |
+| Quản lý dự án (PM) | Không gán việc được cho chính người lập sprint; công tính ở `estimate.md` (người dùng chọn ở bước 1) |
 | 30 ngày trực sau go-live | Trực theo ca, không chia được thành việc tối đa 2 ngày; chỉ có issue lập lịch trực [E19-S07](https://github.com/tamhtt-3564/fish-market-backlog/issues/192) (PREMISE G-20) |
 | Người dùng của khách làm UAT | Việc của khách; đội chỉ có issue hỗ trợ UAT ở E19 (mục 1.3) |
 | 48 câu Q4 không thuộc G-01a | Làm theo mặc định LAB-4, không đổi nhiều khối lượng (PREMISE G-01) |

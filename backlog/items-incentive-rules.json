@@ -783,9 +783,7 @@
     "parent": "E10",
     "title": "[Q4-27] Làm rõ vai trò người duyệt version 業務規程 / 料率",
     "owner": "BrSE-A",
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "spec_refs": [
       "Q4-27",
       "G-01",
@@ -798,7 +796,12 @@
       "Khác mặc định thì sửa ma trận quyền và ước lại E10-S06"
     ],
     "customer_wait": "Khách xác nhận ai duyệt version (照合事務 khác người lập hay vai trò riêng cho 照合部門長), trước sprint làm E10-S06",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E10-S06"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-22: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E11",
@@ -2091,7 +2094,11 @@
       "Khác mặc định thì sửa và ước lại E11-S05-T01"
     ],
     "customer_wait": "Khách trả lời Q4-55 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S05-T01"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E11-S10",
@@ -2099,9 +2106,7 @@
     "parent": "E11",
     "title": "[Q4-58] Làm rõ: Kỳ có hai version 料率",
     "owner": "BrSE-A",
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "spec_refs": [
       "Q4-58",
       "G-01",
@@ -2113,7 +2118,12 @@
       "Khác mặc định thì sửa và ước lại E11-S05-T04"
     ],
     "customer_wait": "Khách trả lời Q4-58 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S05-T04"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-13: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E11-S11",
@@ -2121,9 +2131,7 @@
     "parent": "E11",
     "title": "[Q4-59] Làm rõ: Trả quá hạn: bỏ một giao dịch hay cả kỳ",
     "owner": "BrSE-A",
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "spec_refs": [
       "Q4-59",
       "G-01",
@@ -2135,7 +2143,12 @@
       "Khác mặc định thì sửa và ước lại E11-S05-T01"
     ],
     "customer_wait": "Khách trả lời Q4-59 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S05-T01"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-22: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E11-S12",
@@ -2157,7 +2170,11 @@
       "Khác mặc định thì sửa và ước lại E11-S06-T03"
     ],
     "customer_wait": "Khách trả lời Q4-60 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S06-T03"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E11-S13",
@@ -2165,9 +2182,7 @@
     "parent": "E11",
     "title": "[Q4-63] Làm rõ: Thứ tự so ngưỡng, nhân thuế, làm tròn",
     "owner": "BrSE-A",
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "spec_refs": [
       "Q4-63",
       "G-01",
@@ -2179,7 +2194,12 @@
       "Khác mặc định thì sửa và ước lại E11-S05-T03"
     ],
     "customer_wait": "Khách trả lời Q4-63 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S05-T03"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-18: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E11-S14",
@@ -2202,7 +2222,11 @@
       "Khách cần thao tác huỷ thì tạo story mới ở E11 và ước lại"
     ],
     "customer_wait": "Khách trả lời Q4-64 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S02"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E11-S15",
@@ -2225,7 +2249,13 @@
       "Khác mặc định thì sửa và ước lại E11-S03-T02, E11-S03-T03, E11-S03-T05"
     ],
     "customer_wait": "Khách trả lời Q4-56 trước sprint làm phần nạp CSV khoản trả",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S03-T02",
+      "E11-S03-T03",
+      "E11-S03-T05"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E10-S02-T05",
@@ -2271,7 +2301,12 @@
       "Khác mặc định thì sửa và ước lại E11-S07-T01, E12-S09"
     ],
     "customer_wait": "Khách trả lời Q4-57 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S07-T01",
+      "E12-S09"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E11-S17",
@@ -2293,6 +2328,10 @@
       "Khác mặc định thì sửa và ước lại E11-S05-T02"
     ],
     "customer_wait": "Khách trả lời Q4-61 trước sprint làm phần 完納奨励金 liên quan",
-    "rough_hours": 2
+    "rough_hours": 2,
+    "affects": [
+      "E11-S05-T02"
+    ],
+    "answer_due": "2027-02-05"
   }
 ]

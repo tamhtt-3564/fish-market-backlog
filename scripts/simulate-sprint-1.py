@@ -9,7 +9,7 @@ Giả định (progress-report.md mục 1):
 - Cam kết 85% năng lực mỗi vai; chọn việc lá theo thứ tự ưu tiên, chỉ lấy việc có mọi việc phụ thuộc cũng trong sprint.
 - Mỗi việc: giờ thật = giờ ước × hệ số (log-chuẩn, trung bình khoảng 1,1). Việc xây dựng trượt review với xác suất 15%, làm lại thêm 30%.
 - Xây dựng xong còn 1 ngày review (TL-A) và kiểm (QA-A) mới Closed; thiết kế, ca kiểm thử, tài liệu, vận hành còn 0,5 ngày review.
-- Việc làm rõ có nhãn `chờ khách`: BrSE-A hỏi xong, khách trả lời vào ngày ngẫu nhiên từ ngày 3 tới ngày 15.
+- Việc có trường `customer_wait` (chờ khách): BrSE-A hỏi xong, khách trả lời vào ngày ngẫu nhiên từ ngày 3 tới ngày 15.
 """
 import json
 import math
@@ -82,7 +82,7 @@ def simulate(chosen, items, points, hours):
     def pull_candidates():
         """Việc lá ngoài cam kết, không chờ khách, mọi phụ thuộc đã có lịch và bắt đầu được trước ngày cuối."""
         pool = [k for k in points if points[k]["direct"] and k not in finish and k not in todo and items[k]["owner"] in FTE
-                and "chờ khách" not in items[k].get("labels_extra", []) and leaf_deps(k, items, points) <= finish.keys()]
+                and not items[k].get("customer_wait") and leaf_deps(k, items, points) <= finish.keys()]
         return [k for k in pool if ready_day(k) <= DAYS - 1]
 
     while True:
@@ -104,7 +104,7 @@ def simulate(chosen, items, points, hours):
         actual = hours[k] * factor * (1.3 if failed else 1)
         cap = FTE[o] * HOURS_PER_DAY  # giờ mỗi ngày của vai
         start_day = ready_day(k)
-        answer_day = answer_draw if "chờ khách" in it.get("labels_extra", []) else None
+        answer_day = answer_draw if it.get("customer_wait") else None
         end_day = start_day + actual / cap
         free[o] = end_day * cap
         review = 1 if it["type"] in BUILD else (0 if it["type"] == "investigation" else 0.5)

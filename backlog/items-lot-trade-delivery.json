@@ -702,7 +702,11 @@
       "chờ khách"
     ],
     "customer_wait": "Khách trả lời Q4-28 trước sprint làm SCR-09",
-    "rough_hours": 3
+    "rough_hours": 3,
+    "affects": [
+      "E05-S06"
+    ],
+    "answer_due": "2027-02-01"
   },
   {
     "key": "E05-S08",
@@ -720,11 +724,14 @@
       "Câu trả lời ghi vào bảng Q4",
       "Khác (a) thì sửa E05-S05 và ước lại"
     ],
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "customer_wait": "Khách trả lời Q4-44 trước sprint làm E05-S05",
-    "rough_hours": 3
+    "rough_hours": 3,
+    "affects": [
+      "E05-S05"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-19: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E06",

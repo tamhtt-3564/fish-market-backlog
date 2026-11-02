@@ -600,9 +600,7 @@
     "parent": "E01",
     "title": "[Q4-25] Làm rõ Q4-25 kèm Q4-19: rủi ro sao lưu trong một vùng và dịch vụ phía khách",
     "owner": "BrSE-A",
-    "labels_extra": [
-      "chờ khách"
-    ],
+    "labels_extra": [],
     "spec_refs": [
       "Q4-25",
       "Q4-19",
@@ -616,7 +614,13 @@
       "Nếu chọn A hoặc B: mở issue mới và ước lại E01, E19"
     ],
     "customer_wait": "Khách trả lời Q4-25 và Q4-19 bằng văn bản trước khi dựng production",
-    "rough_hours": 4
+    "rough_hours": 4,
+    "affects": [
+      "E01-S02",
+      "E01-S05"
+    ],
+    "answer_due": "2027-01-22",
+    "answer": "(giả lập) Khách trả lời ngày 2027-01-13: chọn phương án mặc định ghi ở Overview; issue chịu ảnh hưởng giữ ước lượng."
   },
   {
     "key": "E02",
@@ -1688,7 +1692,13 @@
       "Issue E17 gắn độ tin thấp được ước lại"
     ],
     "customer_wait": "Khách trả lời Q4-24 và gửi file mẫu của hệ thống cũ trước sprint làm script chuyển đổi",
-    "rough_hours": 4
+    "rough_hours": 4,
+    "affects": [
+      "E17-S02",
+      "E17-S03",
+      "E17-S06"
+    ],
+    "answer_due": "2027-02-05"
   },
   {
     "key": "E17-S02",

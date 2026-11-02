@@ -19,7 +19,9 @@ Script tạo issue đọc các file này để tạo issue, sub-issue, nhãn và
 | `acceptance` | Có, trừ epic | Danh sách tiêu chí xong kiểm được, mỗi dòng một ý (nhánh, mã lỗi, audit, vai trò bị chặn...) |
 | `roles_allowed`, `roles_blocked` | Với story có giao diện hoặc API | Mã vai trò hệ thống `ROLE-...` (11 vai trò ở ma trận quyền LAB-4) |
 | `depends_on` | Không | Danh sách `key` phải xong trước |
-| `customer_wait` | Khi có nhãn `chờ khách` | Khách cần làm gì, hạn cần có |
+| `customer_wait` | Khi có nhãn `chờ khách`; giữ lại làm lịch sử khi khách đã trả lời | Khách cần làm gì, hạn cần có |
+| `affects`, `answer_due` | Issue làm rõ (`investigation`) | Mã issue chịu ảnh hưởng; hạn trả lời. Ghi bằng `scripts/record-clarification-follow-up.py` |
+| `answer` | Issue làm rõ đã có trả lời | Câu trả lời của khách (ở bài này là câu trả lời giả lập của Sprint 1); khi có thì gỡ nhãn `chờ khách` |
 | `rough_hours` | Có, trừ epic và story có sub-issue | Ước thô số giờ của **lá** (mục không có con), chỉ để kiểm luật 14 giờ; không phải estimate, không ghi lên Project |
 
 ## Luật

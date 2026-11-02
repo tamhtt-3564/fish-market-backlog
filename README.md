@@ -16,7 +16,7 @@
 - **Repo:** https://github.com/tamhtt-3564/fish-market-backlog
 - **GitHub Project:** https://github.com/users/tamhtt-3564/projects/1 (7 view: "View 1" là bảng tất cả mục, bảng trạng thái, theo người phụ trách, nhóm theo issue cha, epic, 完納奨励金, chờ khách)
 - **Báo cáo HTML của skill chấm SWP:** [`estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html`](estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html). File nặng 2,15 MB nên GitHub không hiển thị trực tiếp: ở trang file, bấm biểu tượng tải về (Download raw file) rồi mở file bằng trình duyệt (chạy được không cần mạng).
-- **Bộ spec LAB-4:** https://github.com/tamhtt-3564/fish-market-prototype/tree/lab4-specs/specs (repo private vì spec có câu trích RFP; người chấm cần được mời vào repo).
+- **Bộ spec LAB-4:** https://github.com/tamhtt-3564/fish-market-prototype/tree/lab4-specs/specs (repo private vì spec có câu trích RFP; người chấm cần được mời vào repo). Phần SCR-25 mà backlog dựa nhiều nhất có bản tóm tắt tự viết ở `spec-summary/`.
 - **Đã mở thử không đăng nhập** (trình duyệt chưa đăng nhập GitHub, ngày 2026-11-02): repo, Project #1 và view "Bảng trạng thái" mở được; trang file báo cáo HTML mở được (GitHub báo file quá lớn để hiển thị, có nút tải về).
 
 ## 3. Cấu trúc repo
@@ -28,10 +28,11 @@
 | `task-breakdown.md` | Nguyên tắc chia task; bảng spec → issue; hạng mục 完納奨励金; chỗ hở của spec LAB-4 |
 | `estimate.md` | Báo cáo HTML, issue mẫu đã duyệt, cách quy giờ, tổng theo epic, so với LAB-1 |
 | `progress-report.md` | Báo cáo tiến độ Sprint 1 giả lập: trạng thái, burndown, rủi ro trễ |
-| `AI-report.md` | Skill, prompt đã dùng cho từng việc (kể cả cách ghi SWP lên Project); cách review và 33 lỗi AI đã bắt; chỗ hiệu quả, chỗ cần cải thiện |
+| `AI-report.md` | Skill, prompt đã dùng cho từng việc (kể cả cách ghi SWP lên Project); cách review và 37 lỗi AI đã bắt; chỗ hiệu quả, chỗ cần cải thiện |
 | `backlog/` | Dữ liệu gốc của backlog: 5 file `items-*.json` (792 mục, khuôn ở `backlog-item-format.md`), số issue GitHub (`issue-numbers.json`), SWP và giờ đã chốt (`story-points.json`, `estimated-hours.json`), quan hệ blocked by đã nối và phần vượt giới hạn GitHub, kết quả giả lập Sprint 1 |
 | `estimate/` | `reports/`: báo cáo HTML của skill `tkm:sun-estimate` |
 | `scripts/` | Script tạo issue, gắn link, kiểm dữ liệu, bổ sung phụ thuộc, quy giờ, ghi SWP và giờ lên Project, giả lập và ghi Sprint 1; mỗi script ghi cách chạy ở đầu file |
+| `spec-summary/` | Tóm tắt tự viết thiết kế SCR-25 完納奨励金 (spec gốc ở repo private), trỏ từ `PREMISE.md` S-01 |
 | `skills/` | Skill tự viết `lab5-review-backlog-output`: bộ câu hỏi soát B1..B9 và cổng kiểm máy `run-lab5-backlog-gate.py` dùng soát từng bước |
 
 ## 4. Spec → epic

@@ -14,7 +14,7 @@
 
 Chỗ làm khác quy trình của skill, có ghi trong phần "caveats" của báo cáo:
 - Agent chấm riêng của skill không có quyền đọc ghi file nên không nhận được lô việc. 5 lô được chấm lại bằng agent thường, theo cùng bộ luật chấm, chỉ đọc ghi trong thư mục tạm, không gọi mạng.
-- Skill chỉ đọc. Bước ghi Story Point lên Project là script riêng của repo này, chạy sau khi người đã duyệt (D5-03).
+- Skill chỉ đọc. Bước ghi Story Point lên Project là script riêng của repo này, chạy sau khi người đã duyệt (cách làm người dùng chốt từ đầu).
 - Thân issue dẫn mã spec LAB-4 nằm ở repo private, agent chấm không mở được nên chỉ dựa vào chữ trong issue. Trong 63 việc độ tin thấp: 40 việc thuộc 9 màn chưa có spec (PREMISE G-02), 10 việc đã gắn nhãn `độ tin thấp` từ bước 2, 1 việc làm rõ với khách, 12 việc còn lại do thân issue ngắn (đếm: lọc `confidence == "low"` trong `backlog/story-points.json`, đối chiếu `spec_refs`, nhãn, loại trong `backlog/items-*.json`). Các việc này chấm lại khi có spec hoặc câu trả lời của khách.
 
 ## 2. Issue mẫu skill chọn để kiểm
@@ -44,7 +44,7 @@ Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo g
 
 ## 3. Cách quy ra giờ
 
-**Cách đã chọn:** quy ước đổi SWP ra giờ theo **hệ số của từng vai** (người duyệt chọn ở bước 5, D5-22).
+**Cách đã chọn:** quy ước đổi SWP ra giờ theo **hệ số của từng vai** (người duyệt chọn ở bước 5).
 
 **Vì sao:**
 - SWP đo độ rộng và độ khó, không đo giờ. Cùng 3 SWP, việc chạy bộ ca kiểm thử của QA thường ngắn hơn việc dev giao diện FE. Giờ thô trung bình mỗi SWP: QA-A 1,40 giờ, FE-B 2,72 giờ.
@@ -151,8 +151,34 @@ So theo phần (LAB-5 tính kèm buffer 15% để cùng cách với LAB-1):
 | PM và BrSE | 130 | 139,7 | +9,7 | Cùng tỷ lệ 19,3%, base lớn hơn |
 | **Tổng** | **805** | **865,3** | **+60,3** | Lệch 0,1 so với bảng thành phần do làm tròn từng dòng |
 
+So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estimate LAB-1; MD LAB-1 mỗi giai đoạn đã gồm phần PM, BrSE). LAB-5 = giờ các epic của giai đoạn / 7 × 1,15, cộng khung đóng, rồi cộng phần PM và BrSE 19,3%:
+
+| Giai đoạn LAB-1 | LAB-1 (MD) | Epic LAB-5 | LAB-5 (MD) | Chênh | Ghi chú |
+|---|---|---|---|---|---|
+| GĐ1 Yêu cầu, thiết kế (T1..T2) | 124 | (không có) | 0,0 | −124,0 | Đã làm ở LAB-2..4 (wireframe, spec, kiến trúc); spec 9 màn còn thiếu và thiết kế ngắn nằm trong GĐ2 |
+| GĐ2 Xây dựng (T3..T6) | 465 | E01..E16 | 707,0 | **+242,0 (+52%)** | Chỗ vượt chính: kiểm thử từng tính năng, spec 9 màn, thiết kế ngắn của TL nằm ở đây; quy tắc nghiệp vụ LAB-4 chi tiết hơn |
+| GĐ3 Kiểm thử hệ thống, chuyển đổi (T7..T8 tuần 2) | 120 | E17, E18, khung sửa lỗi 16 MD | 84,2 | −35,8 | Kiểm thử từng tính năng đã chuyển sang GĐ2 |
+| GĐ4 UAT, đào tạo, chuyển đổi chính thức (T8 tuần 3..T9) | 69 | E19, khung UAT 23 MD | 46,6 | −22,4 | |
+| GĐ5 Hỗ trợ vận hành ban đầu (T10) | 27 | Khung hỗ trợ 23 MD | 27,4 | +0,4 | |
+| **Tổng** | **805** | | **865,2** | **+60,2** | |
+
+Đội và lịch của LAB-1 không đủ cho GĐ2. Với đội 5,8 người như giả lập Sprint 1 (cam kết 85% năng lực), phần xây dựng E01..E16 còn lại sau Sprint 1 cần số sprint theo từng vai như dưới; GĐ2 còn 7 sprint tính từ Sprint 2:
+
+| Vai | Giờ còn lại (E01..E16) | Năng lực mỗi sprint (giờ) | Sprint cần | Người cần thêm để xong trong 7 sprint |
+|---|---|---|---|---|
+| BE-A, BE-B | 743,1 + 727,8 | 51,0 + 51,0 | 14,6; 14,3 | 1,1 + 1,0 |
+| QA-A | 763,0 | 51,0 | 15,0 | 1,1 |
+| Design-A | 162,8 | 10,2 | 16,0 | 0,3 |
+| FE-B | 346,7 | 25,5 | 13,6 | 0,5 |
+| FE-A, TL-A, BA-A, Infra-A, BrSE-A | | | 1,1 tới 7,7 | 0 |
+| **Tổng** | | | | **khoảng 4 người** |
+
+Cách tính: giờ còn lại = `estimated-hours.json` của việc lá E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = giờ còn lại / (7 × 60 × 0,85) − số người hiện có. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
+
+Ngoài ra, 3 việc lá sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ thô bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
+
 Đọc bảng:
-- Tổng cao hơn 7,5% (trong độ chính xác ±25% của LAB-1), nhưng **cơ cấu đổi nhiều**: phần tính năng nghiệp vụ tăng, phần nền tảng, thiết kế và kiểm thử hệ thống giảm. Hai lý do chính: wireframe và spec đã làm ở LAB-2..4 nên không còn trong backlog; kiểm thử từng tính năng được chia về epic của tính năng.
+- Tổng cao hơn 7,5% (trong độ chính xác ±25% của LAB-1), nhưng con số này **che chỗ vượt**: riêng giai đoạn xây dựng vượt 52%, bù lại bằng 124 MD thiết kế đã làm ở LAB-2..4. Kế hoạch đội và lịch của LAB-1 phải sửa theo bảng giai đoạn, không theo tổng. **Cơ cấu đổi nhiều**: phần tính năng nghiệp vụ tăng, phần nền tảng, thiết kế và kiểm thử hệ thống giảm. Hai lý do chính: wireframe và spec đã làm ở LAB-2..4 nên không còn trong backlog; kiểm thử từng tính năng được chia về epic của tính năng.
 - Phần tăng nhiều nhất (E11, E09, E08, E03) là chỗ spec LAB-4 làm rõ thêm quy tắc nghiệp vụ so với lúc ước LAB-1. 完納奨励金 tăng từ 16 lên 55,3 MD, đúng với yêu cầu tách theo từng biến của đề.
 - Hai khung sửa lỗi (kiểm thử hệ thống 16 MD, cửa sổ UAT 23 MD) không có issue sẵn; khi lỗi phát sinh, issue lỗi tiêu công từ khung. Báo cáo tiến độ theo dõi phần đã tiêu so với khung.
 - Đào tạo và tài liệu vận hành (E19) thấp hơn LAB-1; cần xác nhận lại khi chốt số buổi đào tạo với khách.
