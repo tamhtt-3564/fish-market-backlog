@@ -2,15 +2,21 @@
 
 Chạy từ gốc repo:  python scripts/convert-story-points-to-hours.py
 Hệ số vai = tổng giờ thô / tổng SWP của các việc lá vai đó (giờ thô ở backlog/items-*.json, bước 2).
-Giờ việc lá = SWP × hệ số vai, làm tròn 0,1 giờ. Mục cha = tổng giờ các con.
+Giờ việc lá = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (5 lên). Mục cha = tổng giờ các con.
 Ghi backlog/estimated-hours.json và in bảng hệ số, bảng tổng theo epic cho estimate.md.
 """
 import json
 import sys
 from collections import defaultdict
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+def round_half_up(value, digits):
+    """Làm tròn kiểu thường (5 lên), để tính tay ra cùng số."""
+    return float(Decimal(str(value)).quantize(Decimal(1).scaleb(-digits), rounding=ROUND_HALF_UP))
 
 
 def main():
@@ -24,13 +30,13 @@ def main():
     for k in leaves:
         swp[items[k]["owner"]] += points[k]["swp"]
         raw[items[k]["owner"]] += items[k]["rough_hours"]
-    rate = {o: round(raw[o] / swp[o], 2) for o in swp}
+    rate = {o: round_half_up(raw[o] / swp[o], 2) for o in swp}
 
-    hours = {k: round(points[k]["swp"] * rate[items[k]["owner"]], 1) for k in leaves}
+    hours = {k: round_half_up(Decimal(points[k]["swp"]) * Decimal(str(rate[items[k]["owner"]])), 1) for k in leaves}
     for key in sorted(points, key=lambda k: -k.count("-")):  # con trước cha
         parent = items[key].get("parent")
         if parent:
-            hours[parent] = round(hours.get(parent, 0) + hours[key], 1)
+            hours[parent] = round_half_up(Decimal(str(hours.get(parent, 0))) + Decimal(str(hours[key])), 1)
     (REPO / "backlog" / "estimated-hours.json").write_text(
         json.dumps(dict(sorted(hours.items(), key=lambda x: (x[0].count("-"), x[0]))), ensure_ascii=False, indent=1),
         encoding="utf-8")
