@@ -108,7 +108,8 @@
     ],
     "rough_hours": 10,
     "depends_on": [
-      "E10-S02-T05"
+      "E10-S02-T05",
+      "E10-S02-T01"
     ]
   },
   {
@@ -140,7 +141,11 @@
     "acceptance": [
       "Mọi ca đạt trên staging, lỗi có issue"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E10-S02-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E10-S03",
@@ -238,7 +243,12 @@
       "9 vai bị chặn nhận 403",
       "Ba chế độ đúng dữ liệu mẫu trên staging"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E10-S03-T01",
+      "E10-S03-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E10-S04",
@@ -383,7 +393,13 @@
       "Nhãn, câu báo tiếng Nhật đúng bảng đã duyệt",
       "Chống bấm hai lần"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E10-S04-T02",
+      "E10-S04-T03",
+      "E10-S04-T04",
+      "E10-S04-T01"
+    ]
   },
   {
     "key": "E10-S04-T06",
@@ -401,7 +417,13 @@
       "CSV sai cột, sai loại, thừa dòng hiện lỗi, không gửi",
       "F-1 chỉ hiện ở version `approved` mới nhất, không phải rollback, chưa có bản rollback mở"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E10-S04-T02",
+      "E10-S04-T03",
+      "E10-S04-T04",
+      "E10-S04-T01"
+    ]
   },
   {
     "key": "E10-S04-T07",
@@ -432,7 +454,12 @@
     "acceptance": [
       "Mọi ca đạt trên staging, có dòng audit cho mỗi lần ghi"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E10-S04-T05",
+      "E10-S04-T06",
+      "E01-S02"
+    ]
   },
   {
     "key": "E10-S05",
@@ -531,7 +558,11 @@
       "A-6 hiện đúng số đếm từ A41",
       "Câu lỗi tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E10-S05-T01",
+      "E10-S05-T02"
+    ]
   },
   {
     "key": "E10-S05-T04",
@@ -561,7 +592,11 @@
     "acceptance": [
       "Mọi ca đạt trên staging"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E10-S05-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E10-S06",
@@ -699,7 +734,13 @@
       "Người lập thấy D-5 thay ba nút",
       "Trả về hoặc 却下 thiếu ghi chú thì G-3 hiện, không gửi"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E10-S06-T02",
+      "E10-S06-T03",
+      "E10-S06-T04",
+      "E10-S06-T01"
+    ]
   },
   {
     "key": "E10-S06-T06",
@@ -730,7 +771,11 @@
     "acceptance": [
       "Mọi ca đạt trên staging, audit đủ"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E10-S06-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E10-S07",
@@ -967,7 +1012,13 @@
       "Câu `payment.recorded`, `payment.replayed` đúng bảng đã duyệt",
       "Giao dịch 取消 hoặc chưa 確定 thì nút ghi tắt"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E11-S02-T02",
+      "E11-S02-T03",
+      "E11-S02-T04",
+      "E11-S02-T01"
+    ]
   },
   {
     "key": "E11-S02-T06",
@@ -998,7 +1049,11 @@
     "acceptance": [
       "Mọi ca đạt, có audit cho mỗi lần ghi"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E11-S02-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S03",
@@ -1135,7 +1190,13 @@
       "Có lỗi dạng phía trình duyệt thì nút nạp tắt",
       "Câu `payment.imported` đúng bảng đã duyệt"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E11-S03-T02",
+      "E11-S03-T03",
+      "E11-S03-T04",
+      "E11-S03-T01"
+    ]
   },
   {
     "key": "E11-S03-T06",
@@ -1166,7 +1227,11 @@
     "acceptance": [
       "Mọi ca đạt; file có dòng lỗi không để lại dòng nào"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S03-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S04",
@@ -1284,7 +1349,12 @@
       "Số âm hiện dấu trừ, không cắt về 0",
       "Vai không có quyền thấy khối không có quyền, không đọc dữ liệu"
     ],
-    "rough_hours": 12
+    "rough_hours": 12,
+    "depends_on": [
+      "E11-S04-T02",
+      "E11-S04-T03",
+      "E11-S04-T01"
+    ]
   },
   {
     "key": "E11-S04-T05",
@@ -1314,7 +1384,11 @@
     "acceptance": [
       "Mọi ca đạt, có log đọc dữ liệu cá nhân"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E11-S04-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S05",
@@ -1540,7 +1614,17 @@
       "D-1 chỉ hiện ở `未計算`, `仮計算`",
       "Chống bấm hai lần bằng `clientRequestId`"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S05-T01",
+      "E11-S05-T02",
+      "E11-S05-T03",
+      "E11-S05-T04",
+      "E11-S05-T05",
+      "E11-S05-T06",
+      "E11-S05-T07",
+      "E11-S05-T08"
+    ]
   },
   {
     "key": "E11-S05-T10",
@@ -1591,7 +1675,11 @@
     "acceptance": [
       "Mọi vector và ca đạt trên staging"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E11-S05-T09",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S06",
@@ -1733,7 +1821,13 @@
       "Câu A-6 trước hạn hiện ngày xác nhận được",
       "`INCENTIVE_STALE` hiện câu hướng dẫn tính lại"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S06-T01",
+      "E11-S06-T02",
+      "E11-S06-T03",
+      "E11-S06-T04"
+    ]
   },
   {
     "key": "E11-S06-T06",
@@ -1764,7 +1858,11 @@
     "acceptance": [
       "Mọi ca đạt, có audit `incentive_confirm`"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S06-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S07",
@@ -1899,7 +1997,13 @@
       "F-1 thêm dòng sau khi tính",
       "A-3 đổi `確定（差額あり）` khi có dòng khác `carry_forward`"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S07-T01",
+      "E11-S07-T02",
+      "E11-S07-T03",
+      "E11-S07-T04"
+    ]
   },
   {
     "key": "E11-S07-T06",
@@ -1931,7 +2035,11 @@
     "acceptance": [
       "Mọi ca đạt, kết quả kỳ nguồn không đổi"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E11-S07-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E11-S08",
@@ -1958,7 +2066,8 @@
       "E11-S04",
       "E11-S07",
       "E10-S06",
-      "E09-S06"
+      "E09-S06",
+      "E11-S01"
     ],
     "rough_hours": 10
   },

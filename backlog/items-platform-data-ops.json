@@ -403,7 +403,11 @@
     "acceptance": [
       "Mọi ca đạt hoặc có issue lỗi"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E01-S05-T01",
+      "E01-S05-T02"
+    ]
   },
   {
     "key": "E01-S06",
@@ -446,7 +450,10 @@
       "Lịch ngày chợ dùng mặc định 6 ngày mỗi tuần tới khi có Q4-46"
     ],
     "customer_wait": "Khách mở tài khoản dịch vụ đo uptime (G-08) trước sprint dựng production",
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E01-S06-T02",
@@ -464,7 +471,10 @@
       "Báo cáo thử một tháng staging ra số",
       "Người thứ hai lập lại được theo hướng dẫn"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E01-S07",
@@ -552,7 +562,12 @@
     "acceptance": [
       "Mọi ca đạt hoặc có issue lỗi"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E01-S07-T01",
+      "E01-S07-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E01-S08",
@@ -574,7 +589,10 @@
       "Khoá API chỉ ở biến môi trường"
     ],
     "customer_wait": "Khách (hoặc bên được chỉ định) khai SPF, DKIM cho tên miền gửi trước sprint làm thông báo email",
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E01-S09",
@@ -708,7 +726,12 @@
       "Mọi hàm prototype chạy như trước",
       "Kết quả ghi vào issue"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E02-S01-T01",
+      "E02-S01-T02",
+      "E02-S01-T03"
+    ]
   },
   {
     "key": "E02-S02",
@@ -831,7 +854,12 @@
       "Kết quả khớp cột kết quả của bảng kiểm khoảng giữa",
       "Lỗi tìm thấy mở issue"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E02-S02-T01",
+      "E02-S02-T03",
+      "E02-S02-T04"
+    ]
   },
   {
     "key": "E02-S03",
@@ -957,7 +985,11 @@
       "Không mất lô, không trống tên 荷目",
       "Kết quả ghi vào issue"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E02-S03-T01",
+      "E02-S03-T04"
+    ]
   },
   {
     "key": "E02-S04",
@@ -1094,7 +1126,13 @@
       "Kết quả khớp bảng",
       "Lỗi tìm thấy mở issue"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E02-S04-T01",
+      "E02-S04-T02",
+      "E02-S04-T04",
+      "E02-S04-T05"
+    ]
   },
   {
     "key": "E02-S05",
@@ -1213,7 +1251,13 @@
     "acceptance": [
       "Kết quả khớp bảng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E02-S05-T01",
+      "E02-S05-T02",
+      "E02-S05-T03",
+      "E02-S05-T04"
+    ]
   },
   {
     "key": "E02-S06",
@@ -1310,7 +1354,12 @@
     "acceptance": [
       "Kết quả khớp bảng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E02-S06-T01",
+      "E02-S06-T02",
+      "E02-S06-T03"
+    ]
   },
   {
     "key": "E02-S07",
@@ -1412,7 +1461,12 @@
     "acceptance": [
       "Kết quả khớp bảng"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E02-S07-T01",
+      "E02-S07-T02",
+      "E02-S07-T03"
+    ]
   },
   {
     "key": "E02-S08",
@@ -1534,7 +1588,11 @@
     "acceptance": [
       "Không hàm cũ nào hỏng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E02-S09-T01",
+      "E02-S09-T04"
+    ]
   },
   {
     "key": "E02-S10",
@@ -1600,7 +1658,10 @@
     "acceptance": [
       "Đăng nhập, khoá tạm, sửa tài khoản chạy đúng như trước đợt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E02-S10-T01"
+    ]
   },
   {
     "key": "E17",
@@ -1810,7 +1871,13 @@
       "Đối số khớp 100%",
       "Lỗi tìm thấy mở issue"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E17-S03-T01",
+      "E17-S03-T02",
+      "E17-S03-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E17-S04",
@@ -1898,7 +1965,12 @@
     "acceptance": [
       "Mọi ca đạt hoặc có issue lỗi"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E17-S04-T01",
+      "E17-S04-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E17-S05",
@@ -2003,7 +2075,9 @@
     ],
     "rough_hours": 10,
     "depends_on": [
-      "E17-S05-T06"
+      "E17-S05-T06",
+      "E17-S05-T01",
+      "E17-S05-T02"
     ]
   },
   {
@@ -2035,7 +2109,11 @@
     "acceptance": [
       "Đạt trên staging"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E17-S05-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E17-S06",
@@ -2145,7 +2223,13 @@
     "acceptance": [
       "Đối số khớp 100%"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E17-S06-T01",
+      "E17-S06-T02",
+      "E17-S06-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E17-S07",
@@ -2167,7 +2251,8 @@
     ],
     "depends_on": [
       "E17-S03",
-      "E17-S06"
+      "E17-S06",
+      "E01-S02"
     ],
     "customer_wait": "Khách cấp file xuất đầy đủ của hệ thống cũ trước diễn tập",
     "rough_hours": 12
@@ -2192,7 +2277,8 @@
       "Nhóm migration bị đình chỉ, khoá đã thu hồi"
     ],
     "depends_on": [
-      "E17-S07"
+      "E17-S07",
+      "E01-S02"
     ],
     "customer_wait": "Khách đóng băng dữ liệu gốc ở hệ thống cũ và duyệt go / no-go trước ngày go-live",
     "rough_hours": 10
@@ -2217,7 +2303,8 @@
       "Sau nghiệm thu vai trò nạp không còn quyền"
     ],
     "depends_on": [
-      "E17-S08"
+      "E17-S08",
+      "E01-S02"
     ],
     "customer_wait": "Khách chốt kỳ cũ ở hệ thống cũ và ký biên bản nghiệm thu nạp lịch sử; hạn: trước sprint go-live (T9 theo lịch LAB-1)",
     "rough_hours": 8
@@ -2245,7 +2332,10 @@
       "TL-A duyệt kế hoạch",
       "Mỗi story E18 có tiêu chí vào ra"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E18-S02",
@@ -2373,7 +2463,10 @@
     "acceptance": [
       "Báo cáo vòng hồi quy, không còn lỗi mức cao"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E18-S03",
@@ -2409,7 +2502,10 @@
     "acceptance": [
       "TL-A, Infra-A soát"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E18-S03-T02",
@@ -2675,7 +2771,10 @@
     "acceptance": [
       "Kết quả quét lưu trong repo"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E18-S06-T03",
@@ -2872,7 +2971,10 @@
     "acceptance": [
       "Đã thử khôi phục một file từ kho lạnh trên staging"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E19-S03-T03",
@@ -2976,7 +3078,10 @@
     "acceptance": [
       "Mọi cảnh báo tới đúng người nhận"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E19-S05",
@@ -3032,7 +3137,10 @@
       "Biên bản đào tạo có danh sách người học"
     ],
     "customer_wait": "Khách cử IT và chốt lịch đào tạo trước 30 ngày hỗ trợ",
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E19-S06",
@@ -3065,7 +3173,10 @@
     "acceptance": [
       "Dữ liệu dựng lại được bằng script"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E19-S06-T02",

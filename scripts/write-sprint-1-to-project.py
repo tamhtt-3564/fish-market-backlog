@@ -3,7 +3,7 @@
 Chạy từ gốc repo:  python scripts/write-sprint-1-to-project.py
 Mỗi việc cam kết: Target version = Sprint 1, Status cuối sprint, Due Date = 2027-01-22,
 Start Date = ngày bắt đầu giả lập (việc đã bắt đầu), Spent time = giờ đã làm trong sprint.
-Ghi lại cùng giá trị thì không đổi gì nên chạy lại được.
+Đóng issue có Status Closed, mở lại issue khác nếu đang đóng (D5-25). Ghi lại cùng giá trị thì không đổi gì nên chạy lại được.
 """
 import json
 import subprocess
@@ -79,6 +79,30 @@ def main():
         body = " ".join(call(n, *s) for n, s in enumerate(sets[start:start + BATCH]))
         gql("mutation{" + body + "}")
         print(f"[{min(start + BATCH, len(sets))}/{len(sets)}]", flush=True)
+        time.sleep(1)
+    sync_issue_state(sim, state)
+
+
+def sync_issue_state(sim, state):
+    """Issue có Status Closed thì đóng (completed); mọi issue khác mở lại nếu đang đóng, để issue khớp board."""
+    closed = {state[k]["number"] for k, r in sim["items"].items() if r["status"] == "Closed"}
+    current, cursor = {}, None
+    while True:
+        page = gql("""query($o:String!,$n:String!,$c:String){repository(owner:$o,name:$n){issues(first:100,after:$c){
+          pageInfo{hasNextPage endCursor} nodes{number id state}}}}""",
+                   {"o": OWNER, "n": "fish-market-backlog", "c": cursor})["repository"]["issues"]
+        current.update({n["number"]: (n["id"], n["state"]) for n in page["nodes"]})
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        cursor = page["pageInfo"]["endCursor"]
+    for number, (issue_id, now) in sorted(current.items()):
+        if number in closed and now == "OPEN":
+            gql("mutation($i:ID!){closeIssue(input:{issueId:$i,stateReason:COMPLETED}){clientMutationId}}", {"i": issue_id})
+        elif number not in closed and now == "CLOSED":
+            gql("mutation($i:ID!){reopenIssue(input:{issueId:$i}){clientMutationId}}", {"i": issue_id})
+        else:
+            continue
+        print(f"#{number} {'đóng' if number in closed else 'mở lại'}", flush=True)
         time.sleep(1)
 
 

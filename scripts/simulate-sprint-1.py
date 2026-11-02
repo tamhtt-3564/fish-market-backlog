@@ -79,17 +79,21 @@ def simulate(chosen, items, points, hours):
         cap = FTE[items[k]["owner"]] * HOURS_PER_DAY
         return max(free[items[k]["owner"]] / cap, max((finish[d] for d in leaf_deps(k, items, points)), default=0))
 
-    def pull_candidate():
-        """Người còn từ 1 ngày trống kéo việc lá sẵn sàng từ backlog (không chờ khách), ưu tiên việc bắt đầu sớm nhất."""
-        pool = [k for k in points if points[k]["direct"] and k not in finish and items[k]["owner"] in FTE
+    def pull_candidates():
+        """Việc lá ngoài cam kết, không chờ khách, mọi phụ thuộc đã có lịch và bắt đầu được trước ngày cuối."""
+        pool = [k for k in points if points[k]["direct"] and k not in finish and k not in todo and items[k]["owner"] in FTE
                 and "chờ khách" not in items[k].get("labels_extra", []) and leaf_deps(k, items, points) <= finish.keys()]
-        pool = [k for k in pool if ready_day(k) <= DAYS - 1]
-        return min(pool, key=lambda k: (ready_day(k), k)) if pool else None
+        return [k for k in pool if ready_day(k) <= DAYS - 1]
 
-    while todo or (k := pull_candidate()):
-        if todo:
-            # việc cam kết: lấy việc bắt đầu được sớm nhất (mọi việc phụ thuộc đã có lịch); hoà thì theo thứ tự cam kết
-            k = min((x for x in todo if leaf_deps(x, items, points) <= finish.keys()), key=lambda x: (ready_day(x), todo.index(x)))
+    while True:
+        # Lấy việc bắt đầu được sớm nhất. Việc kéo thêm bị phạt 1 ngày: chỉ được chọn khi việc cam kết
+        # tiếp theo của người đó phải chờ từ 1 ngày trở lên (người đó trống thì kéo việc làm trước).
+        options = [(ready_day(x), 0, todo.index(x), x) for x in todo if leaf_deps(x, items, points) <= finish.keys()]
+        options += [(ready_day(x) + 1, 1, 0, x) for x in pull_candidates()]
+        if not options:
+            break
+        k = min(options)[3]
+        if k in todo:
             todo.remove(k)
         else:
             draws[k] = draw()

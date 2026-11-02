@@ -3,6 +3,7 @@
 Chạy từ gốc repo:
     python scripts/create-project-issues.py [--only E16] [--delay 7.5]   # tạo issue, gắn cha, đưa vào Project, đặt Status và Phụ trách
     python scripts/create-project-issues.py --link-blocked-by            # nối quan hệ blocked by từ depends_on
+    python scripts/create-project-issues.py --refresh-bodies             # cập nhật thân issue đã cũ
 Ghi kết quả dần vào backlog/issue-numbers.json ({key: {number, id, item}}) nên chạy lại được sau khi bị ngắt.
 Đi chậm (mặc định 7,5 giây mỗi mục, dưới 500 lệnh tạo nội dung mỗi giờ); bị chặn tạm thì chờ rồi thử lại.
 """
@@ -10,6 +11,7 @@ import json
 import subprocess
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -105,7 +107,12 @@ def link_blocked_by(items, delay):
     done_path = REPO / "backlog" / "blocked-by-done.json"
     done = set(json.loads(done_path.read_text(encoding="utf-8"))) if done_path.exists() else set()
     pairs = [(i["key"], d) for i in items for d in i.get("depends_on", []) if f"{i['key']}<{d}" not in done]
-    print(f"Cần nối {len(pairs)} quan hệ", flush=True)
+    # GitHub cho một issue chặn tối đa 100 issue; phần vượt chỉ ghi trong thân issue, lưu danh sách để báo cáo
+    blocking = Counter(pair.split("<")[1] for pair in done)
+    skipped = sorted(f"{k}<{d}" for k, d in pairs if blocking[d] + sum(1 for _, x in pairs[:pairs.index((k, d))] if x == d) >= 100)
+    (REPO / "backlog" / "blocked-by-over-github-limit.json").write_text(json.dumps(skipped, indent=1), encoding="utf-8")
+    pairs = [(k, d) for k, d in pairs if f"{k}<{d}" not in skipped]
+    print(f"Cần nối {len(pairs)} quan hệ, bỏ qua {len(skipped)} vì giới hạn 100 của GitHub", flush=True)
     for n, (key, dep) in enumerate(pairs, 1):
         gql("mutation($a:ID!,$b:ID!){addBlockedBy(input:{issueId:$a,blockingIssueId:$b}){clientMutationId}}",
             {"a": state[key]["id"], "b": state[dep]["id"]})
@@ -115,12 +122,36 @@ def link_blocked_by(items, delay):
         time.sleep(delay)
 
 
+def refresh_bodies(items, delay):
+    """Cập nhật thân issue nào khác với body() hiện tại (ví dụ sau khi bổ sung depends_on)."""
+    state = json.loads(STATE.read_text(encoding="utf-8"))
+    by_number = {state[i["key"]]["number"]: i for i in items}
+    current, cursor = {}, None
+    while True:
+        page = gql("""query($o:String!,$n:String!,$c:String){repository(owner:$o,name:$n){issues(first:100,after:$c){
+          pageInfo{hasNextPage endCursor} nodes{number body}}}}""", {"o": OWNER, "n": NAME, "c": cursor})["repository"]["issues"]
+        current.update({n["number"]: n["body"] for n in page["nodes"]})
+        if not page["pageInfo"]["hasNextPage"]:
+            break
+        cursor = page["pageInfo"]["endCursor"]
+    stale = [n for n, it in sorted(by_number.items()) if current.get(n, "").replace("\r\n", "\n") != body(it)]
+    print(f"Cần cập nhật thân {len(stale)} issue", flush=True)
+    for n, number in enumerate(stale, 1):
+        it = by_number[number]
+        gql("mutation($id:ID!,$b:String!){updateIssue(input:{id:$id,body:$b}){clientMutationId}}",
+            {"id": state[it["key"]]["id"], "b": body(it)})
+        print(f"[{n}/{len(stale)}] {it['key']} #{number}", flush=True)
+        time.sleep(delay)
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     args = sys.argv[1:]
     delay = float(args[args.index("--delay") + 1]) if "--delay" in args else 7.5
     items = load_items()
-    if "--link-blocked-by" in args:
+    if "--refresh-bodies" in args:
+        refresh_bodies(items, delay)
+    elif "--link-blocked-by" in args:
         link_blocked_by(items, delay)
     else:
         create(items, args[args.index("--only") + 1] if "--only" in args else None, delay)

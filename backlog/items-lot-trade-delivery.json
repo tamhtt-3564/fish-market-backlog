@@ -122,7 +122,12 @@
       "Đang tải, rỗng, lỗi hiện như SCR-09 mục 5"
     ],
     "rough_hours": 10,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E05-S01-T02",
+      "E05-S01-T03",
+      "E05-S01-T01"
+    ]
   },
   {
     "key": "E05-S01-T05",
@@ -146,7 +151,10 @@
     "rough_hours": 12,
     "team": "frontend",
     "depends_on": [
-      "E14-S01"
+      "E14-S01",
+      "E05-S01-T02",
+      "E05-S01-T03",
+      "E05-S01-T01"
     ]
   },
   {
@@ -178,7 +186,12 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E05-S01-T04",
+      "E05-S01-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E05-S02",
@@ -317,7 +330,9 @@
     "rough_hours": 10,
     "team": "frontend",
     "depends_on": [
-      "E05-S03-T06"
+      "E05-S03-T06",
+      "E05-S03-T01",
+      "E05-S03-T02"
     ]
   },
   {
@@ -348,7 +363,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E05-S03-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E05-S04",
@@ -442,7 +461,11 @@
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
     "rough_hours": 8,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E05-S04-T01",
+      "E05-S04-T02"
+    ]
   },
   {
     "key": "E05-S04-T04",
@@ -473,7 +496,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E05-S04-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E05-S05",
@@ -592,7 +619,9 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E05-S05-T01"
+      "E05-S05-T01",
+      "E05-S05-T02",
+      "E05-S05-T03"
     ]
   },
   {
@@ -623,7 +652,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E05-S05-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E05-S06",
@@ -833,7 +866,13 @@
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
     "rough_hours": 12,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E06-S01-T02",
+      "E06-S01-T03",
+      "E06-S01-T04",
+      "E06-S01-T01"
+    ]
   },
   {
     "key": "E06-S01-T06",
@@ -865,7 +904,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E06-S01-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S02",
@@ -961,7 +1004,11 @@
       "Câu báo dùng nhãn 落札者"
     ],
     "rough_hours": 10,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E06-S02-T01",
+      "E06-S02-T02"
+    ]
   },
   {
     "key": "E06-S02-T04",
@@ -992,7 +1039,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E06-S02-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S03",
@@ -1106,7 +1157,12 @@
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
     "rough_hours": 10,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E06-S03-T01",
+      "E06-S03-T02",
+      "E06-S03-T03"
+    ]
   },
   {
     "key": "E06-S03-T05",
@@ -1138,7 +1194,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E06-S03-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S04",
@@ -1217,7 +1277,10 @@
       "Nhãn 紙伝票から後追い入力する đúng bản đã duyệt"
     ],
     "rough_hours": 6,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E06-S04-T01"
+    ]
   },
   {
     "key": "E06-S04-T03",
@@ -1249,7 +1312,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E06-S04-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S05",
@@ -1328,7 +1395,8 @@
     "rough_hours": 10,
     "team": "frontend",
     "depends_on": [
-      "E06-S05-T05"
+      "E06-S05-T05",
+      "E06-S05-T01"
     ]
   },
   {
@@ -1410,7 +1478,8 @@
     "rough_hours": 10,
     "team": "frontend",
     "depends_on": [
-      "E06-S06-T05"
+      "E06-S06-T05",
+      "E06-S06-T01"
     ]
   },
   {
@@ -1441,7 +1510,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E06-S06-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S07",
@@ -1538,7 +1611,9 @@
     "rough_hours": 10,
     "team": "frontend",
     "depends_on": [
-      "E06-S07-T06"
+      "E06-S07-T06",
+      "E06-S07-T02",
+      "E06-S07-T01"
     ]
   },
   {
@@ -1570,7 +1645,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E06-S07-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S08",
@@ -1675,7 +1754,8 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E07-S01-T05"
+      "E07-S01-T05",
+      "E07-S01-T01"
     ]
   },
   {
@@ -1830,7 +1910,14 @@
       "Khoá câu dlv.deliveryTitle bỏ dấu chấm giữa"
     ],
     "rough_hours": 12,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E07-S02-T02",
+      "E07-S02-T03",
+      "E07-S02-T04",
+      "E07-S02-T05",
+      "E07-S02-T01"
+    ]
   },
   {
     "key": "E07-S02-T07",
@@ -1850,7 +1937,12 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E14-S01"
+      "E14-S01",
+      "E07-S02-T02",
+      "E07-S02-T03",
+      "E07-S02-T04",
+      "E07-S02-T05",
+      "E07-S02-T01"
     ]
   },
   {
@@ -1882,7 +1974,12 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E07-S02-T06",
+      "E07-S02-T07",
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S03",
@@ -1956,7 +2053,10 @@
       "Điều kiện tắt F-1 đúng SPEC"
     ],
     "rough_hours": 6,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E07-S03-T01"
+    ]
   },
   {
     "key": "E07-S03-T03",
@@ -1986,7 +2086,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E07-S03-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S04",
@@ -2103,7 +2207,12 @@
       "ROLE-DELIVERY thấy khối B chỉ đọc"
     ],
     "rough_hours": 10,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E07-S04-T01",
+      "E07-S04-T02",
+      "E07-S04-T03"
+    ]
   },
   {
     "key": "E07-S04-T05",
@@ -2133,7 +2242,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E07-S04-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S05",
@@ -2270,7 +2383,10 @@
     "team": "frontend",
     "depends_on": [
       "E14-S01",
-      "E07-S05-T01"
+      "E07-S05-T01",
+      "E07-S05-T02",
+      "E07-S05-T03",
+      "E07-S05-T04"
     ]
   },
   {
@@ -2301,7 +2417,11 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E07-S05-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S06",
@@ -2329,7 +2449,8 @@
       "E07-S02",
       "E07-S03",
       "E07-S04",
-      "E07-S05"
+      "E07-S05",
+      "E07-S07"
     ]
   },
   {
@@ -2363,7 +2484,10 @@
     "acceptance": [
       "QA-A chạy ca kiểm thử trên staging, kết quả ghi vào issue; lỗi tìm ra có issue riêng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S07",
@@ -2455,7 +2579,8 @@
     "rough_hours": 6,
     "team": "frontend",
     "depends_on": [
-      "E05-S02-T01"
+      "E05-S02-T01",
+      "E05-S02-T02"
     ]
   },
   {
@@ -2496,7 +2621,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E05-S02-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E06-S05-T03",
@@ -2540,7 +2669,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E06-S05-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E07-S01-T03",
@@ -2584,7 +2717,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E07-S01-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E05-S03-T06",

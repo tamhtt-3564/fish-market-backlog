@@ -147,7 +147,13 @@
       "Biến thể gửi xong mở chi tiết phiếu ở SCR-24",
       "Vai không vào màn thấy khối không quyền"
     ],
-    "rough_hours": 12
+    "rough_hours": 12,
+    "depends_on": [
+      "E08-S01-T02",
+      "E08-S01-T03",
+      "E08-S01-T04",
+      "E08-S01-T01"
+    ]
   },
   {
     "key": "E08-S01-T06",
@@ -186,7 +192,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E08-S01-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S02",
@@ -299,7 +309,12 @@
       "Phiếu không nộp lại được thì hiện câu A-5 đúng mã",
       "Nhãn đúng SPEC"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E08-S02-T02",
+      "E08-S02-T03",
+      "E08-S02-T01"
+    ]
   },
   {
     "key": "E08-S02-T05",
@@ -338,7 +353,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E08-S02-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S03",
@@ -514,7 +533,14 @@
       "Câu lỗi đúng error-codes",
       "Nhãn C-2 bỏ vế 文字のみ"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E08-S03-T02",
+      "E08-S03-T03",
+      "E08-S03-T04",
+      "E08-S03-T05",
+      "E08-S03-T06"
+    ]
   },
   {
     "key": "E08-S03-T08",
@@ -553,7 +579,12 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E08-S03-T01",
+      "E08-S03-T07",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S04",
@@ -676,7 +707,11 @@
       "Nhãn đúng SPEC 6.7",
       "Khối rỗng, lỗi, đang tải đúng wireframe"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E08-S05-T02",
+      "E08-S05-T01"
+    ]
   },
   {
     "key": "E08-S05-T04",
@@ -694,7 +729,11 @@
       "F-3 ẩn khi ngày đã khoá lại sau duyệt, câu riêng khi đang mở lại sổ",
       "ROLE-TRADE thấy F-3 không có liên kết"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E08-S05-T02",
+      "E08-S05-T01"
+    ]
   },
   {
     "key": "E08-S05-T05",
@@ -731,7 +770,12 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E08-S05-T03",
+      "E08-S05-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S06",
@@ -894,7 +938,14 @@
       "Nhãn E-1 theo SPEC 6.7",
       "Phiếu returned chỉ hiện E-1, E-4"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E08-S06-T01",
+      "E08-S06-T02",
+      "E08-S06-T03",
+      "E08-S06-T04",
+      "E08-S06-T05"
+    ]
   },
   {
     "key": "E08-S06-T07",
@@ -933,7 +984,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E08-S06-T06",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S07",
@@ -1030,7 +1085,11 @@
       "Chỉ hiện với phiếu của chính mình đang chờ",
       "Nhãn 取下げ hiện ngay sau khi rút"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E08-S07-T01",
+      "E08-S07-T02"
+    ]
   },
   {
     "key": "E08-S07-T04",
@@ -1069,7 +1128,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E08-S07-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E08-S08",
@@ -1262,7 +1325,14 @@
     "acceptance": [
       "Nút hiện đúng bảng SPEC 6.2"
     ],
-    "rough_hours": 10
+    "rough_hours": 10,
+    "depends_on": [
+      "E09-S01-T02",
+      "E09-S01-T03",
+      "E09-S01-T04",
+      "E09-S01-T05",
+      "E09-S01-T01"
+    ]
   },
   {
     "key": "E09-S01-T07",
@@ -1279,7 +1349,14 @@
       "D-5 chỉ bật khi 6 dòng đầu đạt",
       "Đề nghị của chính mình hiện C-2"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E09-S01-T02",
+      "E09-S01-T03",
+      "E09-S01-T04",
+      "E09-S01-T05",
+      "E09-S01-T01"
+    ]
   },
   {
     "key": "E09-S01-T08",
@@ -1316,7 +1393,12 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E09-S01-T06",
+      "E09-S01-T07",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S02",
@@ -1439,7 +1521,13 @@
       "Nút khoá chỉ bật khi E-13 đã chọn với ngày có 後追い入力",
       "Câu và nhãn đúng SPEC 6.7"
     ],
-    "rough_hours": 12
+    "rough_hours": 12,
+    "depends_on": [
+      "E09-S02-T01",
+      "E09-S02-T02",
+      "E09-S02-T03",
+      "E09-S02-T07"
+    ]
   },
   {
     "key": "E09-S02-T05",
@@ -1478,7 +1566,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E09-S02-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S03",
@@ -1590,7 +1682,13 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E09-S03-T01",
+      "E09-S03-T02",
+      "E09-S03-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S04",
@@ -1685,7 +1783,11 @@
     "acceptance": [
       "Câu lỗi đúng error-codes"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E09-S04-T01",
+      "E09-S04-T02"
+    ]
   },
   {
     "key": "E09-S04-T04",
@@ -1724,7 +1826,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E09-S04-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S05",
@@ -1819,7 +1925,11 @@
     "acceptance": [
       "Đề nghị của chính mình không có nút duyệt"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E09-S05-T01",
+      "E09-S05-T02"
+    ]
   },
   {
     "key": "E09-S05-T04",
@@ -1858,7 +1968,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E09-S05-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S06",
@@ -1957,7 +2071,11 @@
     "acceptance": [
       "Câu đúng SPEC"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E09-S06-T01",
+      "E09-S06-T02"
+    ]
   },
   {
     "key": "E09-S06-T04",
@@ -1996,7 +2114,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E09-S06-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S07",
@@ -2075,7 +2197,8 @@
     ],
     "rough_hours": 8,
     "depends_on": [
-      "E09-S07-T05"
+      "E09-S07-T05",
+      "E09-S07-T01"
     ]
   },
   {
@@ -2113,7 +2236,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E09-S07-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S08",
@@ -2230,7 +2357,10 @@
     ],
     "rough_hours": 6,
     "depends_on": [
-      "E09-S08-T07"
+      "E09-S08-T07",
+      "E09-S08-T02",
+      "E09-S08-T03",
+      "E09-S08-T01"
     ]
   },
   {
@@ -2268,7 +2398,11 @@
       "Lỗi tìm ra có issue riêng, ca trượt chạy lại sau khi sửa",
       "Kết luận đạt hoặc chưa đạt rõ ràng"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E09-S08-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S09",
@@ -2349,6 +2483,9 @@
       "ROLE-AUDIT-VIEW",
       "ROLE-REPORT-VIEW",
       "ROLE-PARTICIPANT-VIEW"
+    ],
+    "depends_on": [
+      "E09-S09"
     ]
   },
   {
@@ -2388,7 +2525,8 @@
     "depends_on": [
       "E08-S06",
       "E09-S02",
-      "E09-S05"
+      "E09-S05",
+      "E01-S02"
     ]
   },
   {
@@ -2464,7 +2602,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E08-S08-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S12-T01",
@@ -2521,7 +2663,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E09-S12-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E09-S07-T05",

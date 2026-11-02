@@ -68,6 +68,8 @@ Trạng thái đi theo mẫu. Việc xây dựng: `In Progress` → `In Review` 
 | Làm rõ | Khách trả lời, câu trả lời ghi vào bảng Q4; issue chịu ảnh hưởng được sửa và ước lại |
 | Hạ tầng, vận hành | Cấu hình hoặc runbook có trong repo, người thứ hai làm theo được |
 
+Thứ tự bổ sung sau soát bước 6 (D5-25, D5-26; quan hệ blocked by trên Project), áp bằng `python scripts/add-implicit-story-dependencies.py`: trong cùng một story, việc giao diện chờ mọi việc BE và thiết kế giao diện, việc kiểm thử chờ các việc làm mã; việc lá nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02. Thêm 456 phụ thuộc (310 rồi 146), tổng 757. Trên GitHub nối được 747 quan hệ blocked by: GitHub cho một issue chặn tối đa 100 issue, nên 10 việc chờ E01-S02 chỉ ghi phụ thuộc trong thân issue (danh sách: `backlog/blocked-by-over-github-limit.json`).
+
 ### 1.6 Danh sách epic
 
 | Mã | Epic | Nguồn chính |

@@ -98,7 +98,11 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S01-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S02",
@@ -225,7 +229,9 @@
     "rough_hours": 3,
     "team": "frontend",
     "depends_on": [
-      "E03-S02-T01"
+      "E03-S02-T01",
+      "E03-S02-T02",
+      "E03-S02-T03"
     ]
   },
   {
@@ -261,7 +267,11 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S02-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S03",
@@ -373,7 +383,9 @@
     "rough_hours": 12,
     "team": "frontend",
     "depends_on": [
-      "E03-S03-T02"
+      "E03-S03-T02",
+      "E03-S03-T03",
+      "E03-S03-T01"
     ]
   },
   {
@@ -409,7 +421,11 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E03-S03-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S04",
@@ -571,7 +587,8 @@
     "rough_hours": 6,
     "team": "frontend",
     "depends_on": [
-      "E03-S06-T04"
+      "E03-S06-T04",
+      "E03-S06-T01"
     ]
   },
   {
@@ -590,7 +607,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E03-S06-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S07",
@@ -735,7 +756,10 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E03-S07-T02"
+      "E03-S07-T02",
+      "E03-S07-T03",
+      "E03-S07-T04",
+      "E03-S07-T01"
     ]
   },
   {
@@ -773,7 +797,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S07-T05",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S08",
@@ -892,7 +920,10 @@
     "rough_hours": 6,
     "team": "frontend",
     "depends_on": [
-      "E03-S08-T07"
+      "E03-S08-T07",
+      "E03-S08-T02",
+      "E03-S08-T03",
+      "E03-S08-T01"
     ]
   },
   {
@@ -930,7 +961,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S08-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S09",
@@ -1053,7 +1088,9 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E03-S09-T01"
+      "E03-S09-T01",
+      "E03-S09-T02",
+      "E03-S09-T03"
     ]
   },
   {
@@ -1089,7 +1126,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S09-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S10",
@@ -1244,7 +1285,13 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S10-T02",
+      "E03-S10-T03",
+      "E03-S10-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S11",
@@ -1325,7 +1372,11 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E03-S11-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S12",
@@ -1504,7 +1555,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E04-S02-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E04-S03",
@@ -1639,7 +1694,13 @@
       "Câu báo đúng error-codes"
     ],
     "rough_hours": 12,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E04-S03-T02",
+      "E04-S03-T03",
+      "E04-S03-T04",
+      "E04-S03-T01"
+    ]
   },
   {
     "key": "E04-S03-T06",
@@ -1655,7 +1716,13 @@
       "Dòng migration hiện システム（データ移行）"
     ],
     "rough_hours": 6,
-    "team": "frontend"
+    "team": "frontend",
+    "depends_on": [
+      "E04-S03-T02",
+      "E04-S03-T03",
+      "E04-S03-T04",
+      "E04-S03-T01"
+    ]
   },
   {
     "key": "E04-S03-T07",
@@ -1692,7 +1759,12 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 6
+    "rough_hours": 6,
+    "depends_on": [
+      "E04-S03-T05",
+      "E04-S03-T06",
+      "E01-S02"
+    ]
   },
   {
     "key": "E04-S04",
@@ -1802,7 +1874,12 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E04-S04-T01",
+      "E04-S04-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E04-S05",
@@ -1961,7 +2038,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E04-S06-T07"
+      "E04-S06-T07",
+      "E04-S06-T02",
+      "E04-S06-T03",
+      "E04-S06-T01"
     ]
   },
   {
@@ -2005,6 +2085,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S06-T04",
+      "E01-S02"
     ]
   },
   {
@@ -2088,7 +2172,8 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E04-S07-T04"
+      "E04-S07-T04",
+      "E04-S07-T01"
     ]
   },
   {
@@ -2110,6 +2195,10 @@
     "rough_hours": 3,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S07-T02",
+      "E01-S02"
     ]
   },
   {
@@ -2221,7 +2310,9 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E04-S08-T06"
+      "E04-S08-T06",
+      "E04-S08-T01",
+      "E04-S08-T02"
     ]
   },
   {
@@ -2263,6 +2354,10 @@
     "rough_hours": 3,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E04-S08-T03",
+      "E01-S02"
     ]
   },
   {
@@ -2525,6 +2620,12 @@
     "rough_hours": 5,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S05-T02",
+      "E12-S05-T03",
+      "E12-S05-T04",
+      "E01-S02"
     ]
   },
   {
@@ -2631,7 +2732,9 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E12-S06-T06"
+      "E12-S06-T06",
+      "E12-S06-T02",
+      "E12-S06-T01"
     ]
   },
   {
@@ -2675,6 +2778,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S06-T03",
+      "E01-S02"
     ]
   },
   {
@@ -2757,7 +2864,8 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E12-S07-T07"
+      "E12-S07-T07",
+      "E12-S07-T01"
     ]
   },
   {
@@ -2780,7 +2888,8 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E12-S07-T07"
+      "E12-S07-T07",
+      "E12-S07-T01"
     ]
   },
   {
@@ -2803,7 +2912,8 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E12-S07-T07"
+      "E12-S07-T07",
+      "E12-S07-T01"
     ]
   },
   {
@@ -2845,6 +2955,12 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S07-T02",
+      "E12-S07-T03",
+      "E12-S07-T04",
+      "E01-S02"
     ]
   },
   {
@@ -2991,7 +3107,13 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 5
+    "rough_hours": 5,
+    "depends_on": [
+      "E12-S08-T02",
+      "E12-S08-T03",
+      "E12-S08-T04",
+      "E01-S02"
+    ]
   },
   {
     "key": "E12-S09",
@@ -3089,7 +3211,12 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E12-S09-T01",
+      "E12-S09-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E12-S10",
@@ -3220,7 +3347,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E12-S10-T07"
+      "E12-S10-T07",
+      "E12-S10-T02",
+      "E12-S10-T03",
+      "E12-S10-T01"
     ]
   },
   {
@@ -3264,6 +3394,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E12-S10-T04",
+      "E01-S02"
     ]
   },
   {
@@ -3324,7 +3458,10 @@
       "Người thứ hai làm theo được"
     ],
     "rough_hours": 4,
-    "team": "infrastructure"
+    "team": "infrastructure",
+    "depends_on": [
+      "E01-S02"
+    ]
   },
   {
     "key": "E13-S01-T03",
@@ -3357,7 +3494,12 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E13-S01-T01",
+      "E13-S01-T02",
+      "E01-S02"
+    ]
   },
   {
     "key": "E13-S02",
@@ -3470,7 +3612,13 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 4
+    "rough_hours": 4,
+    "depends_on": [
+      "E13-S02-T01",
+      "E13-S02-T02",
+      "E13-S02-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E13-S03",
@@ -3542,7 +3690,11 @@
       "Mọi ca đạt trên staging hoặc có issue lỗi gắn kèm",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E13-S03-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E13-S04",
@@ -3635,7 +3787,9 @@
     "rough_hours": 8,
     "team": "frontend",
     "depends_on": [
-      "E13-S04-T06"
+      "E13-S04-T06",
+      "E13-S04-T02",
+      "E13-S04-T01"
     ]
   },
   {
@@ -3671,7 +3825,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E13-S04-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E13-S05",
@@ -3822,7 +3980,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E13-S06-T08"
+      "E13-S06-T08",
+      "E13-S06-T02",
+      "E13-S06-T03",
+      "E13-S06-T01"
     ]
   },
   {
@@ -3844,7 +4005,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E13-S06-T08"
+      "E13-S06-T08",
+      "E13-S06-T02",
+      "E13-S06-T03",
+      "E13-S06-T01"
     ]
   },
   {
@@ -3888,6 +4052,11 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E13-S06-T04",
+      "E13-S06-T05",
+      "E01-S02"
     ]
   },
   {
@@ -4047,7 +4216,13 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 8
+    "rough_hours": 8,
+    "depends_on": [
+      "E14-S01-T02",
+      "E14-S01-T04",
+      "E14-S01-T07",
+      "E01-S02"
+    ]
   },
   {
     "key": "E14-S02",
@@ -4179,7 +4354,9 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E14-S03-T06"
+      "E14-S03-T06",
+      "E14-S03-T02",
+      "E14-S03-T01"
     ]
   },
   {
@@ -4221,6 +4398,10 @@
     "rough_hours": 3,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S03-T03",
+      "E01-S02"
     ]
   },
   {
@@ -4376,7 +4557,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E14-S04-T02"
+      "E14-S04-T02",
+      "E14-S04-T03",
+      "E14-S04-T04",
+      "E14-S04-T01"
     ]
   },
   {
@@ -4418,6 +4602,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E14-S04-T05",
+      "E01-S02"
     ]
   },
   {
@@ -4521,7 +4709,8 @@
     "rough_hours": 6,
     "team": "frontend",
     "depends_on": [
-      "E15-S01-T01"
+      "E15-S01-T01",
+      "E15-S01-T02"
     ]
   },
   {
@@ -4559,7 +4748,11 @@
       "Vai bị chặn gọi thẳng API nhận 403 FORBIDDEN, gọi thẳng hàm DB nhận 42501; chặn ở API hoặc hàm DB, không chỉ ẩn nút",
       "Câu báo tiếng Nhật đúng bảng đã duyệt"
     ],
-    "rough_hours": 3
+    "rough_hours": 3,
+    "depends_on": [
+      "E15-S01-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E15-S02",
@@ -4742,7 +4935,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E15-S04-T07"
+      "E15-S04-T07",
+      "E15-S04-T02",
+      "E15-S04-T03",
+      "E15-S04-T01"
     ]
   },
   {
@@ -4786,6 +4982,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S04-T04",
+      "E01-S02"
     ]
   },
   {
@@ -4923,6 +5123,11 @@
     "rough_hours": 5,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S05-T02",
+      "E15-S05-T03",
+      "E01-S02"
     ]
   },
   {
@@ -5009,7 +5214,8 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E15-S06-T05"
+      "E15-S06-T05",
+      "E15-S06-T01"
     ]
   },
   {
@@ -5051,6 +5257,10 @@
     "rough_hours": 3,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S06-T02",
+      "E01-S02"
     ]
   },
   {
@@ -5203,6 +5413,11 @@
     "rough_hours": 3,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E15-S07-T02",
+      "E15-S07-T03",
+      "E01-S02"
     ]
   },
   {
@@ -5391,7 +5606,10 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E16-S03-T07"
+      "E16-S03-T07",
+      "E16-S03-T02",
+      "E16-S03-T03",
+      "E16-S03-T01"
     ]
   },
   {
@@ -5435,6 +5653,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S03-T04",
+      "E01-S02"
     ]
   },
   {
@@ -5549,7 +5771,9 @@
       "độ tin thấp"
     ],
     "depends_on": [
-      "E16-S04-T06"
+      "E16-S04-T06",
+      "E16-S04-T01",
+      "E16-S04-T02"
     ]
   },
   {
@@ -5593,6 +5817,10 @@
     "rough_hours": 4,
     "labels_extra": [
       "độ tin thấp"
+    ],
+    "depends_on": [
+      "E16-S04-T03",
+      "E01-S02"
     ]
   },
   {
@@ -5700,7 +5928,8 @@
     "rough_hours": 5,
     "team": "frontend",
     "depends_on": [
-      "E03-S04-T01"
+      "E03-S04-T01",
+      "E03-S04-T02"
     ]
   },
   {
@@ -5749,7 +5978,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E03-S04-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S05-T01",
@@ -5816,7 +6049,8 @@
     "rough_hours": 4,
     "team": "frontend",
     "depends_on": [
-      "E03-S05-T01"
+      "E03-S05-T01",
+      "E03-S05-T02"
     ]
   },
   {
@@ -5857,7 +6091,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E03-S05-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E04-S01-T01",
@@ -5927,7 +6165,8 @@
     "rough_hours": 4,
     "team": "frontend",
     "depends_on": [
-      "E04-S01-T01"
+      "E04-S01-T01",
+      "E04-S01-T02"
     ]
   },
   {
@@ -5970,7 +6209,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E04-S01-T03",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S12-T01",
@@ -6009,7 +6252,11 @@
       "Mọi ca kiểm thử đạt trên staging",
       "Lỗi tìm ra ghi thành issue QA bug"
     ],
-    "rough_hours": 2
+    "rough_hours": 2,
+    "depends_on": [
+      "E03-S12-T01",
+      "E01-S02"
+    ]
   },
   {
     "key": "E03-S06-T04",

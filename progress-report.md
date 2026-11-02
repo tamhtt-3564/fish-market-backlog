@@ -2,62 +2,72 @@
 
 ## 1. Thông tin sprint
 
-- **Iteration trên Project:** `Sprint 1` (trường Target version của [Project #1](https://github.com/users/tamhtt-3564/projects/1); xem nhanh ở view "Bảng trạng thái", lọc `target-version:"Sprint 1"`).
-- **Thời gian giả lập:** 2027-01-11 tới 2027-01-22, 10 ngày làm việc. Sprint 1 là sprint đầu của giai đoạn xây dựng (T3 theo lịch LAB-1).
-- **Đây là sprint giả lập, không phải số liệu thật.** Tiến độ từng việc sinh bằng `python scripts/simulate-sprint-1.py` với hạt ngẫu nhiên cố định (20270111), chạy lại ra cùng kết quả; dữ liệu ở `backlog/sprint-1-simulation.json`, ghi lên Project bằng `python scripts/write-sprint-1-to-project.py`.
-- **Giả định của giả lập:**
-  - Đội 5,8 người như giai đoạn xây dựng LAB-1 (BE 2, FE 1,5, QA 1, TL 0,5, Infra 0,4, Design 0,2, BA 0,2), cộng BrSE 0,5 người; mỗi người 6 giờ làm thật mỗi ngày.
-  - Cam kết 85% năng lực; chọn việc lá theo thứ tự hạ tầng, nền dữ liệu, đăng nhập, việc làm rõ, rồi các việc khác, chỉ lấy việc có mọi việc phụ thuộc (kể cả phụ thuộc của story cha) cũng trong sprint.
-  - Giờ làm thật = giờ ước × hệ số ngẫu nhiên (trung bình khoảng 1,1); việc xây dựng có 15% khả năng phải sửa lại sau review.
-  - Ngày khách trả lời câu hỏi, cấp tài khoản: ngẫu nhiên từ ngày làm việc thứ 3 tới thứ 15.
-  - Người còn từ 1 ngày trống thì kéo thêm việc sẵn sàng từ backlog.
-- **Cam kết đầu sprint:** 55 việc, 151 SWP, 286,0 giờ ước. **Kéo thêm giữa sprint:** 2 việc, 9 SWP, 19,7 giờ ước.
+- **Iteration trên Project:** `Sprint 1` (trường Target version của [Project #1](https://github.com/users/tamhtt-3564/projects/1); xem ở view "Bảng trạng thái", lọc `target-version:"Sprint 1"`).
+- **Thời gian giả lập:** 2027-01-11 tới 2027-01-22, 10 ngày làm việc; sprint đầu của giai đoạn xây dựng.
+- **Đây là sprint giả lập, không phải số liệu thật.** Tiến độ từng việc sinh bằng `python scripts/simulate-sprint-1.py` (hạt ngẫu nhiên 20270111, chạy lại ra cùng kết quả), lưu ở `backlog/sprint-1-simulation.json`, ghi lên Project bằng `python scripts/write-sprint-1-to-project.py`. Issue có trạng thái Closed được đóng trên GitHub cho khớp board; các ngày hẹn ở mục 4 là ngày của kịch bản giả lập.
+- **Giả định của giả lập** (đọc từ mã của script):
+  - Đội 5,8 người bằng số người bình quân của giai đoạn xây dựng trong kế hoạch tổng; phân vai do người lập báo cáo giả định: BE 2, FE 1,5, QA 1, TL 0,5, Infra 0,4, Design 0,2, BA 0,2. Thêm BrSE 0,5 người. Mỗi người 6 giờ làm thật mỗi ngày.
+  - Cam kết 85% năng lực. Chọn việc theo thứ tự: hạ tầng, nền dữ liệu, đăng nhập, việc làm rõ, rồi việc khác; chỉ lấy việc mà mọi việc phụ thuộc (kể cả phụ thuộc của story cha) cũng trong sprint.
+  - Thứ tự phụ thuộc lấy từ quan hệ blocked by của backlog, gồm cả luật trong story (`task-breakdown.md`, đoạn trước mục 1.6): giao diện chờ BE và thiết kế giao diện, kiểm thử chờ việc làm mã, việc cần staging, Vercel hay production chờ dựng môi trường.
+  - Giờ làm thật = giờ ước × hệ số ngẫu nhiên, trung bình 1,1. Việc xây dựng có 15% khả năng phải sửa sau review; khi đó cộng thêm 30% giờ.
+  - Việc xây dựng làm xong còn 1 ngày chờ review và kiểm mới Closed; thiết kế, ca kiểm thử, tài liệu, vận hành chờ 0,5 ngày. Giờ review và kiểm của TL, QA không trừ vào năng lực của họ.
+  - Ngày khách trả lời câu hỏi hoặc cấp tài khoản: ngẫu nhiên từ ngày làm việc thứ 3 tới thứ 15.
+  - Ai phải chờ việc cam kết từ 1 ngày trở lên thì kéo việc sẵn sàng từ backlog làm trước.
+- **Cam kết đầu sprint:** 54 việc, 146 SWP, 273,4 giờ ước. **Kéo thêm giữa sprint:** 15 việc, 59 SWP, 122,2 giờ ước.
 
 ## 2. Trạng thái cuối sprint
 
 | Trạng thái | Số issue | Tổng SWP | Ghi chú |
 |---|---|---|---|
-| Closed | 40 | 105 | Tiếp nhận lô E05 38 SWP; nền dữ liệu E02 9 việc (migration đợt 1, 2 và một phần đợt 10a), 30 SWP; giờ thực tế của 40 việc là 206,3 so với 201,2 giờ ước (+2,5%) |
-| In Progress | 3 | 12 | Spec màn SCR-26 ([#120](https://github.com/tamhtt-3564/fish-market-backlog/issues/120)) làm lâu hơn ước; 2 việc kéo thêm giữa sprint: thiết kế và form chốt 相対 ([#380](https://github.com/tamhtt-3564/fish-market-backlog/issues/380), [#384](https://github.com/tamhtt-3564/fish-market-backlog/issues/384)) |
-| Issued Tasks (chưa bắt đầu) | 10 | 36 | 9 việc dựng môi trường, cấu hình, sao lưu, CI (E01) và runbook khôi phục (E19): chưa thể bắt đầu vì chưa có tài khoản dịch vụ |
-| Pending (chờ khách) | 4 | 7 | Tài khoản dịch vụ ([#37](https://github.com/tamhtt-3564/fish-market-backlog/issues/37)); câu hỏi Q4-25 và Q4-19 ([#45](https://github.com/tamhtt-3564/fish-market-backlog/issues/45)), Q4-44 ([#84](https://github.com/tamhtt-3564/fish-market-backlog/issues/84)), Q4-55 ([#135](https://github.com/tamhtt-3564/fish-market-backlog/issues/135)) |
-| **Tổng** | **57** | **160** | Hoàn thành 105/160 SWP (66%); so với cam kết đầu sprint 151 SWP là 70% |
+| Closed | 41 | 115 | 32 việc cam kết (79 SWP) và 9 việc kéo thêm (36 SWP). Nhiều nhất ở tiếp nhận lô (E05, 39 SWP), nền dữ liệu (E02, 18 SWP), giao nhận (E07, 17 SWP) |
+| In Progress | 4 | 16 | Thiết kế lớp ngoại tuyến ([#685](https://github.com/tamhtt-3564/fish-market-backlog/issues/685)); 3 việc kéo thêm: hàm ghi 目利き ([#369](https://github.com/tamhtt-3564/fish-market-backlog/issues/369)), thiết kế giao diện nhập giao dịch ([#380](https://github.com/tamhtt-3564/fish-market-backlog/issues/380)), spec SCR-28 ([#144](https://github.com/tamhtt-3564/fish-market-backlog/issues/144)) |
+| In Review | 3 | 9 | View đợt 2a ([#221](https://github.com/tamhtt-3564/fish-market-backlog/issues/221)); form tiếp nhận lô trực tuyến ([#354](https://github.com/tamhtt-3564/fish-market-backlog/issues/354)) và ca kiểm thử ngoại lệ giao nhận ([#447](https://github.com/tamhtt-3564/fish-market-backlog/issues/447)), là việc kéo thêm |
+| QA Testing | 2 | 7 | Backfill đợt 2a ([#220](https://github.com/tamhtt-3564/fish-market-backlog/issues/220)); nút 完納 trên SCR-18 ([#433](https://github.com/tamhtt-3564/fish-market-backlog/issues/433)), việc kéo thêm |
+| Issued Tasks (chưa bắt đầu) | 15 | 51 | 9 việc E01 (33 SWP): dựng môi trường, cấu hình, CI, sao lưu, kiểm cảnh báo bảo mật trên staging, đều chờ tài khoản dịch vụ; 4 việc giao diện ngoại tuyến (E14, 13 SWP) chờ thiết kế #685; kiểm câu báo lỗi trên staging ([#312](https://github.com/tamhtt-3564/fish-market-backlog/issues/312)); runbook mất dự án Supabase ([#776](https://github.com/tamhtt-3564/fish-market-backlog/issues/776)) |
+| Pending (chờ khách) | 4 | 7 | Tài khoản dịch vụ ([#37](https://github.com/tamhtt-3564/fish-market-backlog/issues/37)); câu hỏi Q4-28 ([#83](https://github.com/tamhtt-3564/fish-market-backlog/issues/83)), Q4-55 ([#135](https://github.com/tamhtt-3564/fish-market-backlog/issues/135)), Q4-60 ([#138](https://github.com/tamhtt-3564/fish-market-backlog/issues/138)) |
+| **Tổng** | **69** | **205** | Xong 115/205 SWP (56%). Riêng phần cam kết đầu sprint: xong 79/146 SWP (54%) |
 
-Lệnh đếm: đọc trường Status, Target version, Story Point của Project (truy vấn `fieldValueByName`), 57 mục có Target version `Sprint 1`, khớp `backlog/sprint-1-simulation.json`. 735 mục còn lại giữ trạng thái New, chưa vào sprint.
+Lệnh đếm (chạy từ gốc repo):
+
+```bash
+gh api graphql --paginate -f query='query($endCursor:String){user(login:"tamhtt-3564"){projectV2(number:1){items(first:100,after:$endCursor){pageInfo{hasNextPage endCursor} nodes{t:fieldValueByName(name:"Target version"){... on ProjectV2ItemFieldIterationValue{title}} s:fieldValueByName(name:"Status"){... on ProjectV2ItemFieldSingleSelectValue{name}} p:fieldValueByName(name:"Story Point"){... on ProjectV2ItemFieldNumberValue{number}}}}}}}' --jq '.data.user.projectV2.items.nodes[] | select(.t.title=="Sprint 1") | [.s.name, .p.number] | @tsv' | awk -F'\t' '{n[$1]++; s[$1]+=$2} END {for (k in n) print k, n[k], s[k]}'
+```
+
+Trên GitHub: 41 issue đóng, 751 issue mở. 723 mục ngoài sprint giữ trạng thái New.
 
 ## 3. Burndown
 
-SWP còn lại cuối mỗi ngày. "Phạm vi" tăng khi kéo thêm việc giữa sprint; đường lý tưởng tính trên 151 SWP cam kết.
+SWP còn lại cuối mỗi ngày. "Phạm vi" tăng khi kéo thêm việc giữa sprint; đường lý tưởng tính trên 146 SWP cam kết.
 
 | Ngày | Ngày làm việc | Lý tưởng | Phạm vi | Còn lại |
 |---|---|---|---|---|
-| 0 | Đầu sprint | 151,0 | 151 | 151 |
-| 1 | 2027-01-11 | 135,9 | 151 | 148 |
-| 2 | 2027-01-12 | 120,8 | 151 | 135 |
-| 3 | 2027-01-13 | 105,7 | 151 | 124 |
-| 4 | 2027-01-14 | 90,6 | 151 | 109 |
-| 5 | 2027-01-15 | 75,5 | 151 | 102 |
-| 6 | 2027-01-18 | 60,4 | 151 | 87 |
-| 7 | 2027-01-19 | 45,3 | 151 | 80 |
-| 8 | 2027-01-20 | 30,2 | 156 | 74 |
-| 9 | 2027-01-21 | 15,1 | 160 | 65 |
-| 10 | 2027-01-22 | 0,0 | 160 | 55 |
+| 0 | Đầu sprint | 146,0 | 146 | 146 |
+| 1 | 2027-01-11 | 131,4 | 146 | 146 |
+| 2 | 2027-01-12 | 116,8 | 151 | 141 |
+| 3 | 2027-01-13 | 102,2 | 154 | 134 |
+| 4 | 2027-01-14 | 87,6 | 162 | 129 |
+| 5 | 2027-01-15 | 73,0 | 174 | 124 |
+| 6 | 2027-01-18 | 58,4 | 178 | 108 |
+| 7 | 2027-01-19 | 43,8 | 186 | 101 |
+| 8 | 2027-01-20 | 29,2 | 193 | 101 |
+| 9 | 2027-01-21 | 14,6 | 205 | 100 |
+| 10 | 2027-01-22 | 0,0 | 205 | 90 |
 
 Thực tế lệch kế hoạch ở đâu:
-- **Lệch chính là hạ tầng.** Tài khoản dịch vụ (Vercel, Supabase, gửi mail, kho đối tượng, đo uptime) theo kế hoạch có trước ngày đầu sprint, nhưng tới cuối sprint vẫn chưa có. 10 việc hạ tầng phụ thuộc vào tài khoản (36 SWP) chưa bắt đầu được; đây là gần hết phần còn lại.
-- **Phần không phụ thuộc tài khoản đi gần đúng kế hoạch.** Nền dữ liệu, tiếp nhận lô, giao nhận làm trên máy của đội; giờ thực tế của việc đã xong chỉ hơn ước 2,5%.
-- **Từ ngày 8, đội kéo thêm 2 việc** (9 SWP) cho người đang trống vì việc hạ tầng bị chặn; hai việc này chưa xong, nên phạm vi tăng từ 151 lên 160 SWP và đường còn lại giảm chậm hơn ở hai ngày cuối.
-- **Tốc độ Sprint 1:** 105 SWP. Năng lực đủ của đội khi không bị chặn ước khoảng 174 SWP mỗi sprint (321 giờ cam kết × 0,54 SWP mỗi giờ theo `estimate.md`).
+- **Phần cam kết chỉ xong 54%.** Lý do lớn nhất: 5 tài khoản dịch vụ (Vercel, Supabase, gửi mail, kho đối tượng, đo uptime) theo kế hoạch có trước ngày đầu sprint nhưng tới cuối sprint vẫn chưa có. 9 việc E01 (33 SWP) và 1 việc kiểm trên staging không bắt đầu được; riêng 9 việc E01 là 49% phần cam kết chưa xong.
+- **Đội không ngồi chờ:** từ ngày 2, người bị chặn kéo thêm 15 việc sẵn sàng (59 SWP), xong 9 việc. Vì vậy phạm vi tăng từ 146 lên 205 SWP và đường còn lại giảm chậm hơn đường lý tưởng suốt sprint.
+- **Năng lực dùng không đều:** BE, QA, TL, Design, BA dùng gần hết giờ. FE chỉ dùng 29 trên 90 giờ, vì việc giao diện phải chờ hàm DB, route của BE và thiết kế; Infra dùng 10 trên 24 giờ vì chờ tài khoản. BE và TL là chỗ nghẽn của đội.
+- **Ước lượng:** 41 việc đã xong làm 214,2 giờ so với 214,5 giờ ước. Có việc đang làm vượt ước: thiết kế lớp ngoại tuyến #685 đã dùng 6,5 giờ so với 4,2 giờ ước (+55%) và đang chặn 4 việc FE; form tiếp nhận lô #354 dùng 14,9 so với 10,2 giờ (+46%).
+- **Tốc độ Sprint 1:** 115 SWP. Năng lực đủ của đội khi không bị chặn ước khoảng 174 SWP mỗi sprint (321 giờ cam kết × 0,54 SWP mỗi giờ theo `estimate.md`); đội chưa đạt mức này ở sprint nào.
 
 ## 4. Rủi ro trễ
 
 | Rủi ro | Issue | Ảnh hưởng tới mốc nào | Hành động | Ai làm, khi nào |
 |---|---|---|---|---|
-| Chưa có 5 tài khoản dịch vụ do khách đứng tên | [#37](https://github.com/tamhtt-3564/fish-market-backlog/issues/37) E01-S01; chặn [#194](https://github.com/tamhtt-3564/fish-market-backlog/issues/194), [#195](https://github.com/tamhtt-3564/fish-market-backlog/issues/195), [#196](https://github.com/tamhtt-3564/fish-market-backlog/issues/196) và các việc E01-S03, S04, S05, E19-S01 | Môi trường staging cho QA và triển khai từ Sprint 2; mọi việc kiểm trên staging của Sprint 2 | Xin khách cấp tài khoản, gửi lại danh sách quyền cần cấp; Infra chuẩn bị sẵn script dựng môi trường để chạy ngay trong 1 ngày khi có tài khoản; đội dùng DB chạy trên máy cho việc phát triển trong lúc chờ | PM-A gửi khách 2027-01-25, hạn cấp 2027-01-27; Infra-A xong script trước 2027-01-27 |
-| Khách chưa trả lời phương án sao lưu một vùng (Q4-25, Q4-19) | [#45](https://github.com/tamhtt-3564/fish-market-backlog/issues/45) E01-S09 | Dựng production (gói có PITR, [#194](https://github.com/tamhtt-3564/fish-market-backlog/issues/194)); khác phương án mặc định thì đổi khối lượng hạ tầng | Gửi lại câu hỏi kèm ba rủi ro và chi phí từng phương án, xin trả lời bằng văn bản | BrSE-A gửi 2027-01-25, hạn trả lời 2027-01-29 |
-| Khách chưa trả lời cách xử lý lô kẹt sau khoá ngày (Q4-44) | [#84](https://github.com/tamhtt-3564/fish-market-backlog/issues/84) E05-S08 | Sprint làm chuyển lô kẹt ([#81](https://github.com/tamhtt-3564/fish-market-backlog/issues/81) E05-S05); đang làm theo phương án (a) chuyển lô | Nhắc trong họp tuần; nếu khách chọn khác (a) thì ước lại E05-S05 trước khi đưa vào sprint | BrSE-A, họp tuần 2027-01-28 |
-| Khách chưa trả lời nghĩa "trả đủ" khi tính 完納奨励金 (Q4-55) | [#135](https://github.com/tamhtt-3564/fish-market-backlog/issues/135) E11-S09 | Các issue tính 完納奨励金 của E11 (điều kiện được thưởng E11-S05) | Gửi kèm ví dụ tính bằng số cho hai cách hiểu để khách chọn | BrSE-A gửi 2027-01-25, hạn trả lời trước sprint có E11-S05 |
-| Spec màn SCR-26 làm lâu hơn ước (BA 0,2 người) | [#120](https://github.com/tamhtt-3564/fish-market-backlog/issues/120) E10-S01 | Các issue xây dựng màn SCR-26 (E10) chưa vào sprint được tới khi spec xong | Tăng BA lên 0,4 người ở Sprint 2 để xong spec SCR-26 và bắt đầu spec các màn chưa có spec khác | PM-A chốt ở buổi lập kế hoạch Sprint 2, 2027-01-25 |
-| Tốc độ Sprint 1 (105 SWP) thấp hơn năng lực đủ (khoảng 174 SWP) | Toàn backlog: còn 2.082 SWP | Mốc Cổng 3 sẵn sàng chuyển đổi và UAT (T8 tuần 2 theo LAB-1) còn khoảng 10 sprint tính từ Sprint 2. Ở tốc độ đủ cần khoảng 12 sprint, ở tốc độ Sprint 1 cần khoảng 20 sprint | Gỡ chặn tài khoản trong tuần đầu Sprint 2; theo dõi tốc độ Sprint 2, 3; nếu vẫn dưới 174 SWP thì đề xuất với khách thêm người hoặc dời mốc | PM-A, báo cáo cùng kết quả Sprint 2 (2027-02-05) |
+| Chưa có 5 tài khoản dịch vụ, theo kế hoạch Quý khách cấp trước ngày đầu Sprint 1 | [#37](https://github.com/tamhtt-3564/fish-market-backlog/issues/37) E01-S01; chặn [#194](https://github.com/tamhtt-3564/fish-market-backlog/issues/194), [#195](https://github.com/tamhtt-3564/fish-market-backlog/issues/195), [#196](https://github.com/tamhtt-3564/fish-market-backlog/issues/196), các việc E01-S03, S04, S05 còn lại và các việc kiểm trên staging (#214, #312) | Môi trường staging để kiểm và triển khai từ Sprint 2 | Xin Quý khách cấp tài khoản, gửi lại danh sách quyền cần cấp; chuẩn bị sẵn script dựng môi trường để chạy xong trong 1 ngày khi có tài khoản | PM-A gửi 2027-01-25, xin cấp trước 2027-01-27; Infra-A xong script trước 2027-01-27 |
+| Câu hỏi Q4-28 về màn quản lý danh mục 荷目 chưa có trả lời | [#83](https://github.com/tamhtt-3564/fish-market-backlog/issues/83) E05-S07 | Sprint làm tiếp nhận lô SCR-09 tiếp theo; nếu cần màn riêng thì thêm một màn | Gửi lại câu hỏi kèm phương án mặc định (nạp danh mục cùng dữ liệu gốc) | BrSE-A gửi 2027-01-25, xin trả lời trước 2027-02-01 |
+| Câu hỏi Q4-55 (nghĩa của "trả đủ") và Q4-60 (tổng kỳ âm) về 完納奨励金 chưa có trả lời | [#135](https://github.com/tamhtt-3564/fish-market-backlog/issues/135) E11-S09, [#138](https://github.com/tamhtt-3564/fish-market-backlog/issues/138) E11-S12 | Các issue tính 完納奨励金 (điều kiện được thưởng E11-S05, chuyển phần âm E11-S06) | Gửi kèm ví dụ tính bằng số cho từng cách hiểu để Quý khách chọn | BrSE-A gửi 2027-01-25, xin trả lời trước 2027-02-05 |
+| Việc giao diện phải chờ BE và thiết kế; FE dùng 32% năng lực | Ví dụ [#686](https://github.com/tamhtt-3564/fish-market-backlog/issues/686), [#687](https://github.com/tamhtt-3564/fish-market-backlog/issues/687), [#688](https://github.com/tamhtt-3564/fish-market-backlog/issues/688) chờ [#685](https://github.com/tamhtt-3564/fish-market-backlog/issues/685) | Tốc độ các sprint sau; mọi màn có giao diện | Sprint 2 xếp việc BE và thiết kế trước việc FE cùng story; đề xuất chuyển 0,5 người FE sang làm BE hoặc tăng TL lên 1 người | PM-A chốt ở buổi lập kế hoạch Sprint 2, 2027-01-25 |
+| Khối lượng xây dựng vượt lịch, kể cả khi đội chạy đủ năng lực | Toàn backlog: phần xây dựng E01..E16 còn 1.801 SWP | Hết giai đoạn xây dựng (2027-05-08, còn 7 sprint tính từ Sprint 2). Ở năng lực đủ 174 SWP (chưa đạt) cần khoảng 10,4 sprint; ở tốc độ đo được 115 SWP cần khoảng 15,7 sprint | Báo trước với Quý khách ngay, không chờ thêm số liệu. Hai phương án để chọn ở buổi review Sprint 2, kèm tác động chi phí: (a) tăng đội từ Sprint 3, cần thêm khoảng 3,5 người nếu đạt năng lực đủ, tới khoảng 9 người nếu giữ tốc độ Sprint 1; (b) dời mốc hết xây dựng khoảng 7 tuần nếu đạt năng lực đủ, tới khoảng 17 tuần nếu giữ tốc độ Sprint 1. Song song gỡ chặn tài khoản và cân lại FE, BE để kéo tốc độ về gần năng lực đủ; số đo Sprint 2 dùng để thu hẹp khoảng | PM-A gửi phương án 2027-02-03, chốt cùng Quý khách ở buổi review Sprint 2 (2027-02-05) |
 
-Ghi chú: ngày hẹn với khách trong bảng là ngày của kịch bản giả lập.
+Cách tính phương án: (a) số người cần = (1.801 − SWP của Sprint 2) / 6 sprint còn lại sau Sprint 2, chia cho tốc độ mỗi người (tốc độ đội / 6,3 người), trừ 6,3 người hiện có; (b) số tuần dời = (số sprint cần − 7) × 2 tuần. Sprint 2 lấy bằng tốc độ ở từng đầu khoảng.
