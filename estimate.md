@@ -50,7 +50,7 @@ Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo g
 - SWP đo độ rộng và độ khó, không đo giờ. Cùng 3 SWP, việc chạy bộ ca kiểm thử của QA thường ngắn hơn việc dev giao diện FE. Giờ thô trung bình mỗi SWP: QA-A 1,40 giờ, FE-B 2,72 giờ.
 - Dùng một hệ số chung (1,84 giờ/SWP) thì phần QA dư khoảng 32%, phần FE-B thiếu khoảng 32%. Kế hoạch nhân sự sẽ thừa QA, thiếu FE.
 - Giữ nguyên giờ thô của bước 2 thì sát từng việc hơn, nhưng giờ thô do AI ước lúc chia việc, chưa ai duyệt từng cái; còn SWP đã qua 5 issue mẫu của skill và 2 issue kiểm thêm.
-- Hệ số theo vai vừa gắn giờ với SWP đã duyệt, vừa giữ tổng giờ từng vai bằng giờ thô của vai đó.
+- Hệ số theo vai vừa gắn giờ với SWP đã duyệt, vừa giữ tổng giờ từng vai gần bằng giờ thô của vai đó (lệch do làm tròn, nhiều nhất 3,8 giờ ở BE-B).
 
 **Quy tắc** (áp cho mọi việc lá, không ngoại lệ):
 1. Hệ số vai = tổng giờ thô bước 2 / tổng SWP các việc lá của vai đó, làm tròn 2 chữ số.
@@ -83,6 +83,8 @@ Tính thử bằng tay bốn việc:
 **Giới hạn của cách này:** trong cùng một vai, việc 2 giờ thô và việc 10 giờ thô cùng 3 SWP nhận cùng số giờ (tương quan SWP với giờ thô chỉ 0,52). Tổng theo vai và theo epic tin được hơn số giờ của từng việc. Khi lập sprint, người làm chỉnh giờ từng việc ở buổi lập kế hoạch.
 
 **Khoảng dao động:** báo cáo HTML dịch ±1 bậc SWP cho 413 việc độ tin vừa và thấp: 1.802 tới 2.614 SWP, quy ra khoảng 3.399 tới 4.770 giờ. Chỉ dịch 63 việc độ tin thấp: 2.126 tới 2.256 SWP, khoảng 3.916 tới 4.179 giờ. Cách tính giờ của khoảng: mỗi việc giữ giờ/SWP của chính nó (`estimated-hours.json` chia `story-points.json`), nhân với SWP đã dịch một bậc trên dãy SWP hợp lệ của skill.
+
+**Phần độ tin thấp, cộng riêng** (theo `PREMISE.md` G-02): 106 việc lá mang nhãn `độ tin thấp` (86 việc thuộc 9 màn chưa có spec; nằm ở E02, E04, E10, E12..E17) gồm 336 SWP (15,4% tổng), 621,2 giờ, tức 88,7 MD (102,1 MD có buffer 15%). Phần này chấm lại SWP và giờ khi spec hoặc câu trả lời của khách có; con số có thể đổi nhiều hơn phần còn lại. Đếm: lọc việc lá (`direct: true` trong `backlog/story-points.json`) có nhãn `độ tin thấp` trong `labels_extra` của `backlog/items-*.json`, cộng `swp` và giờ ở `backlog/estimated-hours.json`.
 
 ## 4. Tổng theo epic
 
