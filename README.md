@@ -14,7 +14,7 @@
 ## 2. Link
 
 - **Repo:** https://github.com/tamhtt-3564/fish-market-backlog
-- **GitHub Project:** https://github.com/users/tamhtt-3564/projects/1 (7 view: "View 1" là bảng tất cả mục, bảng trạng thái, theo người phụ trách, nhóm theo issue cha, epic, 完納奨励金, chờ khách)
+- **GitHub Project:** https://github.com/users/tamhtt-3564/projects/1 (8 view: "View 1" là bảng tất cả mục, bảng trạng thái, theo người phụ trách, nhóm theo issue cha, epic, 完納奨励金, chờ khách, [Sprint 1 (giả lập)](https://github.com/users/tamhtt-3564/projects/1/views/8) cho báo cáo tiến độ)
 - **Báo cáo HTML của skill chấm SWP:** [`estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html`](estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html). File nặng 2,15 MB nên GitHub không hiển thị trực tiếp: ở trang file, bấm biểu tượng tải về (Download raw file) rồi mở file bằng trình duyệt (chạy được không cần mạng).
 - **Bộ spec LAB-4:** https://github.com/tamhtt-3564/fish-market-prototype/tree/lab4-specs/specs (repo private vì spec có câu trích RFP; người chấm cần được mời vào repo). Phần SCR-25 mà backlog dựa nhiều nhất có bản tóm tắt tự viết ở `spec-summary/`.
 - **Đã mở thử không đăng nhập** (trình duyệt chưa đăng nhập GitHub, ngày 2026-11-02): repo, Project #1 và view "Bảng trạng thái" mở được; trang file báo cáo HTML mở được (GitHub báo file quá lớn để hiển thị, có nút tải về).

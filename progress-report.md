@@ -2,7 +2,7 @@
 
 ## 1. Thông tin sprint
 
-- **Iteration trên Project:** `Sprint 1` (trường Target version của [Project #1](https://github.com/users/tamhtt-3564/projects/1); xem ở view "Bảng trạng thái", lọc `target-version:"Sprint 1"`).
+- **Iteration trên Project:** `Sprint 1` (trường Target version của [Project #1](https://github.com/users/tamhtt-3564/projects/1); xem ở tab [Sprint 1 (giả lập)](https://github.com/users/tamhtt-3564/projects/1/views/8): bảng cột theo trạng thái, đã lọc sẵn `target-version:"Sprint 1"`, 69 việc).
 - **Thời gian giả lập:** 2027-01-11 tới 2027-01-22, 10 ngày làm việc; sprint đầu của giai đoạn xây dựng.
 - **Đây là sprint giả lập, không phải số liệu thật.** Tiến độ từng việc sinh bằng `python scripts/simulate-sprint-1.py` (hạt ngẫu nhiên 20270111, chạy lại ra cùng kết quả), lưu ở `backlog/sprint-1-simulation.json`, ghi lên Project bằng `python scripts/write-sprint-1-to-project.py`. Issue có trạng thái Closed được đóng trên GitHub cho khớp board; các ngày hẹn ở mục 4 là ngày của kịch bản giả lập.
 - **Giả định của giả lập** (đọc từ mã của script):
