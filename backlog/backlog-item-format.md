@@ -22,11 +22,11 @@ Script tạo issue đọc các file này để tạo issue, sub-issue, nhãn và
 | `customer_wait` | Khi có nhãn `chờ khách`; giữ lại làm lịch sử khi khách đã trả lời | Khách cần làm gì, hạn cần có |
 | `affects`, `answer_due` | Issue làm rõ (`investigation`) | Mã issue chịu ảnh hưởng; hạn trả lời. Ghi bằng `scripts/record-clarification-follow-up.py` |
 | `answer` | Issue làm rõ đã có trả lời | Câu trả lời của khách (ở bài này là câu trả lời giả lập của Sprint 1); khi có thì gỡ nhãn `chờ khách` |
-| `rough_hours` | Có, trừ epic và story có sub-issue | Ước thô số giờ của **lá** (mục không có con), chỉ để kiểm luật 14 giờ; không phải estimate, không ghi lên Project |
+| `rough_hours` | Có, trừ epic và story có sub-issue | Ước thô số giờ của **leaf issue** (mục không có con, tầng cuối của cây epic → issue → sub-issue), chỉ để kiểm luật 14 giờ; không phải estimate, không ghi lên Project |
 
 ## Luật
 
-- Lá (mục không có con) tối đa 14 giờ. Story ước dưới 14 giờ thì không tách; lớn hơn thì tách sub-issue theo lớp (thiết kế giao diện, hàm DB và test, API, giao diện, ca kiểm thử, QA kiểm), lớp còn lớn thì tách theo nhánh nghiệp vụ ở TECH.
+- Leaf issue (mục không có con) tối đa 14 giờ. Story ước dưới 14 giờ thì không tách; lớn hơn thì tách sub-issue theo lớp (thiết kế giao diện, hàm DB và test, API, giao diện, ca kiểm thử, QA kiểm), lớp còn lớn thì tách theo nhánh nghiệp vụ ở TECH.
 - Mọi story có giao diện mới hoặc đổi nhiều có sub-issue `uidesign`; mọi story có ghi dữ liệu có sub-issue `testdesign` và `testexecution` (owner `QA-A`).
 - Repo nộp public: **không chép câu nào của tài liệu khách** (RFP) và không dán đoạn spec có câu trích; chữ Nhật chỉ dùng cho thuật ngữ và nhãn màn ngắn. Không tên người thật, không dữ liệu thật.
 - Không dùng dấu gạch dài và dấu chấm giữa dòng.

@@ -4,13 +4,13 @@
 
 - Báo cáo: [`estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html`](estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html) (tải về rồi mở bằng trình duyệt; chạy được không cần mạng).
 - Skill: `tkm:sun-estimate`, mô hình `swp-matrix-v2`. Mỗi việc chấm hai trục: Scope (độ rộng: bao nhiêu thành phần, tầng) và Complexity (độ khó bên trong). SWP tra từ bảng cố định theo hai trục, không cộng hai trục.
-- Nguồn chấm: 792 issue đọc từ Project #1 ngày 2026-11-02, chỉ đọc. 654 việc lá được chấm trực tiếp. 138 mục cha (19 epic, 85 story, 34 issue có sub-issue) không chấm riêng; SWP của mục cha là tổng SWP các con.
+- Nguồn chấm: 792 issue đọc từ Project #1 ngày 2026-11-02, chỉ đọc. 654 leaf issue (định nghĩa ở `task-breakdown.md` mục 1.4: issue ở tầng cuối của cây epic → issue → sub-issue, không có issue con; thường là sub-issue, có khi là issue không cần tách; là đơn vị được chấm SWP, quy giờ và xếp vào sprint) được chấm trực tiếp. 138 mục cha (19 epic, 85 story, 34 issue có sub-issue) không chấm riêng; SWP của mục cha là tổng SWP các con.
 - Kết quả: tổng 2.187 SWP. Độ tin: cao 241 việc, vừa 350, thấp 63. Không việc nào bị đề nghị tách thêm.
-- Phân bố SWP của 654 việc lá: 1 SWP 39 việc, 2 SWP 27, 3 SWP 415, 4 SWP 79, 5 SWP 54, 6 SWP 34, 8 SWP 3, 10 SWP 2, 15 SWP 1. Phần lớn ở 3 SWP vì mỗi việc lá đã chia nhỏ tối đa 2 ngày một người (`task-breakdown.md` mục 1.4).
-- Trường Story Point trên Project là SWP đã review ở mục 2. Mục cha ghi tổng của các con; việc lá ghi thêm trường Scope và Complexity. Số liệu nằm ở `backlog/story-points.json`, ghi lên Project bằng `python scripts/write-story-points-to-project.py`.
+- Phân bố SWP của 654 leaf issue: 1 SWP 39 việc, 2 SWP 27, 3 SWP 415, 4 SWP 79, 5 SWP 54, 6 SWP 34, 8 SWP 3, 10 SWP 2, 15 SWP 1. Phần lớn ở 3 SWP vì mỗi leaf issue đã chia nhỏ tối đa 2 ngày một người (`task-breakdown.md` mục 1.4).
+- Trường Story Point trên Project là SWP đã review ở mục 2. Mục cha ghi tổng của các con; leaf issue ghi thêm trường Scope và Complexity. Số liệu nằm ở `backlog/story-points.json`, ghi lên Project bằng `python scripts/write-story-points-to-project.py`.
 - Lệnh đếm:
   - tổng và phân bố: đọc `backlog/story-points.json`, cộng `swp` các mục `direct: true`;
-  - đối chiếu Project: truy vấn `fieldValueByName("Story Point")` của 792 mục, kết quả 0 mục lệch, tổng việc lá 2.187, tổng 19 epic 2.187.
+  - đối chiếu Project: truy vấn `fieldValueByName("Story Point")` của 792 mục, kết quả 0 mục lệch, tổng leaf issue 2.187, tổng 19 epic 2.187.
 
 Chỗ làm khác quy trình của skill, có ghi trong phần "caveats" của báo cáo:
 - Agent chấm riêng của skill không có quyền đọc ghi file nên không nhận được lô việc. 5 lô được chấm lại bằng agent thường, theo cùng bộ luật chấm, chỉ đọc ghi trong thư mục tạm, không gọi mạng.
@@ -52,13 +52,13 @@ Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo g
 - Giữ nguyên giờ thô của bước 2 thì sát từng việc hơn, nhưng giờ thô do AI ước lúc chia việc, chưa ai duyệt từng cái; còn SWP đã qua 5 issue mẫu của skill và 2 issue kiểm thêm.
 - Hệ số theo vai vừa gắn giờ với SWP đã duyệt, vừa giữ tổng giờ từng vai gần bằng giờ thô của vai đó (lệch do làm tròn, nhiều nhất 3,8 giờ ở BE-B).
 
-**Quy tắc** (áp cho mọi việc lá, không ngoại lệ):
-1. Hệ số vai = tổng giờ thô bước 2 / tổng SWP các việc lá của vai đó, làm tròn 2 chữ số.
-2. Giờ việc lá = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (từ 0,05 làm tròn lên).
+**Quy tắc** (áp cho mọi leaf issue, không ngoại lệ):
+1. Hệ số vai = tổng giờ thô bước 2 / tổng SWP các leaf issue của vai đó, làm tròn 2 chữ số.
+2. Giờ leaf issue = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (từ 0,05 làm tròn lên).
 3. Giờ mục cha (story, issue có sub-issue, epic) = tổng giờ các con.
 4. Chạy `python scripts/convert-story-points-to-hours.py`: ghi `backlog/estimated-hours.json`, in hai bảng dưới. Ghi trường Estimated time lên Project bằng `python scripts/write-story-points-to-project.py`.
 
-| Vai | Việc lá | Tổng SWP | Giờ thô bước 2 | Hệ số giờ/SWP | Giờ quy đổi |
+| Vai | Leaf issue | Tổng SWP | Giờ thô bước 2 | Hệ số giờ/SWP | Giờ quy đổi |
 |---|---|---|---|---|---|
 | BA-A | 10 | 44 | 108 | 2,45 | 108,2 |
 | BE-A | 107 | 402 | 835 | 2,08 | 834,4 |
@@ -84,13 +84,13 @@ Tính thử bằng tay bốn việc:
 
 **Khoảng dao động:** báo cáo HTML dịch ±1 bậc SWP cho 413 việc độ tin vừa và thấp: 1.802 tới 2.614 SWP, quy ra khoảng 3.399 tới 4.770 giờ. Chỉ dịch 63 việc độ tin thấp: 2.126 tới 2.256 SWP, khoảng 3.916 tới 4.179 giờ. Cách tính giờ của khoảng: mỗi việc giữ giờ/SWP của chính nó (`estimated-hours.json` chia `story-points.json`), nhân với SWP đã dịch một bậc trên dãy SWP hợp lệ của skill.
 
-**Phần độ tin thấp, cộng riêng** (theo `PREMISE.md` G-02): 106 việc lá mang nhãn `độ tin thấp` (86 việc thuộc 9 màn chưa có spec; nằm ở E02, E04, E10, E12..E17) gồm 336 SWP (15,4% tổng), 621,2 giờ, tức 88,7 MD (102,1 MD có buffer 15%). Phần này chấm lại SWP và giờ khi spec hoặc câu trả lời của khách có; con số có thể đổi nhiều hơn phần còn lại. Đếm: lọc việc lá (`direct: true` trong `backlog/story-points.json`) có nhãn `độ tin thấp` trong `labels_extra` của `backlog/items-*.json`, cộng `swp` và giờ ở `backlog/estimated-hours.json`.
+**Phần độ tin thấp, cộng riêng** (theo `PREMISE.md` G-02): 106 leaf issue mang nhãn `độ tin thấp` (86 việc thuộc 9 màn chưa có spec; nằm ở E02, E04, E10, E12..E17) gồm 336 SWP (15,4% tổng), 621,2 giờ, tức 88,7 MD (102,1 MD có buffer 15%). Phần này chấm lại SWP và giờ khi spec hoặc câu trả lời của khách có; con số có thể đổi nhiều hơn phần còn lại. Đếm: lọc leaf issue (`direct: true` trong `backlog/story-points.json`) có nhãn `độ tin thấp` trong `labels_extra` của `backlog/items-*.json`, cộng `swp` và giờ ở `backlog/estimated-hours.json`.
 
 ## 4. Tổng theo epic
 
-Giờ ở bảng là giờ backlog, chưa có buffer, PM, BrSE điều phối, hỗ trợ 30 ngày (các phần này ở mục 5). Số issue là issue cấp một của epic; việc lá là mục được chấm SWP trực tiếp.
+Giờ ở bảng là giờ backlog, chưa có buffer, PM, BrSE điều phối, hỗ trợ 30 ngày (các phần này ở mục 5). Số issue là issue cấp một của epic; leaf issue là mục được chấm SWP trực tiếp.
 
-| Epic | Số issue | Việc lá | Tổng SWP | Tổng giờ | Ghi chú |
+| Epic | Số issue | Leaf issue | Tổng SWP | Tổng giờ | Ghi chú |
 |---|---|---|---|---|---|
 | E01 Hạ tầng và môi trường | 9 | 24 | 80 | 136,1 | 1 issue làm rõ với khách gộp Q4-25 và Q4-19 (E01-S09) |
 | E02 Nền dữ liệu (đợt 1..8, 10) | 10 | 39 | 159 | 313,7 | Gồm 5 hàm nền dùng chung (PREMISE G-10); đợt 10 tách 10a, 10b (S-02) |
@@ -113,7 +113,7 @@ Giờ ở bảng là giờ backlog, chưa có buffer, PM, BrSE điều phối, h
 | E19 Vận hành, đào tạo, hỗ trợ UAT, bàn giao | 8 | 20 | 63 | 98,0 | Hỗ trợ 30 ngày không có issue (G-20), tính ở mục 5 |
 | **Tổng** | **161** | **654** | **2.187** | **4.038,7** | = 577,0 MD (1 MD = 7 giờ) |
 
-Lệnh đếm: `python scripts/convert-story-points-to-hours.py` (bảng epic); số issue và việc lá đếm theo số dấu `-` của mã trong `backlog/story-points.json`.
+Lệnh đếm: `python scripts/convert-story-points-to-hours.py` (bảng epic); số issue và leaf issue đếm theo số dấu `-` của mã trong `backlog/story-points.json`.
 
 ## 5. So với estimate LAB-1
 
@@ -175,9 +175,9 @@ So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estim
 | FE-A, TL-A, BA-A, Infra-A, BrSE-A | | | 1,1 tới 7,7 | 0 (BA-A cần 7,7 sprint, thiếu khoảng 0,02 người, bỏ qua) |
 | **Tổng** | | | | **khoảng 4,7 người** |
 
-Cách tính: giờ còn lại = `estimated-hours.json` của việc lá E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = (giờ còn lại − năng lực Sprint 2 của đội hiện có) / (6 sprint × 60 × 0,85) − số người hiện có, vì người mới vào từ Sprint 3 chỉ còn 6 sprint. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
+Cách tính: giờ còn lại = `estimated-hours.json` của leaf issue E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = (giờ còn lại − năng lực Sprint 2 của đội hiện có) / (6 sprint × 60 × 0,85) − số người hiện có, vì người mới vào từ Sprint 3 chỉ còn 6 sprint. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
 
-Ngoài ra, 3 việc lá sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ thô bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
+Ngoài ra, 3 leaf issue sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ thô bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
 
 Đọc bảng:
 - Tổng cao hơn 7,5% (trong độ chính xác ±25% của LAB-1), nhưng con số này **che chỗ vượt**: riêng giai đoạn xây dựng vượt 52%, bù lại bằng 124 MD thiết kế đã làm ở LAB-2..4. Kế hoạch đội và lịch của LAB-1 phải sửa theo bảng giai đoạn, không theo tổng. **Cơ cấu đổi nhiều**: phần tính năng nghiệp vụ tăng, phần nền tảng, thiết kế và kiểm thử hệ thống giảm. Hai lý do chính: wireframe và spec đã làm ở LAB-2..4 nên không còn trong backlog; kiểm thử từng tính năng được chia về epic của tính năng.

@@ -95,9 +95,9 @@ def check(items, errors):
             continue
         hours = it.get("rough_hours")
         if not isinstance(hours, (int, float)) or hours <= 0:
-            errors.append(f"{where}: lá thiếu rough_hours")
+            errors.append(f"{where}: leaf issue thiếu rough_hours")
         elif hours > MAX_LEAF_HOURS:
-            errors.append(f"{where}: lá {hours} giờ, quá {MAX_LEAF_HOURS}")
+            errors.append(f"{where}: leaf issue {hours} giờ, quá {MAX_LEAF_HOURS}")
     return by_key, children
 
 

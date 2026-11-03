@@ -1,8 +1,8 @@
 """Quy SWP đã review ra giờ ước lượng theo hệ số của từng vai (estimate.md mục 3).
 
 Chạy từ gốc repo:  python scripts/convert-story-points-to-hours.py
-Hệ số vai = tổng giờ thô / tổng SWP của các việc lá vai đó (giờ thô ở backlog/items-*.json, bước 2).
-Giờ việc lá = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (5 lên). Mục cha = tổng giờ các con.
+Hệ số vai = tổng giờ thô / tổng SWP của các leaf issue vai đó (giờ thô ở backlog/items-*.json, bước 2).
+Giờ leaf issue = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (5 lên). Mục cha = tổng giờ các con.
 Ghi backlog/estimated-hours.json và in bảng hệ số, bảng tổng theo epic cho estimate.md.
 """
 import json
@@ -41,7 +41,7 @@ def main():
         json.dumps(dict(sorted(hours.items(), key=lambda x: (x[0].count("-"), x[0]))), ensure_ascii=False, indent=1),
         encoding="utf-8")
 
-    print("| Vai | Việc lá | Tổng SWP | Giờ thô bước 2 | Hệ số giờ/SWP | Giờ quy đổi |")
+    print("| Vai | Leaf issue | Tổng SWP | Giờ thô bước 2 | Hệ số giờ/SWP | Giờ quy đổi |")
     print("|---|---|---|---|---|---|")
     by_owner = defaultdict(float)
     for k in leaves:
@@ -51,7 +51,7 @@ def main():
         print(f"| {o} | {n} | {swp[o]} | {raw[o]:g} | {rate[o]} | {by_owner[o]:g} |")
     print(f"| Tổng | {len(leaves)} | {sum(swp.values())} | {sum(raw.values()):g} | | {sum(by_owner.values()):g} |")
 
-    print("\n| Epic | Số issue | Việc lá | Tổng SWP | Tổng giờ |")
+    print("\n| Epic | Số issue | Leaf issue | Tổng SWP | Tổng giờ |")
     print("|---|---|---|---|---|")
     for epic in sorted(k for k in points if k.count("-") == 0):
         under = [k for k in points if k.startswith(epic + "-")]

@@ -46,6 +46,8 @@ Issue bị chặn gắn nhãn **`chờ khách`**; phần mô tả ghi khách c�
 
 ### 1.4 Chia tới đâu thì dừng
 
+Cách gọi trong bài: **leaf issue** là issue ở tầng cuối của cây epic → issue → sub-issue, không có issue con; thường là sub-issue, có khi là issue không cần tách; là đơn vị được chấm SWP, quy giờ và xếp vào sprint. Epic, story và issue có sub-issue là mục cha: điểm và giờ bằng tổng các leaf issue bên dưới.
+
 - Một issue mà một người làm xong trong 2 ngày thì **không tách** sub-issue (ví dụ màn danh sách chỉ đọc dùng một API có sẵn).
 - Issue lớn hơn 2 ngày thì tách sub-issue **theo lớp**: thiết kế giao diện (màn mới hoặc đổi nhiều); hàm DB và test của hàm; API route; giao diện; ca kiểm thử và kiểm của QA; kiểm thử đầu cuối khi luồng đi qua nhiều màn.
 - Issue có giao diện hoặc API ghi rõ **vai trò người dùng hệ thống** (11 vai trò ở ma trận quyền LAB-4) nào được làm, vai trò nào bị chặn. Ca kiểm thử phải có vai bị chặn, và chặn phải ở hàm DB hoặc API, không chỉ ẩn nút (gồm tài khoản bên ngoài ROLE-PARTICIPANT-VIEW, PKT-11).
@@ -68,7 +70,7 @@ Trạng thái đi theo mẫu. Việc xây dựng: `In Progress` → `In Review` 
 | Làm rõ | Khách trả lời, câu trả lời ghi vào bảng Q4; issue chịu ảnh hưởng được sửa và ước lại |
 | Hạ tầng, vận hành | Cấu hình hoặc runbook có trong repo, người thứ hai làm theo được |
 
-Thứ tự bổ sung sau hai lượt soát độc lập bước 6 (quan hệ blocked by trên Project), áp bằng `python scripts/add-implicit-story-dependencies.py`: trong cùng một story, việc giao diện chờ mọi việc BE và thiết kế giao diện, việc kiểm thử chờ các việc làm mã; việc lá nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02. Thêm 456 phụ thuộc (310 rồi 146), tổng 757. Trên GitHub nối được 747 quan hệ blocked by: GitHub cho một issue chặn tối đa 100 issue, nên 10 việc chờ E01-S02 chỉ ghi phụ thuộc trong thân issue (danh sách: `backlog/blocked-by-over-github-limit.json`).
+Thứ tự bổ sung sau hai lượt soát độc lập bước 6 (quan hệ blocked by trên Project), áp bằng `python scripts/add-implicit-story-dependencies.py`: trong cùng một story, việc giao diện chờ mọi việc BE và thiết kế giao diện, việc kiểm thử chờ các việc làm mã; leaf issue nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02. Thêm 456 phụ thuộc (310 rồi 146), tổng 757. Trên GitHub nối được 747 quan hệ blocked by: GitHub cho một issue chặn tối đa 100 issue, nên 10 việc chờ E01-S02 chỉ ghi phụ thuộc trong thân issue (danh sách: `backlog/blocked-by-over-github-limit.json`).
 
 ### 1.6 Danh sách epic
 

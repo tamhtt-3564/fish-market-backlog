@@ -5,7 +5,7 @@ Luật 1..3 chỉ giữa các mục con trực tiếp của cùng một cha:
 1. Việc giao diện (devtask team frontend) chờ mọi việc devtask team backend.
 2. Việc giao diện chờ mọi việc thiết kế giao diện (uidesign).
 3. Việc kiểm thử (testexecution) chờ các devtask chưa bị devtask khác cùng cha chờ (đã chờ FE thì không nối thêm BE).
-4. Việc lá nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02,
+4. Leaf issue nhắc staging, Vercel hoặc production chờ story dựng môi trường E01-S02,
    trừ việc của E01-S01, E01-S02 và việc mà một cấp cha đã chờ E01-S02.
 Chỉ thêm, không xoá phụ thuộc có sẵn; chạy lại không thêm trùng. Sau đó chạy
 python scripts/create-project-issues.py --link-blocked-by để nối quan hệ trên GitHub.

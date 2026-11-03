@@ -6,7 +6,7 @@ Ghi backlog/sprint-1-simulation.json (việc cam kết, kết quả từng việ
 
 Giả định (progress-report.md mục 1):
 - Đội 5,8 người như GĐ2 của LAB-1, cộng BrSE-A 0,5 người; 6 giờ làm thật mỗi người mỗi ngày.
-- Cam kết 85% năng lực mỗi vai; chọn việc lá theo thứ tự ưu tiên, chỉ lấy việc có mọi việc phụ thuộc cũng trong sprint.
+- Cam kết 85% năng lực mỗi vai; chọn leaf issue theo thứ tự ưu tiên, chỉ lấy việc có mọi việc phụ thuộc cũng trong sprint.
 - Mỗi việc: giờ thật = giờ ước × hệ số (log-chuẩn, trung bình khoảng 1,1). Việc xây dựng trượt review với xác suất 15%, làm lại thêm 30%.
 - Xây dựng xong còn 1 ngày review (TL-A) và kiểm (QA-A) mới Closed; thiết kế, ca kiểm thử, tài liệu, vận hành còn 0,5 ngày review.
 - Việc có trường `customer_wait` (chờ khách): BrSE-A hỏi xong, khách trả lời vào ngày ngẫu nhiên từ ngày 3 tới ngày 15.
@@ -36,7 +36,7 @@ def load():
 
 
 def leaf_deps(key, items, points):
-    """Việc lá chịu phụ thuộc của chính nó và của mọi cấp cha; phụ thuộc vào mục cha nghĩa là mọi việc lá bên dưới."""
+    """Leaf issue chịu phụ thuộc của chính nó và của mọi cấp cha; phụ thuộc vào mục cha nghĩa là mọi leaf issue bên dưới."""
     deps, node = [], key
     while node:
         deps += items[node].get("depends_on", [])
@@ -80,7 +80,7 @@ def simulate(chosen, items, points, hours):
         return max(free[items[k]["owner"]] / cap, max((finish[d] for d in leaf_deps(k, items, points)), default=0))
 
     def pull_candidates():
-        """Việc lá ngoài cam kết, không chờ khách, mọi phụ thuộc đã có lịch và bắt đầu được trước ngày cuối."""
+        """Leaf issue ngoài cam kết, không chờ khách, mọi phụ thuộc đã có lịch và bắt đầu được trước ngày cuối."""
         pool = [k for k in points if points[k]["direct"] and k not in finish and k not in todo and items[k]["owner"] in FTE
                 and not items[k].get("customer_wait") and leaf_deps(k, items, points) <= finish.keys()]
         return [k for k in pool if ready_day(k) <= DAYS - 1]

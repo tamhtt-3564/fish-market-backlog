@@ -1,7 +1,7 @@
 """Ghi SWP đã review (backlog/story-points.json) và giờ ước lượng (backlog/estimated-hours.json) lên Project #1.
 
 Chạy từ gốc repo:  python scripts/write-story-points-to-project.py [--only-hours]
-Việc lá: ghi Story Point, Scope, Complexity. Mục cha (epic, story, issue có sub-issue): ghi Story Point = tổng SWP các con.
+Leaf issue: ghi Story Point, Scope, Complexity. Mục cha (epic, story, issue có sub-issue): ghi Story Point = tổng SWP các con.
 Có file giờ thì ghi thêm Estimated time cho mọi mục; --only-hours chỉ ghi Estimated time.
 Gộp 10 lệnh mỗi lần gọi; ghi lại cùng giá trị thì không đổi gì nên chạy lại được.
 """
