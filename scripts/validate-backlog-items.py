@@ -112,7 +112,7 @@ def summary(items):
     level = defaultdict(Counter)
     for it in items:
         level[it["key"][:3]][it["key"].count("-")] += 1
-    print("| Epic | Issue | Sub-issue | Trong đó story | Tổng mục | Giờ thô |")
+    print("| Epic | Issue | Sub-issue | Trong đó story | Tổng mục | Giờ ước sơ bộ |")
     print("|---|---|---|---|---|---|")
     for epic in sorted(per_epic):
         lv = level[epic]

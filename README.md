@@ -33,7 +33,7 @@
 | `estimate/` | `reports/`: báo cáo HTML của skill `tkm:sun-estimate` |
 | `scripts/` | Script tạo issue, gắn link, kiểm dữ liệu, bổ sung phụ thuộc, quy giờ, ghi SWP và giờ lên Project, giả lập và ghi Sprint 1; mỗi script ghi cách chạy ở đầu file |
 | `spec-summary/` | Tóm tắt tự viết thiết kế SCR-25 完納奨励金 (spec gốc ở repo private), trỏ từ `PREMISE.md` S-01 |
-| `skills/` | Skill tự viết `lab5-review-backlog-output`: bộ câu hỏi soát B1..B9 và cổng kiểm máy `run-lab5-backlog-gate.py` dùng soát từng bước |
+| `skills/` | Skill tự viết `lab5-review-backlog-output`: bộ câu hỏi soát B1..B9 và quality gate tự động (script kiểm trước khi đẩy repo) `run-lab5-backlog-gate.py` dùng soát từng bước |
 
 ## 4. Spec → epic
 

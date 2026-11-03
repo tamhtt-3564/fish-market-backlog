@@ -54,7 +54,7 @@ Cách gọi trong bài: **leaf issue** là issue ở tầng cuối của cây ep
 - Một lớp vẫn lớn hơn 2 ngày thì tách tiếp **theo nhánh nghiệp vụ** ghi ở TECH (ví dụ tính tạm và tính sau hạn; 相対 và せり), không tách theo file.
 - Mỗi biến nghiệp vụ của 完納奨励金 (điều kiện được thưởng, hạn trả, công thức, version 料率, chênh lệch sau xác nhận, phần âm chuyển kỳ sau, khoản trả trùng) là ít nhất một issue hoặc sub-issue có tiêu chí xong riêng, không gộp.
 - Chỗ khách chưa trả lời mà đổi nhiều khối lượng có **issue làm rõ** riêng (18 câu, `PREMISE.md` G-01a); chỗ còn lại làm theo mặc định LAB-4.
-- Màn chưa có spec có **issue viết spec** riêng (G-02); issue xây dựng của màn đó gắn độ tin thấp.
+- Màn chưa có spec có **issue viết spec** riêng (G-02); issue xây dựng của màn đó gắn nhãn `độ tin thấp`.
 
 ### 1.5 Định nghĩa xong
 
@@ -100,7 +100,7 @@ Trên Project #1 (https://github.com/users/tamhtt-3564/projects/1): 19 epic, 161
 
 ## 2. Spec → issue
 
-Bảng sinh từ dữ liệu backlog bằng `python scripts/render-spec-to-issue-table.py <thư mục specs LAB-4>`; cột Issue ghi mã mục, mỗi mã là link tới issue trên GitHub (gắn bằng `python scripts/link-backlog-keys-to-issues.py task-breakdown.md PREMISE.md`, số issue lấy ở `backlog/issue-numbers.json`). Đơn vị spec: 27 TECH, 34 màn, 10 đợt migration, 8 việc LAB-4 chuyển sang LAB-5. API, câu Q4, PKT, ADR đối chiếu ở bảng phủ của từng nhóm khi chia; mọi API đều nằm trong issue của TECH hoặc màn tương ứng (kiểm bằng lệnh: 53 mã A1..A53 và 25 mã N-01..N-25 đều có trong `spec_refs` hoặc tiêu đề của ít nhất một mục).
+Bảng sinh từ dữ liệu backlog bằng `python scripts/render-spec-to-issue-table.py <thư mục specs LAB-4>`; cột Issue ghi mã mục, mỗi mã là link tới issue trên GitHub (gắn bằng `python scripts/link-backlog-keys-to-issues.py task-breakdown.md PREMISE.md`, số issue lấy ở `backlog/issue-numbers.json`). Đơn vị spec: 27 TECH, 34 màn, 10 đợt migration, 8 việc LAB-4 chuyển sang LAB-5. API, câu Q4, PKT, ADR đối chiếu ở bảng độ phủ (coverage: spec nào đã có issue) của từng nhóm khi chia; mọi API đều nằm trong issue của TECH hoặc màn tương ứng (kiểm bằng lệnh: 53 mã A1..A53 và 25 mã N-01..N-25 đều có trong `spec_refs` hoặc tiêu đề của ít nhất một mục).
 
 | Loại | Spec | Epic | Issue | Phần spec chưa thành issue và vì sao |
 |---|---|---|---|---|

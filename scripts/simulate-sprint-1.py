@@ -6,7 +6,7 @@ Ghi backlog/sprint-1-simulation.json (việc cam kết, kết quả từng việ
 
 Giả định (progress-report.md mục 1):
 - Đội 5,8 người như GĐ2 của LAB-1, cộng BrSE-A 0,5 người; 6 giờ làm thật mỗi người mỗi ngày.
-- Cam kết 85% năng lực mỗi vai; chọn leaf issue theo thứ tự ưu tiên, chỉ lấy việc có mọi việc phụ thuộc cũng trong sprint.
+- Cam kết 85% capacity mỗi vai; chọn leaf issue theo thứ tự ưu tiên, chỉ lấy việc có mọi việc phụ thuộc cũng trong sprint.
 - Mỗi việc: giờ thật = giờ ước × hệ số (log-chuẩn, trung bình khoảng 1,1). Việc xây dựng trượt review với xác suất 15%, làm lại thêm 30%.
 - Xây dựng xong còn 1 ngày review (TL-A) và kiểm (QA-A) mới Closed; thiết kế, ca kiểm thử, tài liệu, vận hành còn 0,5 ngày review.
 - Việc có trường `customer_wait` (chờ khách): BrSE-A hỏi xong, khách trả lời vào ngày ngẫu nhiên từ ngày 3 tới ngày 15.
@@ -72,7 +72,7 @@ def simulate(chosen, items, points, hours):
         return rng.lognormvariate(math.log(1.1) - 0.08, 0.4), rng.random(), rng.randint(3, 15)
 
     draws = {k: draw() for k in chosen}  # rút theo thứ tự cam kết, để kết quả không phụ thuộc thứ tự làm
-    free = {o: 0.0 for o in FTE}  # giờ đã dùng của từng vai, tính theo năng lực của vai
+    free = {o: 0.0 for o in FTE}  # giờ đã dùng của từng vai, tính theo capacity của vai
     finish, result, todo = {}, {}, list(chosen)
 
     def ready_day(k):
@@ -86,8 +86,8 @@ def simulate(chosen, items, points, hours):
         return [k for k in pool if ready_day(k) <= DAYS - 1]
 
     while True:
-        # Lấy việc bắt đầu được sớm nhất. Việc kéo thêm bị phạt 1 ngày: chỉ được chọn khi việc cam kết
-        # tiếp theo của người đó phải chờ từ 1 ngày trở lên (người đó trống thì kéo việc làm trước).
+        # Lấy việc bắt đầu được sớm nhất. Việc thêm vào sprint giữa chừng bị phạt 1 ngày: chỉ được chọn khi việc cam kết
+        # tiếp theo của người đó phải chờ từ 1 ngày trở lên (người đó trống thì lấy việc sẵn sàng làm trước).
         options = [(ready_day(x), 0, todo.index(x), x) for x in todo if leaf_deps(x, items, points) <= finish.keys()]
         options += [(ready_day(x) + 1, 1, 0, x) for x in pull_candidates()]
         if not options:
@@ -130,7 +130,7 @@ def simulate(chosen, items, points, hours):
 
 
 def burndown(result):
-    """Còn lại cuối mỗi ngày = phạm vi tới ngày đó (cam kết + việc kéo thêm đã bắt đầu) trừ phần đã Closed."""
+    """Còn lại cuối mỗi ngày = scope tới ngày đó (cam kết + việc thêm giữa chừng đã bắt đầu) trừ phần đã Closed."""
     committed = sum(r["swp"] for r in result.values() if not r["added_mid_sprint"])
     rows = []
     for d in range(DAYS + 1):
@@ -154,7 +154,7 @@ def main():
     st = Counter(r["status"] for r in result.values())
     for added in (False, True):
         part = [r for r in result.values() if r["added_mid_sprint"] == added]
-        print("kéo thêm" if added else "cam kết", len(part), "việc,", sum(r["swp"] for r in part), "SWP,",
+        print("thêm giữa chừng" if added else "cam kết", len(part), "việc,", sum(r["swp"] for r in part), "SWP,",
               round(sum(r["estimated_hours"] for r in part), 1), "giờ ước")
     print("trạng thái", dict(st))
     print("burndown", [(b["day"], b["ideal"], b["scope"], b["remaining"]) for b in data["burndown"]])

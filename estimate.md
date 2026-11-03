@@ -5,7 +5,7 @@
 - Báo cáo: [`estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html`](estimate/reports/sun-estimate-fish-market-backlog-project-1-20261102.html) (tải về rồi mở bằng trình duyệt; chạy được không cần mạng).
 - Skill: `tkm:sun-estimate`, mô hình `swp-matrix-v2`. Mỗi việc chấm hai trục: Scope (độ rộng: bao nhiêu thành phần, tầng) và Complexity (độ khó bên trong). SWP tra từ bảng cố định theo hai trục, không cộng hai trục.
 - Nguồn chấm: 792 issue đọc từ Project #1 ngày 2026-11-02, chỉ đọc. 654 leaf issue (định nghĩa ở `task-breakdown.md` mục 1.4: issue ở tầng cuối của cây epic → issue → sub-issue, không có issue con; thường là sub-issue, có khi là issue không cần tách; là đơn vị được chấm SWP, quy giờ và xếp vào sprint) được chấm trực tiếp. 138 mục cha (19 epic, 85 story, 34 issue có sub-issue) không chấm riêng; SWP của mục cha là tổng SWP các con.
-- Kết quả: tổng 2.187 SWP. Độ tin: cao 241 việc, vừa 350, thấp 63. Không việc nào bị đề nghị tách thêm.
+- Kết quả: tổng 2.187 SWP. Độ tin cậy (mức chắc chắn skill gán cho điểm chấm): cao 241 việc, vừa 350, thấp 63. Không việc nào bị đề nghị tách thêm.
 - Phân bố SWP của 654 leaf issue: 1 SWP 39 việc, 2 SWP 27, 3 SWP 415, 4 SWP 79, 5 SWP 54, 6 SWP 34, 8 SWP 3, 10 SWP 2, 15 SWP 1. Phần lớn ở 3 SWP vì mỗi leaf issue đã chia nhỏ tối đa 2 ngày một người (`task-breakdown.md` mục 1.4).
 - Trường Story Point trên Project là SWP đã review ở mục 2. Mục cha ghi tổng của các con; leaf issue ghi thêm trường Scope và Complexity. Số liệu nằm ở `backlog/story-points.json`, ghi lên Project bằng `python scripts/write-story-points-to-project.py`.
 - Lệnh đếm:
@@ -15,11 +15,11 @@
 Chỗ làm khác quy trình của skill, có ghi trong phần "caveats" của báo cáo:
 - Agent chấm riêng của skill không có quyền đọc ghi file nên không nhận được lô việc. 5 lô được chấm lại bằng agent thường, theo cùng bộ luật chấm, chỉ đọc ghi trong thư mục tạm, không gọi mạng.
 - Skill chỉ đọc. Bước ghi Story Point lên Project là script riêng của repo này, chạy sau khi người đã duyệt (cách làm người dùng chốt từ đầu).
-- Thân issue dẫn mã spec LAB-4 nằm ở repo private, agent chấm không mở được nên chỉ dựa vào chữ trong issue. Trong 63 việc độ tin thấp: 40 việc thuộc 9 màn chưa có spec (PREMISE G-02), 10 việc đã gắn nhãn `độ tin thấp` từ bước 2, 1 việc làm rõ với khách, 12 việc còn lại do thân issue ngắn (đếm: lọc `confidence == "low"` trong `backlog/story-points.json`, đối chiếu `spec_refs`, nhãn, loại trong `backlog/items-*.json`). Các việc này chấm lại khi có spec hoặc câu trả lời của khách.
+- Thân issue dẫn mã spec LAB-4 nằm ở repo private, agent chấm không mở được nên chỉ dựa vào chữ trong issue. Trong 63 việc độ tin cậy thấp: 40 việc thuộc 9 màn chưa có spec (PREMISE G-02), 10 việc đã gắn nhãn `độ tin thấp` từ bước 2, 1 việc làm rõ với khách, 12 việc còn lại do thân issue ngắn (đếm: lọc `confidence == "low"` trong `backlog/story-points.json`, đối chiếu `spec_refs`, nhãn, loại trong `backlog/items-*.json`). Các việc này chấm lại khi có spec hoặc câu trả lời của khách.
 
 ## 2. Issue mẫu skill chọn để kiểm
 
-Skill tự chọn 5 issue theo luật cố định: nhỏ nhất, trung vị, lớn nhất, lệch xa trung vị nhất, độ tin thấp nhất. Người duyệt từng issue qua hai câu hỏi: mức khó (rất dễ, dễ, vừa, khó, rất khó), rồi điểm cụ thể trong mức đó.
+Skill tự chọn 5 issue theo luật cố định: nhỏ nhất, trung vị, lớn nhất, lệch xa trung vị nhất, độ tin cậy thấp nhất. Người duyệt từng issue qua hai câu hỏi: mức khó (rất dễ, dễ, vừa, khó, rất khó), rồi điểm cụ thể trong mức đó.
 
 | Issue | Vì sao được chọn | Skill chấm (Scope × Complexity → SWP) | Bạn chốt | Lý do |
 |---|---|---|---|---|
@@ -27,18 +27,18 @@ Skill tự chọn 5 issue theo luật cố định: nhỏ nhất, trung vị, l�
 | [#563](https://github.com/tamhtt-3564/fish-market-backlog/issues/563) E10-S05-T01 Hàm DB nộp version và đếm số lần đổi, kèm test | Trung vị | 2 × 2 → 3 | 3 | Hai hàm trong một tầng DB đã có thiết kế TECH; độ khó nằm ở biên 4 lần đổi và loại trừ bản rollback, đúng mức "dễ" |
 | [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) E17-S08 Chạy chuyển đổi dữ liệu gốc lên production trước go-live | Lớn nhất | 5 × 5 → 15 | 15 | Thao tác một lần trên production, có go / no-go, khó quay lui; định dạng dữ liệu hệ thống cũ chưa rõ nên độ khó cao là có căn cứ |
 | [#177](https://github.com/tamhtt-3564/fish-market-backlog/issues/177) E17-S07 Diễn tập chuyển đổi trên staging | Lệch xa trung vị | 5 × 3 → 10 | 10 | Chạy trọn thủ tục bằng file thật của khách, đo giờ, đối số; nhẹ hơn #178 vì trên staging làm lại được |
-| [#3](https://github.com/tamhtt-3564/fish-market-backlog/issues/3) E16-S02 Làm rõ luồng và hạn xử lý tranh chấp (Q4-02) | Độ tin thấp nhất | 2 × 1 → 3 | 3 | Ngoài hỏi khách còn phải sửa và ước lại các issue tranh chấp liên quan, nên nặng hơn #45 |
+| [#3](https://github.com/tamhtt-3564/fish-market-backlog/issues/3) E16-S02 Làm rõ luồng và hạn xử lý tranh chấp (Q4-02) | Độ tin cậy thấp nhất | 2 × 1 → 3 | 3 | Ngoài hỏi khách còn phải sửa và ước lại các issue tranh chấp liên quan, nên nặng hơn #45 |
 
 Không sửa issue mẫu nào: cả 5 điểm đều khớp cảm nhận của người duyệt về độ khó, và thứ tự giữa các issue mẫu hợp lý (diễn tập nhẹ hơn chạy thật, việc làm rõ kéo theo sửa issue nặng hơn việc chỉ hỏi đáp). Vì không có chỉnh sửa, skill không lan điều chỉnh sang việc khác; 654 việc giữ nguyên điểm skill chấm (báo cáo HTML: trạng thái "accepted", 0 việc đổi điểm).
 
-**Kiểm thêm 2 issue điển hình** (ngoài skill, vì skill giới hạn 5 issue mẫu). 4/5 issue mẫu của skill là việc ngoại lệ (làm rõ với khách, chuyển đổi dữ liệu), không có việc QA hay FE, trong khi QA chiếm 32% tổng SWP. Luật chọn: trong nhóm việc, lấy việc có SWP trung vị, rồi giờ thô trung vị, rồi số issue nhỏ nhất.
+**Kiểm thêm 2 issue điển hình** (ngoài skill, vì skill giới hạn 5 issue mẫu). 4/5 issue mẫu của skill là việc ngoại lệ (làm rõ với khách, chuyển đổi dữ liệu), không có việc QA hay FE, trong khi QA chiếm 32% tổng SWP. Luật chọn: trong nhóm việc, lấy việc có SWP trung vị, rồi giờ ước sơ bộ (rough estimate: giờ AI ước cho từng leaf issue lúc chia việc ở bước 2, trường `rough_hours`) trung vị, rồi số issue nhỏ nhất.
 
 | Issue | Đại diện cho | Skill chấm (Scope × Complexity → SWP) | Bạn chốt | Lý do |
 |---|---|---|---|---|
 | [#11](https://github.com/tamhtt-3564/fish-market-backlog/issues/11) E16-S03-T06 QA kiểm mở tranh chấp và danh sách tranh chấp (SCR-22) | 117 việc chạy kiểm thử; 68 việc cùng nhóm hiệu chỉnh | 2 × 1 → 3 | 3 | Chạy bộ ca có sẵn của một tính năng, ghi kết quả; thao tác quen |
 | [#286](https://github.com/tamhtt-3564/fish-market-backlog/issues/286) E03-S07-T05 Hộp tạo tài khoản trên SCR-07 (N-01) | 82 việc dev FE; 56 việc cùng nhóm hiệu chỉnh | 2 × 1 → 3 | 3 | Một hộp tạo có ô chọn theo điều kiện, phím Esc, câu báo lỗi; validation thường |
 
-"Cùng nhóm hiệu chỉnh" là nhóm skill dùng để lan điều chỉnh: cùng ngành (`primaryDiscipline`), cùng loại việc (`workType`), cùng hai bộ dấu hiệu Scope và Complexity (đếm: lọc 4 trường này trong payload nhúng ở báo cáo HTML). Cả hai giữ nguyên nên không nhóm việc nào phải chỉnh. Hai việc cùng 3 SWP nhưng giờ thô khác nhau (4 và 8 giờ): khác biệt về giờ giữa QA và FE được xử lý ở bước quy giờ (mục 3), không phải bằng cách đổi SWP.
+"Cùng nhóm hiệu chỉnh" là nhóm skill dùng để lan điều chỉnh: cùng ngành (`primaryDiscipline`), cùng loại việc (`workType`), cùng hai bộ dấu hiệu Scope và Complexity (đếm: lọc 4 trường này trong payload nhúng ở báo cáo HTML). Cả hai giữ nguyên nên không nhóm việc nào phải chỉnh. Hai việc cùng 3 SWP nhưng giờ ước sơ bộ khác nhau (4 và 8 giờ): khác biệt về giờ giữa QA và FE được xử lý ở bước quy giờ (mục 3), không phải bằng cách đổi SWP.
 
 Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo giờ. Hai issue cùng ước thô 10 giờ có thể khác SWP xa nhau (#563 3 SWP, #178 15 SWP). Mục 3 phải chọn cách quy có tính tới chuyện này.
 
@@ -47,18 +47,18 @@ Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo g
 **Cách đã chọn:** quy ước đổi SWP ra giờ theo **hệ số của từng vai** (người duyệt chọn ở bước 5).
 
 **Vì sao:**
-- SWP đo độ rộng và độ khó, không đo giờ. Cùng 3 SWP, việc chạy bộ ca kiểm thử của QA thường ngắn hơn việc dev giao diện FE. Giờ thô trung bình mỗi SWP: QA-A 1,40 giờ, FE-B 2,72 giờ.
+- SWP đo độ rộng và độ khó, không đo giờ. Cùng 3 SWP, việc chạy bộ ca kiểm thử của QA thường ngắn hơn việc dev giao diện FE. Giờ ước sơ bộ trung bình mỗi SWP: QA-A 1,40 giờ, FE-B 2,72 giờ.
 - Dùng một hệ số chung (1,84 giờ/SWP) thì phần QA dư khoảng 32%, phần FE-B thiếu khoảng 32%. Kế hoạch nhân sự sẽ thừa QA, thiếu FE.
-- Giữ nguyên giờ thô của bước 2 thì sát từng việc hơn, nhưng giờ thô do AI ước lúc chia việc, chưa ai duyệt từng cái; còn SWP đã qua 5 issue mẫu của skill và 2 issue kiểm thêm.
-- Hệ số theo vai vừa gắn giờ với SWP đã duyệt, vừa giữ tổng giờ từng vai gần bằng giờ thô của vai đó (lệch do làm tròn, nhiều nhất 3,8 giờ ở BE-B).
+- Giữ nguyên giờ ước sơ bộ của bước 2 thì sát từng việc hơn, nhưng giờ ước sơ bộ do AI ước lúc chia việc, chưa ai duyệt từng cái; còn SWP đã qua 5 issue mẫu của skill và 2 issue kiểm thêm.
+- Hệ số theo vai vừa gắn giờ với SWP đã duyệt, vừa giữ tổng giờ từng vai gần bằng giờ ước sơ bộ của vai đó (lệch do làm tròn, nhiều nhất 3,8 giờ ở BE-B).
 
 **Quy tắc** (áp cho mọi leaf issue, không ngoại lệ):
-1. Hệ số vai = tổng giờ thô bước 2 / tổng SWP các leaf issue của vai đó, làm tròn 2 chữ số.
+1. Hệ số vai = tổng giờ ước sơ bộ bước 2 / tổng SWP các leaf issue của vai đó, làm tròn 2 chữ số.
 2. Giờ leaf issue = SWP × hệ số vai, làm tròn 0,1 giờ kiểu thường (từ 0,05 làm tròn lên).
 3. Giờ mục cha (story, issue có sub-issue, epic) = tổng giờ các con.
 4. Chạy `python scripts/convert-story-points-to-hours.py`: ghi `backlog/estimated-hours.json`, in hai bảng dưới. Ghi trường Estimated time lên Project bằng `python scripts/write-story-points-to-project.py`.
 
-| Vai | Leaf issue | Tổng SWP | Giờ thô bước 2 | Hệ số giờ/SWP | Giờ quy đổi |
+| Vai | Leaf issue | Tổng SWP | Giờ ước sơ bộ bước 2 | Hệ số giờ/SWP | Giờ quy đổi |
 |---|---|---|---|---|---|
 | BA-A | 10 | 44 | 108 | 2,45 | 108,2 |
 | BE-A | 107 | 402 | 835 | 2,08 | 834,4 |
@@ -72,7 +72,7 @@ Lưu ý cho bước quy giờ: SWP đo độ rộng và độ khó, không đo g
 | TL-A | 54 | 171 | 240 | 1,40 | 239,4 |
 | **Tổng** | **654** | **2.187** | **4.031** | | **4.038,7** |
 
-Tổng quy đổi lệch giờ thô 7,7 giờ do làm tròn hệ số và làm tròn từng việc (chưa làm tròn: 4.034,18 giờ).
+Tổng quy đổi lệch giờ ước sơ bộ 7,7 giờ do làm tròn hệ số và làm tròn từng việc (chưa làm tròn: 4.034,18 giờ).
 
 Tính thử bằng tay bốn việc:
 - [#563](https://github.com/tamhtt-3564/fish-market-backlog/issues/563) E10-S05-T01, BE-A: 3 SWP × 2,08 = 6,24, làm tròn 6,2 giờ.
@@ -80,11 +80,11 @@ Tính thử bằng tay bốn việc:
 - [#72](https://github.com/tamhtt-3564/fish-market-backlog/issues/72) E04-S05, BA-A: 5 SWP × 2,45 = 12,25, làm tròn lên 12,3 giờ.
 - [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) E17-S08, Infra-A: 15 SWP × 1,56 = 23,4 giờ.
 
-**Giới hạn của cách này:** trong cùng một vai, việc 2 giờ thô và việc 10 giờ thô cùng 3 SWP nhận cùng số giờ (tương quan SWP với giờ thô chỉ 0,52). Tổng theo vai và theo epic tin được hơn số giờ của từng việc. Khi lập sprint, người làm chỉnh giờ từng việc ở buổi lập kế hoạch.
+**Giới hạn của cách này:** trong cùng một vai, việc 2 giờ ước sơ bộ và việc 10 giờ ước sơ bộ cùng 3 SWP nhận cùng số giờ (tương quan SWP với giờ ước sơ bộ chỉ 0,52). Tổng theo vai và theo epic tin được hơn số giờ của từng việc. Khi lập sprint, người làm chỉnh giờ từng việc ở buổi lập kế hoạch.
 
-**Khoảng dao động:** báo cáo HTML dịch ±1 bậc SWP cho 413 việc độ tin vừa và thấp: 1.802 tới 2.614 SWP, quy ra khoảng 3.399 tới 4.770 giờ. Chỉ dịch 63 việc độ tin thấp: 2.126 tới 2.256 SWP, khoảng 3.916 tới 4.179 giờ. Cách tính giờ của khoảng: mỗi việc giữ giờ/SWP của chính nó (`estimated-hours.json` chia `story-points.json`), nhân với SWP đã dịch một bậc trên dãy SWP hợp lệ của skill.
+**Khoảng dao động:** báo cáo HTML dịch ±1 bậc SWP cho 413 việc độ tin cậy vừa và thấp: 1.802 tới 2.614 SWP, quy ra khoảng 3.399 tới 4.770 giờ. Chỉ dịch 63 việc độ tin cậy thấp: 2.126 tới 2.256 SWP, khoảng 3.916 tới 4.179 giờ. Cách tính giờ của khoảng: mỗi việc giữ giờ/SWP của chính nó (`estimated-hours.json` chia `story-points.json`), nhân với SWP đã dịch một bậc trên dãy SWP hợp lệ của skill.
 
-**Phần độ tin thấp, cộng riêng** (theo `PREMISE.md` G-02): 106 leaf issue mang nhãn `độ tin thấp` (86 việc thuộc 9 màn chưa có spec; nằm ở E02, E04, E10, E12..E17) gồm 336 SWP (15,4% tổng), 621,2 giờ, tức 88,7 MD (102,1 MD có buffer 15%). Phần này chấm lại SWP và giờ khi spec hoặc câu trả lời của khách có; con số có thể đổi nhiều hơn phần còn lại. Đếm: lọc leaf issue (`direct: true` trong `backlog/story-points.json`) có nhãn `độ tin thấp` trong `labels_extra` của `backlog/items-*.json`, cộng `swp` và giờ ở `backlog/estimated-hours.json`.
+**Phần độ tin cậy thấp, cộng riêng** (theo `PREMISE.md` G-02): 106 leaf issue mang nhãn `độ tin thấp` (86 việc thuộc 9 màn chưa có spec; nằm ở E02, E04, E10, E12..E17) gồm 336 SWP (15,4% tổng), 621,2 giờ, tức 88,7 MD (102,1 MD có buffer 15%). Phần này chấm lại SWP và giờ khi spec hoặc câu trả lời của khách có; con số có thể đổi nhiều hơn phần còn lại. Đếm: lọc leaf issue (`direct: true` trong `backlog/story-points.json`) có nhãn `độ tin thấp` trong `labels_extra` của `backlog/items-*.json`, cộng `swp` và giờ ở `backlog/estimated-hours.json`.
 
 ## 4. Tổng theo epic
 
@@ -123,9 +123,9 @@ Estimate LAB-1 ra **805 MD**, đã gồm buffer 15%, PM và BrSE. Để so cùng
 |---|---|---|
 | Giờ backlog | 577,0 | 4.038,7 giờ / 7 |
 | Buffer 15% | 86,5 | Như LAB-1, cho mọi việc trong backlog |
-| Sửa lỗi kiểm thử hệ thống | 16,0 | Đóng khung như LAB-1 dòng T-06 (FE 6, BE 10 MD). Backlog không có issue sẵn cho việc này: lỗi tìm ra thành issue khi phát sinh |
-| Hỗ trợ và sửa lỗi suốt cửa sổ UAT 6 tuần | 23,0 | Đóng khung như LAB-1 dòng U-01 (FE 4, BE 7, QA 11, Infra 1 MD; buffer 0%). Lỗi UAT thành issue `type:uatbug` khi phát sinh, tiêu công từ khung này |
-| Hỗ trợ vận hành ban đầu | 23,0 | Đóng khung như LAB-1: hỗ trợ 30 ngày 22 MD (buffer 0%), đo KPI sau 1 tháng 1 MD (buffer 15%); không thành issue (G-20) |
+| Sửa lỗi kiểm thử hệ thống | 16,0 | Timebox (khoản công cố định theo thời gian, không chia thành issue) như LAB-1 dòng T-06 (FE 6, BE 10 MD). Backlog không có issue sẵn cho việc này: lỗi tìm ra thành issue khi phát sinh |
+| Hỗ trợ và sửa lỗi suốt cửa sổ UAT 6 tuần | 23,0 | Timebox như LAB-1 dòng U-01 (FE 4, BE 7, QA 11, Infra 1 MD; buffer 0%). Lỗi UAT thành issue `type:uatbug` khi phát sinh, tiêu công từ timebox này |
+| Hỗ trợ vận hành ban đầu | 23,0 | Timebox như LAB-1: hỗ trợ 30 ngày 22 MD (buffer 0%), đo KPI sau 1 tháng 1 MD (buffer 15%); không thành issue (G-20) |
 | PM và BrSE điều phối | 139,7 | Cùng tỷ lệ LAB-1: 130 MD trên 675 MD phần còn lại (19,3%), tính trên 725,5 MD. Trùng nhẹ với 18 issue làm rõ của BrSE-A (48 giờ, khoảng 7 MD) đã nằm trong backlog |
 | **Tổng** | **865,2** | Hơn LAB-1 60,2 MD (+7,5%), trong độ chính xác ±25% LAB-1 đã ghi |
 
@@ -146,27 +146,27 @@ So theo phần (LAB-5 tính kèm buffer 15% để cùng cách với LAB-1):
 | F12 Thông báo → E13 | 14 | 26,4 | +12,4 | Thêm việc nền chưa có TECH, mỗi việc kèm thiết kế ngắn (G-05) |
 | F13 Audit, lưu trữ → E15 | 29 | 27,5 | −1,5 | Gần như khớp |
 | F14 và Nền tảng, thiết kế → E01, E02, E14 | 166 | 95,6 | −70,4 | Wireframe và spec 34 màn (LAB-1 X-03, X-08, 55 MD) đã làm ở LAB-2..4; phần còn lại là spec 9 màn và thiết kế ngắn của TL-A, nằm trong epic tính năng (G-02, G-03) |
-| F15 và Chuyển đổi dữ liệu → E17 | 53 | 32,5 | −20,5 | ADR-017 chốt phạm vi hẹp hơn LAB-1: dữ liệu gốc vào bảng nghiệp vụ, 13 tháng lịch sử vào vùng tra cứu chỉ đọc, giao dịch dở chạy nốt ở hệ thống cũ (không chuyển); độ tin thấp vì định dạng hệ thống cũ chưa rõ |
-| Kiểm thử hệ thống → E18 và khung sửa lỗi | 89 | 38,1 | −50,9 | Gồm 16 MD khung sửa lỗi như T-06. Kiểm thử từng tính năng (QA-A 211 việc) đã chia vào epic tính năng; E18 còn 6 issue chung: kế hoạch kiểm thử, kiểm thử đầu cuối, tải, quét quyền theo 11 vai, accessibility, bảo mật |
-| UAT, đào tạo, bàn giao → E19 và khung UAT | 48 | 39,1 | −8,9 | Gồm 23 MD khung UAT như U-01. Phần còn thấp hơn: đào tạo và tài liệu vận hành của E19 ước theo việc cụ thể, nhỏ hơn U-02, U-03 của LAB-1 |
-| Hỗ trợ vận hành ban đầu | 23 | 23,0 | 0 | Đóng khung như LAB-1 |
+| F15 và Chuyển đổi dữ liệu → E17 | 53 | 32,5 | −20,5 | ADR-017 chốt phạm vi hẹp hơn LAB-1: dữ liệu gốc vào bảng nghiệp vụ, 13 tháng lịch sử vào vùng tra cứu chỉ đọc, giao dịch dở chạy nốt ở hệ thống cũ (không chuyển); độ tin cậy thấp vì định dạng hệ thống cũ chưa rõ |
+| Kiểm thử hệ thống → E18 và timebox sửa lỗi | 89 | 38,1 | −50,9 | Gồm 16 MD timebox sửa lỗi như T-06. Kiểm thử từng tính năng (QA-A 211 việc) đã chia vào epic tính năng; E18 còn 6 issue chung: kế hoạch kiểm thử, kiểm thử đầu cuối, tải, quét quyền theo 11 vai, accessibility, bảo mật |
+| UAT, đào tạo, bàn giao → E19 và timebox UAT | 48 | 39,1 | −8,9 | Gồm 23 MD timebox UAT như U-01. Phần còn thấp hơn: đào tạo và tài liệu vận hành của E19 ước theo việc cụ thể, nhỏ hơn U-02, U-03 của LAB-1 |
+| Hỗ trợ vận hành ban đầu | 23 | 23,0 | 0 | Timebox như LAB-1 |
 | PM và BrSE | 130 | 139,7 | +9,7 | Cùng tỷ lệ 19,3%, base lớn hơn |
 | **Tổng** | **805** | **865,3** | **+60,3** | Lệch 0,1 so với bảng thành phần do làm tròn từng dòng |
 
-So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estimate LAB-1; MD LAB-1 mỗi giai đoạn đã gồm phần PM, BrSE). LAB-5 = giờ các epic của giai đoạn / 7 × 1,15, cộng khung đóng, rồi cộng phần PM và BrSE 19,3%:
+So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estimate LAB-1; MD LAB-1 mỗi giai đoạn đã gồm phần PM, BrSE). LAB-5 = giờ các epic của giai đoạn / 7 × 1,15, cộng timebox, rồi cộng phần PM và BrSE 19,3%:
 
 | Giai đoạn LAB-1 | LAB-1 (MD) | Epic LAB-5 | LAB-5 (MD) | Chênh | Ghi chú |
 |---|---|---|---|---|---|
 | GĐ1 Yêu cầu, thiết kế (T1..T2) | 124 | (không có) | 0,0 | −124,0 | Đã làm ở LAB-2..4 (wireframe, spec, kiến trúc); spec 9 màn còn thiếu và thiết kế ngắn nằm trong GĐ2 |
 | GĐ2 Xây dựng (T3..T6) | 465 | E01..E16 | 707,0 | **+242,0 (+52%)** | Chỗ vượt chính: kiểm thử từng tính năng, spec 9 màn, thiết kế ngắn của TL nằm ở đây; quy tắc nghiệp vụ LAB-4 chi tiết hơn |
-| GĐ3 Kiểm thử hệ thống, chuyển đổi (T7..T8 tuần 2) | 120 | E17, E18, khung sửa lỗi 16 MD | 84,2 | −35,8 | Kiểm thử từng tính năng đã chuyển sang GĐ2 |
-| GĐ4 UAT, đào tạo, chuyển đổi chính thức (T8 tuần 3..T9) | 69 | E19, khung UAT 23 MD | 46,6 | −22,4 | |
-| GĐ5 Hỗ trợ vận hành ban đầu (T10) | 27 | Khung hỗ trợ 23 MD | 27,4 | +0,4 | |
+| GĐ3 Kiểm thử hệ thống, chuyển đổi (T7..T8 tuần 2) | 120 | E17, E18, timebox sửa lỗi 16 MD | 84,2 | −35,8 | Kiểm thử từng tính năng đã chuyển sang GĐ2 |
+| GĐ4 UAT, đào tạo, chuyển đổi chính thức (T8 tuần 3..T9) | 69 | E19, timebox UAT 23 MD | 46,6 | −22,4 | |
+| GĐ5 Hỗ trợ vận hành ban đầu (T10) | 27 | Timebox hỗ trợ 23 MD | 27,4 | +0,4 | |
 | **Tổng** | **805** | | **865,2** | **+60,2** | |
 
-Đội và lịch của LAB-1 không đủ cho GĐ2. Với đội 5,8 người như giả lập Sprint 1 (cam kết 85% năng lực), phần xây dựng E01..E16 còn lại sau Sprint 1 cần số sprint theo từng vai như dưới; GĐ2 còn 7 sprint tính từ Sprint 2:
+Đội và lịch của LAB-1 không đủ cho GĐ2. Với đội 5,8 người như giả lập Sprint 1 (cam kết 85% capacity, tức năng lực làm việc của đội trong sprint tính bằng giờ), phần xây dựng E01..E16 còn lại sau Sprint 1 cần số sprint theo từng vai như dưới; GĐ2 còn 7 sprint tính từ Sprint 2:
 
-| Vai | Giờ còn lại (E01..E16) | Năng lực mỗi sprint (giờ) | Sprint cần | Người cần thêm, vào từ Sprint 3 |
+| Vai | Giờ còn lại (E01..E16) | Capacity mỗi sprint (giờ) | Sprint cần | Người cần thêm, vào từ Sprint 3 |
 |---|---|---|---|---|
 | BE-A, BE-B | 743,1 + 727,8 | 51,0 + 51,0 | 14,6; 14,3 | 1,3 + 1,2 |
 | QA-A | 763,0 | 51,0 | 15,0 | 1,3 |
@@ -175,12 +175,12 @@ So theo giai đoạn của kế hoạch nguồn lực LAB-1 (mục 6 của estim
 | FE-A, TL-A, BA-A, Infra-A, BrSE-A | | | 1,1 tới 7,7 | 0 (BA-A cần 7,7 sprint, thiếu khoảng 0,02 người, bỏ qua) |
 | **Tổng** | | | | **khoảng 4,7 người** |
 
-Cách tính: giờ còn lại = `estimated-hours.json` của leaf issue E01..E16 chưa Closed sau Sprint 1, theo `owner`; năng lực = người × 60 giờ × 85%; người cần thêm = (giờ còn lại − năng lực Sprint 2 của đội hiện có) / (6 sprint × 60 × 0,85) − số người hiện có, vì người mới vào từ Sprint 3 chỉ còn 6 sprint. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
+Cách tính: giờ còn lại = `estimated-hours.json` của leaf issue E01..E16 chưa Closed sau Sprint 1, theo `owner`; capacity = người × 60 giờ × 85%; người cần thêm = (giờ còn lại − capacity Sprint 2 của đội hiện có) / (6 sprint × 60 × 0,85) − số người hiện có, vì người mới vào từ Sprint 3 chỉ còn 6 sprint. Chỗ nghẽn dài hạn là BE, QA và Design; TL chỉ nghẽn ở Sprint 1 (thiết kế ngắn dồn đầu dự án).
 
-Ngoài ra, 3 leaf issue sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ thô bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
+Ngoài ra, 3 leaf issue sau khi quy giờ vượt luật 14 giờ của `task-breakdown.md` mục 1.4 (luật áp cho giờ ước sơ bộ bước 2): [#178](https://github.com/tamhtt-3564/fish-market-backlog/issues/178) 23,4 giờ, [#355](https://github.com/tamhtt-3564/fish-market-backlog/issues/355) 16,3 giờ, [#179](https://github.com/tamhtt-3564/fish-market-backlog/issues/179) 15,6 giờ; tách nhỏ ở buổi lập kế hoạch sprint có các việc này.
 
 Đọc bảng:
 - Tổng cao hơn 7,5% (trong độ chính xác ±25% của LAB-1), nhưng con số này **che chỗ vượt**: riêng giai đoạn xây dựng vượt 52%, bù lại bằng 124 MD thiết kế đã làm ở LAB-2..4. Kế hoạch đội và lịch của LAB-1 phải sửa theo bảng giai đoạn, không theo tổng. **Cơ cấu đổi nhiều**: phần tính năng nghiệp vụ tăng, phần nền tảng, thiết kế và kiểm thử hệ thống giảm. Hai lý do chính: wireframe và spec đã làm ở LAB-2..4 nên không còn trong backlog; kiểm thử từng tính năng được chia về epic của tính năng.
 - Phần tăng nhiều nhất (E11, E09, E08, E03) là chỗ spec LAB-4 làm rõ thêm quy tắc nghiệp vụ so với lúc ước LAB-1. 完納奨励金 tăng từ 16 lên 55,3 MD, đúng với yêu cầu tách theo từng biến của đề.
-- Hai khung sửa lỗi (kiểm thử hệ thống 16 MD, cửa sổ UAT 23 MD) không có issue sẵn; khi lỗi phát sinh, issue lỗi tiêu công từ khung. Báo cáo tiến độ theo dõi phần đã tiêu so với khung.
+- Hai timebox sửa lỗi (kiểm thử hệ thống 16 MD, cửa sổ UAT 23 MD) không có issue sẵn; khi lỗi phát sinh, issue lỗi tiêu công từ timebox. Báo cáo tiến độ theo dõi phần đã tiêu so với timebox.
 - Đào tạo và tài liệu vận hành (E19) thấp hơn LAB-1; cần xác nhận lại khi chốt số buổi đào tạo với khách.
